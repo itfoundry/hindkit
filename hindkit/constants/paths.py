@@ -1,0 +1,6 @@
+MASTERS = 'masters'
+INSTANCES = 'instances'
+FMNDN = 'FontMenuNameDB'
+GOADB = 'GlyphOrderAndAliasDB'
+BUILD = 'build'
+OUTPUT = '/Library/Application Support/Adobe/Fonts'
