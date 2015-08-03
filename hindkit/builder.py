@@ -1,7 +1,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import subprocess, os, pickle, time, argparse
-import robofab.world, WriteFeaturesKernFDK, WriteFeaturesMarkFDK
+import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit as kit
 
 class Builder(object):
