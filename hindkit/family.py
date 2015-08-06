@@ -4,9 +4,6 @@ import os
 import robofab.world
 import hindkit as kit
 
-def initiate(family):
-    pass
-
 class Family(object):
 
     def __init__(
