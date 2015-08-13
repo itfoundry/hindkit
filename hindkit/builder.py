@@ -118,14 +118,15 @@ class Builder(object):
             lines.append('  f = {}'.format(self.family.output_name))
             lines.append('  s = {}'.format(style.name))
 
-            if style.name != 'Regular':
-                if self.do_style_linking and (style.is_bold or style.is_italic):
-                    if style.is_bold:
-                        lines.append('  # IsBoldStyle')
-                    if style.is_italic:
-                        lines.append('  # IsItalicStyle')
-                else:
-                    lines.append('  l = {}'.format(style.output_full_name))
+            if self.do_style_linking and (
+                style.name == 'Regular' or style.is_bold or style.is_italic
+            ):
+                if style.is_bold:
+                    lines.append('  # IsBoldStyle')
+                if style.is_italic:
+                    lines.append('  # IsItalicStyle')
+            else:
+                lines.append('  l = {}'.format(style.output_full_name))
 
         with open(kit.paths.FMNDN, 'w') as f:
             f.write(kit.templates.FMNDB_HEAD)
