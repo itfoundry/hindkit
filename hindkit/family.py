@@ -162,11 +162,11 @@ class Style(_BaseStyle):
         self.is_italic = is_italic
         self.is_oblique = is_oblique
         if is_bold is None:
-            self.is_bold = True if 'Bold' in self.name else False
+            self.is_bold = True if 'Bold' in self.name.split() else False
         if is_italic is None:
-            self.is_italic = True if 'Italic' in self.name else False
+            self.is_italic = True if 'Italic' in self.name.split() else False
         if is_oblique is None:
-            self.is_oblique = True if 'Oblique' in self.name else False
+            self.is_oblique = True if 'Oblique' in self.name.split() else False
 
     @property
     def directory(self):
