@@ -99,10 +99,12 @@ class _BaseStyle(object):
         _family,
         name = '',
         interpolation_value = 0,
+        _file_name = None,
     ):
         self._family = _family
         self.name = name
         self.interpolation_value = interpolation_value
+        self._file_name = _file_name
 
     @property
     def directory(self):
@@ -110,7 +112,10 @@ class _BaseStyle(object):
 
     @property
     def file_name(self):
-        return ''
+        if self._file_name:
+            return self._file_name
+        else:
+            return ''
 
     @property
     def path(self):
@@ -134,7 +139,10 @@ class Master(_BaseStyle):
 
     @property
     def file_name(self):
-        return '{}-{}.ufo'.format(self._family.name, self.name)
+        if self._file_name:
+            return self._file_name
+        else:
+            return '{}-{}.ufo'.format(self._family.name, self.name)
 
 class Style(_BaseStyle):
 
@@ -174,7 +182,10 @@ class Style(_BaseStyle):
 
     @property
     def file_name(self):
-        return 'font.ufo'
+        if self._file_name:
+            return self._file_name
+        else:
+            return 'font.ufo'
 
     @property
     def output_full_name(self):
