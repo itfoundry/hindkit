@@ -55,4 +55,9 @@ INDIC_SCRIPTS = {
         'indic1 tag': 'mlym',
         'indic2 tag': 'mlm2',
     },
+
+    'sinhala': {
+        'abbreviation': 'si',
+        'tag': 'sinh',
+    },
 }
