@@ -41,6 +41,8 @@ class Builder(object):
         self.prefer_typo_metrics = False
         self.is_width_weight_slope_only = False
 
+        self.keep_build_directory = False
+
         self.parser = argparse.ArgumentParser()
         options = self.parser.add_argument_group(
             title = 'build options',
@@ -96,6 +98,8 @@ class Builder(object):
             'prefer_typo_metrics',
             'is_width_weight_slope_only',
 
+            'keep_build_directory',
+
         ]:
             if supported_option in options:
                 self.__dict__[supported_option] = True
@@ -111,27 +115,44 @@ class Builder(object):
 
     def generate_fmndb(self):
 
+        f_name = self.family.output_name
         lines = []
+        
         for style in self.family.styles:
+
             lines.append('')
             lines.append('[{}]'.format(style.output_full_name_postscript))
-            lines.append('  f = {}'.format(self.family.output_name))
+            lines.append('  f = {}'.format(f_name))
             lines.append('  s = {}'.format(style.name))
 
-            if self.do_style_linking and (
-                style.name == 'Regular' or style.is_bold or style.is_italic
-            ):
-                if style.is_bold:
-                    lines.append('  # IsBoldStyle')
-                if style.is_italic:
-                    lines.append('  # IsItalicStyle')
-            else:
-                lines.append('  l = {}'.format(style.output_full_name))
+            l_name = style.output_full_name
+            comment_lines = []
+
+            if self.do_style_linking:
+                if style.name == 'Regular':
+                    l_name = l_name.replace(' Regular', '')
+                else:
+                    if style.is_bold:
+                        comment_lines.append('  # IsBoldStyle')
+                        l_name = l_name.replace(' Bold', '')
+                    if style.is_italic:
+                        comment_lines.append('  # IsItalicStyle')
+                        l_name = l_name.replace(' Italic', '')
+
+            if l_name != f_name:
+                lines.append('  l = {}'.format(l_name))
+
+            lines.extend(comment_lines)
 
         with open(kit.paths.FMNDN, 'w') as f:
             f.write(kit.templates.FMNDB_HEAD)
             f.write('\n'.join(lines))
             f.write('\n')
+
+    def reset_build_directory(self):
+        print('[Note] Resetting the build directory...\n')
+        subprocess.call(['rm', '-fr', kit.paths.BUILD])
+        subprocess.call(['mkdir', kit.paths.BUILD])
 
     def build(self, additional_arguments = []):
 
@@ -291,9 +312,8 @@ class Builder(object):
 
         if self.compile:
 
-            print('[Note] Resetting the build directory...\n')
-            subprocess.call(['rm', '-fr', kit.paths.BUILD])
-            subprocess.call(['mkdir', kit.paths.BUILD])
+            if not self.keep_build_directory:
+                self.reset_build_directory()
 
             for style in self.enabled_styles:
 
