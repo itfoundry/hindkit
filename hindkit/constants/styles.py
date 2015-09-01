@@ -6,7 +6,7 @@ STANDARD = [
     ('Bold',     100, 700),
 ]
 
-STANDARD_googlefonts = [
+STANDARD_CamelCase = [
     ('Light',      0, 300),
     ('Regular',   21, 400),
     ('Medium',    44, 500),
