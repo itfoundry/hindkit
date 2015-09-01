@@ -71,7 +71,7 @@ class Family(object):
             else:
                 self.__dict__['has_' + module] = False
 
-    def set_styles(self, style_scheme = kit.styles.STANDARD_googlefonts):
+    def set_styles(self, style_scheme = kit.styles.STANDARD_CamelCase):
 
         self.styles = []
 
