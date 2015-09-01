@@ -8,5 +8,5 @@ setuptools.setup(
     version = kit.__version__,
     author = 'Liang Hai',
     author_email = 'lianghai@gmail.com',
-    packages = ['hindkit'],
+    packages = ['hindkit', 'hindkit.constants', 'hindkit.scripts', 'hindkit.AFDKOPython'],
 )
