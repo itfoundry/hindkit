@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glyph name="I" format="1">
+  <advance width="232"/>
+  <unicode hex="0049"/>
+  <outline>
+    <contour>
+      <point x="147" y="0" type="line"/>
+      <point x="147" y="674" type="line"/>
+      <point x="85" y="674" type="line"/>
+      <point x="85" y="0" type="line"/>
+    </contour>
+  </outline>
+  <lib>
+    <dict>
+      <key>com.schriftgestaltung.Glyphs.ColorIndex</key>
+      <integer>3</integer>
+      <key>public.markColor</key>
+      <string>0.97,1,0,1</string>
+    </dict>
+  </lib>
+</glyph>
