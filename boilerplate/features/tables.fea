@@ -27,6 +27,7 @@ table OS/2 {
     # 21  # Telugu 0C00-0C7F
     # 22  # Kannada 0C80-0CFF
     # 23  # Malayalam 0D00-0D7F
+    # 73  # Sinhala 0D80-0DFF
     ;
   # CodePageRange;
   TypoAscender 750;
