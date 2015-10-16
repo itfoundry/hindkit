@@ -17,7 +17,7 @@ WEIGHTCLASS = 'WeightClass {};\n'
 
 EXIT_MESSAGE = '''
 [WARNING] Bad version of the package "hindkit".
-          Version "{}" is required by this project while you have "{}".
+          Version "{}" is specified in "build.py" while you have "{}".
 
 [Note] Exit.
 '''

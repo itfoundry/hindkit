@@ -104,20 +104,28 @@ class Builder(object):
             if supported_option in options:
                 self.__dict__[supported_option] = True
 
-    def generate_designspace(self):
-
+    def _afdkopython(self, file_name):
         process = subprocess.Popen(
-            ['AFDKOPython', 'AFDKOPython/generate_designspace.py'],
+            ['AFDKOPython', 'AFDKOPython/{}'.format(file_name)],
             stdin = subprocess.PIPE,
             cwd = kit.__path__[0],
         )
         process.communicate(pickle.dumps(self.family.dump()))
 
+    def import_glyphs(self):
+        self._check_master_files()
+        self._afdkopython('import_glyphs.py')
+        self.family.masters[0]._file_name = 'TEMP-Light.ufo'
+        self.family.masters[1]._file_name = 'TEMP-Bold.ufo'
+
+    def generate_designspace(self):
+        self._afdkopython('generate_designspace.py')
+
     def generate_fmndb(self):
 
         f_name = self.family.output_name
         lines = []
-        
+
         for style in self.family.styles:
 
             lines.append('')
