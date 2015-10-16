@@ -9,7 +9,7 @@ This package hosts the build system for the Hind multiscript project:
 - [Hind Guntur](https://github.com/itfoundry/hind-guntur) (Telugu)
 - [Hind Kochi](https://github.com/itfoundry/hind-kochi) (Malayalam)
 - [Hind Madurai](https://github.com/itfoundry/hind-madurai) (Tamil)
-- Hind Colombo (Sinhala)
+- [Hind Colombo](https://github.com/itfoundry/hind-colombo) (Sinhala)
 
 ## Dependencies
 
