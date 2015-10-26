@@ -155,6 +155,7 @@ class Style(_BaseStyle):
         is_bold = None,
         is_italic = None,
         is_oblique = None,
+        _output_full_name_postscript = None,
     ):
 
         super(Style, self).__init__(_family, name, interpolation_value)
@@ -176,6 +177,8 @@ class Style(_BaseStyle):
         if is_oblique is None:
             self.is_oblique = True if 'Oblique' in self.name.split() else False
 
+        self._output_full_name_postscript = _output_full_name_postscript
+
     @property
     def directory(self):
         return os.path.join(kit.paths.INSTANCES, self.name_postscript)
@@ -194,7 +197,10 @@ class Style(_BaseStyle):
 
     @property
     def output_full_name_postscript(self):
-        output_full_name_postscript = self._family.output_name_postscript + '-' + self.name_postscript
+        if self._output_full_name_postscript:
+            output_full_name_postscript = self._output_full_name_postscript
+        else:
+            output_full_name_postscript = self._family.output_name_postscript + '-' + self.name_postscript
         return output_full_name_postscript
 
     def dump(self):

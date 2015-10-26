@@ -1,6 +1,6 @@
 from __future__ import division, print_function, unicode_literals
 
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 
 from hindkit.constants import paths, linguistics, styles, templates
 from hindkit.family    import Family, Master, Style
