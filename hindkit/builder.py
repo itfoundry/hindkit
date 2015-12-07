@@ -3,6 +3,7 @@ from __future__ import division, print_function, unicode_literals
 import subprocess, os, pickle, time, argparse
 import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit as kit
+from hindkit.scripts import devanagari
 
 class Builder(object):
 
@@ -178,7 +179,7 @@ class Builder(object):
                 self.enabled_styles = [self.family.styles[0], self.family.styles[-1]]
 
         if self.family.script in ['Devanagari', 'Gujarati']:
-            from hindkit.scripts import devanagari
+            # from hindkit.scripts import devanagari
             devanagari.SCRIPT_PREFIX = kit.linguistics.INDIC_SCRIPTS[self.family.script.lower()]['abbreviation']
 
         if self.prepare_styles:
@@ -302,7 +303,15 @@ class Builder(object):
                         light_min, light_max = light
                         bold_min, bold_max = bold
 
-                        ratio = style.interpolation_value / self.family.masters[-1].interpolation_value
+                        axis_start = self.family.masters[0].interpolation_value
+                        axis_end = self.family.masters[-1].interpolation_value
+
+                        axis_range = axis_end - axis_start
+
+                        if axis_range == 0:
+                            ratio = 1
+                        else:
+                            ratio = (style.interpolation_value - axis_start) / axis_range
 
                         offset_tuple = (
                             light_min + (bold_min - light_min) * ratio,

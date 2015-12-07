@@ -4,10 +4,19 @@ import re, collections
 import hindkit as kit
 
 SCRIPT_PREFIX = 'dv'
+MATRA_I_NAME_STEM = 'mI.alt'
+MATRA_I_ANCHOR_NAME = 'abvm.i'
+
 STEM_ANCHOR_NAMES = ['abvm.e', 'abvm']
 
 def glyph_filter_matra_i_alts(glyph):
-    return glyph.name.startswith(SCRIPT_PREFIX + 'mI.alt')
+    is_filted = False
+    if re.match(
+        SCRIPT_PREFIX + MATRA_I_NAME_STEM + r'\d\d$',
+        glyph.name,
+    ):
+        is_filted = True
+    return is_filted
 
 def glyph_filter_bases_for_matra_i(glyph):
     name = glyph.name
@@ -50,18 +59,18 @@ def get_stem_position(glyph, stem_right_margin):
 def restore_abvm_content(abvm_content):
 
     if re.search(
-        r'# lookup MARK_BASE_abvm.i \{',
+        r'# lookup MARK_BASE_{} \{{'.format(MATRA_I_ANCHOR_NAME),
         abvm_content
     ):
 
         abvm_content = re.sub(
-            r'(?m)\n\n\n^lookup MARK_BASE_abvm.i \{\n(^.+\n)+^\} MARK_BASE_abvm.i;',
+            r'(?m)\n\n\n^lookup MARK_BASE_{0} \{{\n(^.+\n)+^\}} MARK_BASE_{0};'.format(MATRA_I_ANCHOR_NAME),
             r'',
             abvm_content
         )
 
         commented_abvm_lookup = re.search(
-            r'(?m)^# lookup MARK_BASE_abvm.i \{\n(^# .+\n)+^# \} MARK_BASE_abvm.i;',
+            r'(?m)^# lookup MARK_BASE_{0} \{{\n(^# .+\n)+^# \}} MARK_BASE_{0};'.format(MATRA_I_ANCHOR_NAME),
             abvm_content
         ).group()
 
@@ -87,12 +96,12 @@ def write_mI_matches_to_files(directory, mI_table, long_base_names):
     original_abvm_content = restore_abvm_content(abvm_content)
 
     original_abvm_lookup = re.search(
-        r'(?m)^lookup MARK_BASE_abvm.i {\n(.+\n)+^} MARK_BASE_abvm.i;',
+        r'(?m)^lookup MARK_BASE_{0} \{{\n(.+\n)+^\}} MARK_BASE_{0};'.format(MATRA_I_ANCHOR_NAME),
         original_abvm_content
     ).group()
 
     modified_abvm_lookup = original_abvm_lookup.replace(
-        'pos base {}mI.alt'.format(SCRIPT_PREFIX),
+        'pos base {}{}'.format(SCRIPT_PREFIX, MATRA_I_NAME_STEM),
         'pos base @generated_MATRA_I_BASES_'
     )
 
