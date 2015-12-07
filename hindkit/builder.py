@@ -3,7 +3,7 @@ from __future__ import division, print_function, unicode_literals
 import subprocess, os, pickle, time, argparse
 import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit as kit
-from itfoundrykit.scripts import devanagari
+from hindkit.scripts import devanagari
 
 class Builder(object):
 
