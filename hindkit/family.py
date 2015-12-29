@@ -74,10 +74,10 @@ class Family(object):
             else:
                 self.__dict__['has_' + module] = False
 
-    def set_styles(
-        self,
-        style_scheme = kit.clients.CLIENTS[self.client]['style_scheme'],
-    ):
+    def set_styles(self, style_scheme = None):
+
+        if not style_scheme:
+            style_scheme = kit.clients.CLIENTS[self.client]['style_scheme']
 
         self.styles = []
 

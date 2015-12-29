@@ -16,7 +16,7 @@ FMNDB_HEAD = '''\
 WEIGHTCLASS = 'WeightClass {};\n'
 
 EXIT_MESSAGE = '''
-[WARNING] Bad version of the package "hindkit".
+[WARNING] Bad version of the package "{}".
           Version "{}" is specified in "build.py" while you have "{}".
 
 [Note] Exit.

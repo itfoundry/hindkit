@@ -107,7 +107,9 @@ class Builder(object):
 
         self._parse_args()
 
-    def _afdkopython(self, file_name, info=self.family.dump()):
+    def _afdkopython(self, file_name, info=None):
+        if not info:
+            info = self.family.dump()
         process = subprocess.Popen(
             ['AFDKOPython', 'AFDKOPython/{}'.format(file_name)],
             stdin = subprocess.PIPE,
