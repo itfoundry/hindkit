@@ -8,10 +8,13 @@ class Family(object):
 
     def __init__(
         self,
+        client = kit.clients.DEFAULT_CLIENT,
         trademark = '',
         script = '',
         hide_script_name = False,
     ):
+
+        self.client = client
 
         self.trademark = trademark
         self.script = script
@@ -71,7 +74,10 @@ class Family(object):
             else:
                 self.__dict__['has_' + module] = False
 
-    def set_styles(self, style_scheme = kit.styles.STANDARD_CamelCase):
+    def set_styles(
+        self,
+        style_scheme = kit.clients.CLIENTS[self.client]['style_scheme'],
+    ):
 
         self.styles = []
 
@@ -156,6 +162,7 @@ class Style(_BaseStyle):
         is_italic = None,
         is_oblique = None,
         _output_full_name_postscript = None,
+        _otf_name = None,
     ):
 
         super(Style, self).__init__(_family, name, interpolation_value)
@@ -178,6 +185,8 @@ class Style(_BaseStyle):
             self.is_oblique = True if 'Oblique' in self.name.split() else False
 
         self._output_full_name_postscript = _output_full_name_postscript
+
+        self._otf_name = _otf_name
 
     @property
     def directory(self):
@@ -202,6 +211,14 @@ class Style(_BaseStyle):
         else:
             output_full_name_postscript = self._family.output_name_postscript + '-' + self.name_postscript
         return output_full_name_postscript
+
+    @property
+    def otf_name(self):
+        if self._otf_name:
+            otf_name = self._otf_name
+        else:
+            otf_name = self.output_full_name_postscript + '.otf'
+        return otf_name
 
     def dump(self):
         dictionary = self.__dict__.copy()
