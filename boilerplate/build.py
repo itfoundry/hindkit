@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import hindkit as kit
-kit.confirm_version('0.3.0')
+kit.confirm_version('0.3.2')
 
 # - - -
 
