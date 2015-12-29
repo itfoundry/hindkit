@@ -167,7 +167,7 @@ class Builder(object):
                     'deriving': deriving,
                     'working_directory': self.family.working_directory,
                 }
-                self._afdkopython('insert_glyphs.py', info=info)
+                self._afdkopython('import_glyphs.py', info=info)
 
     def reset_build_directory(self):
         print('[Note] Resetting the build directory...\n')
