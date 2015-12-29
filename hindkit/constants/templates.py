@@ -5,7 +5,7 @@ table head {
   FontRevision 1.000;
 } head;
 
-include (../../features/features.fea);\n'''
+include (../../../features/features.fea);\n'''
 
 FMNDB_HEAD = '''\
 # [PostScriptName]

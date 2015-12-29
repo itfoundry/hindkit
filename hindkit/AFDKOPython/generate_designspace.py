@@ -7,7 +7,7 @@ from mutatorMath.ufo.document import DesignSpaceDocumentWriter
 
 def main():
     family = pickle.load(sys.stdin)
-    generate_designspace(family, 'font.designspace')
+    generate_designspace(family, 'temp/font.designspace')
 
 def generate_designspace(family, path):
 
