@@ -105,19 +105,15 @@ class Builder(object):
             if supported_option in options:
                 self.__dict__[supported_option] = True
 
-    def _afdkopython(self, file_name):
+        self._parse_args()
+
+    def _afdkopython(self, file_name, info=self.family.dump()):
         process = subprocess.Popen(
             ['AFDKOPython', 'AFDKOPython/{}'.format(file_name)],
             stdin = subprocess.PIPE,
             cwd = kit.__path__[0],
         )
-        process.communicate(pickle.dumps(self.family.dump()))
-
-    def import_glyphs(self):
-        self._check_master_files()
-        self._afdkopython('import_glyphs.py')
-        self.family.masters[0]._file_name = 'TEMP-Light.ufo'
-        self.family.masters[1]._file_name = 'TEMP-Bold.ufo'
+        process.communicate(pickle.dumps(info))
 
     def generate_designspace(self):
         self._afdkopython('generate_designspace.py')
@@ -158,14 +154,26 @@ class Builder(object):
             f.write('\n'.join(lines))
             f.write('\n')
 
+    def import_glyphs(self, source_path_body, excluding=[], deriving=[]):
+
+        if self.prepare_styles:
+
+            for i, master in enumerate(self.family.masters):
+                info = {
+                    'source_path': source_path_body + '-' + str(i) + '.ufo',
+                    'target_path': master.path,
+                    'excluding': excluding,
+                    'deriving': deriving,
+                    'working_directory': self.family.working_directory,
+                }
+                self._afdkopython('insert_glyphs.py', info=info)
+
     def reset_build_directory(self):
         print('[Note] Resetting the build directory...\n')
         subprocess.call(['rm', '-fr', kit.paths.BUILD])
         subprocess.call(['mkdir', kit.paths.BUILD])
 
     def build(self, additional_arguments = []):
-
-        self._parse_args()
 
         print()
         print('[Note] {} Building...\n'.format(time.strftime('%H:%M:%S')))
@@ -179,7 +187,6 @@ class Builder(object):
                 self.enabled_styles = [self.family.styles[0], self.family.styles[-1]]
 
         if self.family.script in ['Devanagari', 'Gujarati']:
-            # from hindkit.scripts import devanagari
             devanagari.SCRIPT_PREFIX = kit.linguistics.INDIC_SCRIPTS[self.family.script.lower()]['abbreviation']
 
         if self.prepare_styles:
@@ -348,8 +355,7 @@ class Builder(object):
                 with open(os.path.join(style.directory, 'weightclass.fea'), 'w') as file:
                     file.write(kit.templates.WEIGHTCLASS.format(str(style.weight_class)))
 
-                otf_name = style.output_full_name_postscript + '.otf'
-                otf_path = os.path.join(kit.paths.BUILD, otf_name)
+                otf_path = os.path.join(kit.paths.BUILD, style.otf_name)
 
                 # Prepare makeotf arguments
 
@@ -360,7 +366,8 @@ class Builder(object):
                     '-gf', self.family.goadb_path,
                     '-r',
                     '-shw',
-                    '-rev', self.fontrevision
+                    '-rev', self.fontrevision,
+                    '-omitMacNames',
                 ]
 
                 # Style linking:
