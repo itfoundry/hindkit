@@ -1,9 +1,8 @@
-from __future__ import division, print_function, unicode_literals
+from __future__ import division, absolute_import, print_function, unicode_literals
 
 import subprocess, os, pickle, time, argparse
 import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
-import hindkit as kit
-from hindkit.scripts import devanagari
+import hindkit
 
 class Builder(object):
 
@@ -111,9 +110,9 @@ class Builder(object):
         if not info:
             info = self.family.dump()
         process = subprocess.Popen(
-            ['AFDKOPython', 'AFDKOPython/{}'.format(file_name)],
+            ['AFDKOPython', os.path.join('AFDKOPython', file_name)],
             stdin = subprocess.PIPE,
-            cwd = kit.__path__[0],
+            cwd = hindkit.__path__[0],
         )
         process.communicate(pickle.dumps(info))
 
@@ -151,8 +150,8 @@ class Builder(object):
 
             lines.extend(comment_lines)
 
-        with open(kit.paths.FMNDN, 'w') as f:
-            f.write(kit.templates.FMNDB_HEAD)
+        with open(hindkit.constants.paths.FMNDN, 'w') as f:
+            f.write(hindkit.constants.templates.FMNDB_HEAD)
             f.write('\n'.join(lines))
             f.write('\n')
 
@@ -172,8 +171,8 @@ class Builder(object):
 
     def reset_build_directory(self):
         print('[Note] Resetting the build directory...\n')
-        subprocess.call(['rm', '-fr', kit.paths.BUILD])
-        subprocess.call(['mkdir', kit.paths.BUILD])
+        subprocess.call(['rm', '-fr', hindkit.constants.paths.BUILD])
+        subprocess.call(['mkdir', hindkit.constants.paths.BUILD])
 
     def build(self, additional_arguments = []):
 
@@ -189,7 +188,7 @@ class Builder(object):
                 self.enabled_styles = [self.family.styles[0], self.family.styles[-1]]
 
         if self.family.script in ['Devanagari', 'Gujarati']:
-            devanagari.SCRIPT_PREFIX = kit.linguistics.INDIC_SCRIPTS[self.family.script.lower()]['abbreviation']
+            hindkit.devanagari.SCRIPT_PREFIX = hindkit.constants.INDIC_SCRIPTS[self.family.script.lower()]['abbreviation']
 
         if self.prepare_styles:
 
@@ -206,9 +205,9 @@ class Builder(object):
                 if self.enable_devanagari_matra_i_variants:
                     print('[Note] Generating glyph classes for mI and mII matching...\n')
                     glyph_classes.extend([
-                        ('generated_MATRA_I_ALTS', devanagari.glyph_filter_matra_i_alts),
-                        ('generated_BASES_FOR_MATRA_I', devanagari.glyph_filter_bases_for_matra_i),
-                        ('generated_BASES_FOR_WIDE_MATRA_II', devanagari.glyph_filter_bases_for_wide_matra_ii),
+                        ('generated_MATRA_I_ALTS', hindkit.devanagari.glyph_filter_matra_i_alts),
+                        ('generated_BASES_FOR_MATRA_I', hindkit.devanagari.glyph_filter_bases_for_matra_i),
+                        ('generated_BASES_FOR_WIDE_MATRA_II', hindkit.devanagari.glyph_filter_bases_for_wide_matra_ii),
                     ])
 
                 generate_glyph_classes(
@@ -219,8 +218,8 @@ class Builder(object):
                 )
 
             print('[Note] Resetting instance directories...\n')
-            subprocess.call(['rm', '-fr', kit.paths.INSTANCES])
-            subprocess.call(['mkdir', kit.paths.INSTANCES])
+            subprocess.call(['rm', '-fr', hindkit.constants.paths.INSTANCES])
+            subprocess.call(['mkdir', hindkit.constants.paths.INSTANCES])
             for style in self.enabled_styles:
                 subprocess.call(['mkdir', style.directory])
 
@@ -298,7 +297,7 @@ class Builder(object):
                         genMkmkFeature = self.enable_mark_to_mark_positioning,
                         writeClassesFile = True,
                         indianScriptsFormat = (
-                            True if self.family.script.lower() in kit.linguistics.INDIC_SCRIPTS
+                            True if self.family.script.lower() in hindkit.constants.INDIC_SCRIPTS
                             else False
                         ),
                     )
@@ -327,7 +326,7 @@ class Builder(object):
                             light_max + (bold_max - light_max) * ratio,
                         )
 
-                        devanagari.match_matra_i_alts(
+                        hindkit.devanagari.match_matra_i_alts(
                             style,
                             offset_range = offset_tuple
                         )
@@ -352,19 +351,19 @@ class Builder(object):
                     font.save()
 
                 with open(os.path.join(style.directory, 'features'), 'w') as file:
-                    file.write(kit.templates.FEATURES)
+                    file.write(hindkit.constants.templates.FEATURES)
 
                 with open(os.path.join(style.directory, 'weightclass.fea'), 'w') as file:
-                    file.write(kit.templates.WEIGHTCLASS.format(str(style.weight_class)))
+                    file.write(hindkit.constants.templates.WEIGHTCLASS.format(str(style.weight_class)))
 
-                otf_path = os.path.join(kit.paths.BUILD, style.otf_name)
+                otf_path = os.path.join(hindkit.constants.paths.BUILD, style.otf_name)
 
                 # Prepare makeotf arguments
 
                 arguments = [
                     '-f', style.path,
                     '-o', otf_path,
-                    '-mf', kit.paths.FMNDN,
+                    '-mf', hindkit.constants.paths.FMNDN,
                     '-gf', self.family.goadb_path,
                     '-r',
                     '-shw',
@@ -404,8 +403,8 @@ class Builder(object):
 
                 # Copy the compiled font file to Adobe's fonts folder
 
-                if os.path.exists(otf_path) and os.path.exists(kit.paths.OUTPUT):
-                    subprocess.call(['cp', '-f', otf_path, kit.paths.OUTPUT])
+                if os.path.exists(otf_path) and os.path.exists(hindkit.constants.paths.OUTPUT):
+                    subprocess.call(['cp', '-f', otf_path, hindkit.constants.paths.OUTPUT])
 
                 print()
 

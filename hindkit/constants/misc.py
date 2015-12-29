@@ -1,3 +1,17 @@
+from __future__ import division, absolute_import, print_function, unicode_literals
+
+DEFAULT_CLIENT = 'googlefonts'
+
+from . import styles
+CLIENTS = {
+    'itf': {
+        'style_scheme': styles.STANDARD,
+    },
+    'googlefonts': {
+        'style_scheme': styles.STANDARD_CamelCase,
+    },
+}
+
 INDIC_SCRIPTS = {
 
     'devanagari': {

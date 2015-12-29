@@ -1,20 +1,25 @@
-from __future__ import division, print_function, unicode_literals
+from __future__ import division, absolute_import, print_function, unicode_literals
 
 import os
 import robofab.world
-import hindkit as kit
+import hindkit.constants
 
 class Family(object):
 
+    default_client = hindkit.constants.misc.DEFAULT_CLIENT
+
     def __init__(
         self,
-        client = kit.clients.DEFAULT_CLIENT,
+        client = None,
         trademark = '',
         script = '',
         hide_script_name = False,
     ):
 
-        self.client = client
+        if client:
+            self.client = client
+        else:
+            self.client = self.default_client
 
         self.trademark = trademark
         self.script = script
@@ -26,7 +31,7 @@ class Family(object):
         self.name_postscript = self.name.replace(' ', '')
 
         self.output_name_affix = '{}'
-        self.goadb_path = kit.paths.GOADB
+        self.goadb_path = hindkit.constants.paths.GOADB
         self.working_directory = os.path.realpath(os.getcwd())
 
     @property
@@ -77,7 +82,7 @@ class Family(object):
     def set_styles(self, style_scheme = None):
 
         if not style_scheme:
-            style_scheme = kit.clients.CLIENTS[self.client]['style_scheme']
+            style_scheme = hindkit.constants.misc.CLIENTS[self.client]['style_scheme']
 
         self.styles = []
 
@@ -141,7 +146,7 @@ class Master(_BaseStyle):
 
     @property
     def directory(self):
-        return kit.paths.MASTERS
+        return hindkit.constants.paths.MASTERS
 
     @property
     def file_name(self):
@@ -190,7 +195,7 @@ class Style(_BaseStyle):
 
     @property
     def directory(self):
-        return os.path.join(kit.paths.INSTANCES, self.name_postscript)
+        return os.path.join(hindkit.constants.paths.INSTANCES, self.name_postscript)
 
     @property
     def file_name(self):

@@ -1,17 +1,6 @@
-from __future__ import division, print_function, unicode_literals
+from __future__ import division, absolute_import, print_function, unicode_literals
+
+from hindkit.family import Family
+from hindkit.builder import Builder
 
 __version__ = '1.0.0'
-
-from hindkit.constants import paths, linguistics, styles, templates
-from hindkit.constants import clients
-from hindkit.family    import Family, Master, Style
-from hindkit.builder   import Builder
-
-def confirm_version(required_version):
-    if __version__ != required_version:
-        message = templates.EXIT_MESSAGE.format(
-            __name__,
-            required_version,
-            __version__,
-        )
-        raise SystemExit(message)

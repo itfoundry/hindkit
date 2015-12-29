@@ -1,5 +1,7 @@
 #! AFDKOPython
 
+from __future__ import division, absolute_import, print_function, unicode_literals
+
 import sys, pickle, os
 from mutatorMath.ufo.document import DesignSpaceDocumentWriter
 

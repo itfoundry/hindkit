@@ -1,3 +1,5 @@
+from __future__ import division, absolute_import, print_function, unicode_literals
+
 MASTERS = 'masters'
 INSTANCES = 'instances'
 FMNDN = 'FontMenuNameDB'
