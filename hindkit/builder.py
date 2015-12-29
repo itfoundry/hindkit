@@ -159,9 +159,9 @@ class Builder(object):
 
         if self.prepare_styles:
 
-            for i, master in enumerate(self.family.masters):
+            for master in self.family.masters:
                 info = {
-                    'source_path': source_path_body + '-' + str(i) + '.ufo',
+                    'source_path': source_path_body + '-' + master.name + '.ufo',
                     'target_path': master.path,
                     'excluding': excluding,
                     'deriving': deriving,
