@@ -1,5 +1,7 @@
 # hindkit
 
+`AFDKOPython build.py`
+
 This package hosts the build system for the Hind multiscript project:
 
 - [Hind Siliguri](https://github.com/itfoundry/hind-siliguri) (Bangla)

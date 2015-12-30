@@ -95,14 +95,6 @@ class Family(object):
             )
             self.styles.append(style)
 
-    def dump(self):
-        dictionary = self.__dict__.copy()
-        for i in ['output_name', 'output_name_postscript']:
-            dictionary[i] = self.__getattribute__(i)
-        for i in ['masters', 'styles']:
-            dictionary[i] = [j.dump() for j in self.__getattribute__(i)]
-        return dictionary
-
 class _BaseStyle(object):
 
     def __init__(
@@ -134,13 +126,6 @@ class _BaseStyle(object):
 
     def open_font(self):
         return robofab.world.OpenFont(self.path)
-
-    def dump(self):
-        dictionary = self.__dict__.copy()
-        dictionary['_family'] = repr(dictionary['_family'])
-        for i in ['directory', 'file_name', 'path']:
-            dictionary[i] = self.__getattribute__(i)
-        return dictionary
 
 class Master(_BaseStyle):
 
@@ -224,10 +209,3 @@ class Style(_BaseStyle):
         else:
             otf_name = self.output_full_name_postscript + '.otf'
         return otf_name
-
-    def dump(self):
-        dictionary = self.__dict__.copy()
-        dictionary['_family'] = repr(dictionary['_family'])
-        for i in ['directory', 'file_name', 'path', 'output_full_name', 'output_full_name_postscript']:
-            dictionary[i] = self.__getattribute__(i)
-        return dictionary

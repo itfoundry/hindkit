@@ -1,7 +1,8 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import subprocess, os, pickle, time, argparse
-import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
+import subprocess, os, time, argparse
+import defcon, WriteFeaturesKernFDK, WriteFeaturesMarkFDK
+from mutatorMath.ufo.document import DesignSpaceDocumentWriter
 import hindkit
 import hindkit.devanagari
 
@@ -85,6 +86,9 @@ class Builder(object):
             message_lines.extend(['', '[Note] Exit.', ''])
             raise SystemExit('\n'.join(message_lines))
 
+    def normalize_path(self, path):
+        return os.path.join(self.family.working_directory, path)
+
     def set_options(self, options = []):
 
         for supported_option in [
@@ -110,18 +114,51 @@ class Builder(object):
 
         self._parse_args()
 
-    def _afdkopython(self, file_name, info=None):
-        if not info:
-            info = self.family.dump()
-        process = subprocess.Popen(
-            ['AFDKOPython', os.path.join('AFDKOPython', file_name)],
-            stdin = subprocess.PIPE,
-            cwd = hindkit.__path__[0],
-        )
-        process.communicate(pickle.dumps(info))
-
     def generate_designspace(self):
-        self._afdkopython('generate_designspace.py')
+
+        doc = DesignSpaceDocumentWriter(
+            self.normalize_path(hindkit.constants.paths.DESIGNSPACE)
+        )
+
+        for i, master in enumerate(self.family.masters):
+
+            doc.addSource(
+
+                path = self.normalize_path(master.path),
+                name = 'master-' + master.name,
+                location = {'weight': master.interpolation_value},
+
+                copyLib    = True if i == 0 else False,
+                copyGroups = True if i == 0 else False,
+                copyInfo   = True if i == 0 else False,
+
+                # muteInfo = False,
+                # muteKerning = False,
+                # mutedGlyphNames = None,
+
+            )
+
+        for style in self.family.styles:
+
+            doc.startInstance(
+                name = 'instance-' + style.name,
+                location = {'weight': style.interpolation_value},
+                familyName = self.family.output_name,
+                styleName = style.name,
+                fileName = self.normalize_path(style.path),
+                postScriptFontName = style.output_full_name_postscript,
+                # styleMapFamilyName = None,
+                # styleMapStyleName = None,
+            )
+
+            doc.writeInfo()
+
+            if self.family.has_kerning:
+                doc.writeKerning()
+
+            doc.endInstance()
+
+        doc.save()
 
     def generate_fmndb(self):
 
@@ -180,7 +217,61 @@ class Builder(object):
                     'deriving': deriving,
                     'working_directory': self.family.working_directory,
                 }
-                self._afdkopython('import_glyphs.py', info=info)
+
+                font_source_path = self.normalize_path(info['source_path'])
+                font_source = defcon.Font(font_source_path)
+
+                font_target_path = self.normalize_path(info['target_path'])
+                font_target = defcon.Font(font_target_path)
+
+                new_names = set(font_source.keys())
+                insider_names = set(font_target.keys())
+                excluding_names = set(info['excluding'])
+                deriving_names = set(info['deriving'])
+
+                new_names.difference_update(insider_names)
+                new_names.difference_update(excluding_names)
+
+                print('[NOTE] Incerting glyphs from `{}`...'.format(info['source_path']))
+                print()
+                print('[NOTE] Excluding: {}'.format(info['excluding']))
+
+                for name in new_names:
+                    glyph = font_source[name]
+                    print(glyph.name, end=' ')
+                    try:
+                        font_target.insertGlyph(glyph)
+                    except AssertionError:
+                        print('[AssertionError]', end=' ')
+                    print(glyph.name, end=' ')
+                print('\n')
+
+                DERIVING_MAP = {
+                    'CR': 'space',
+                    'uni00A0': 'space',
+                    'NULL': None,
+                    'uni200B': None,
+                }
+
+                print('[NOTE] Deriving glyphs...')
+                for glyph_target_name in deriving_names:
+                    glyph_source_name = DERIVING_MAP[glyph_target_name]
+                    print(glyph_target_name, end=' ')
+                    if glyph_source_name:
+                        font_target.newGlyph(glyph_target_name)
+                        font_target[glyph_target_name]._set_width(
+                            font_target[glyph_source_name].width
+                        )
+                    else:
+                        if glyph_target_name not in font_target:
+                            font_target.newGlyph(glyph_target_name)
+                print('\n')
+
+                subprocess.call(['rm', '-fr', font_target_path])
+                font_target.save(font_target_path)
+
+                print('[NOTE] Modified master is saved.')
+                print()
 
     def reset_build_directory(self):
         print('[Note] Resetting the build directory...\n')
