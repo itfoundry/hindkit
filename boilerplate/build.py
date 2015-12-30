@@ -1,7 +1,7 @@
-#! /usr/bin/env python
+#!/usr/bin/env AFDKOPython
 
 import hindkit as kit
-kit.confirm_version('0.3.2')
+kit.confirm_version('1.0.0')
 
 # - - -
 
