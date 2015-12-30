@@ -1,10 +1,11 @@
+#!/usr/bin/env AFDKOPython
+
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import subprocess, os, time, argparse
-import defcon, WriteFeaturesKernFDK, WriteFeaturesMarkFDK
-from mutatorMath.ufo.document import DesignSpaceDocumentWriter
-import hindkit
-import hindkit.devanagari
+import defcon, mutatorMath.ufo.document
+import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
+import hindkit, hindkit.devanagari
 
 class Builder(object):
 
@@ -86,6 +87,11 @@ class Builder(object):
             message_lines.extend(['', '[Note] Exit.', ''])
             raise SystemExit('\n'.join(message_lines))
 
+    def _reset_build_directory(self):
+        print('[Note] Resetting the build directory...\n')
+        subprocess.call(['rm', '-fr', hindkit.constants.paths.BUILD])
+        subprocess.call(['mkdir', hindkit.constants.paths.BUILD])
+
     def normalize_path(self, path):
         return os.path.join(self.family.working_directory, path)
 
@@ -116,7 +122,7 @@ class Builder(object):
 
     def generate_designspace(self):
 
-        doc = DesignSpaceDocumentWriter(
+        doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
             self.normalize_path(hindkit.constants.paths.DESIGNSPACE)
         )
 
@@ -272,11 +278,6 @@ class Builder(object):
 
                 print('[NOTE] Modified master is saved.')
                 print()
-
-    def reset_build_directory(self):
-        print('[Note] Resetting the build directory...\n')
-        subprocess.call(['rm', '-fr', hindkit.constants.paths.BUILD])
-        subprocess.call(['mkdir', hindkit.constants.paths.BUILD])
 
     def build(self, additional_arguments = []):
 
@@ -442,7 +443,7 @@ class Builder(object):
         if self.compile:
 
             if not self.keep_build_directory:
-                self.reset_build_directory()
+                self._reset_build_directory()
 
             for style in self.enabled_styles:
 
