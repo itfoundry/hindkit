@@ -15,9 +15,8 @@ def main():
     font_source_path = normalize_path(info['source_path'])
     font_source = defcon.Font(font_source_path)
 
-    font_target_path_old = normalize_path(info['target_path'][:-9] + '.ufo')
-    font_target_path_new = normalize_path(info['target_path'])
-    font_target = defcon.Font(font_target_path_old)
+    font_target_path = normalize_path(info['target_path'])
+    font_target = defcon.Font(font_target_path)
 
     new_names = set(font_source.keys())
     insider_names = set(font_target.keys())
@@ -34,7 +33,11 @@ def main():
     for name in new_names:
         glyph = font_source[name]
         print(glyph.name, end=' ')
-        font_target.insertGlyph(glyph)
+        try:
+            font_target.insertGlyph(glyph)
+        except AssertionError:
+            print('[AssertionError]', end=' ')
+        print(glyph.name, end=' ')
     print('\n')
 
     DERIVING_MAP = {
@@ -58,8 +61,8 @@ def main():
                 font_target.newGlyph(glyph_target_name)
     print('\n')
 
-    subprocess.call(['rm', '-fr', font_target_path_new])
-    font_target.save(font_target_path_new)
+    subprocess.call(['rm', '-fr', font_target_path])
+    font_target.save(font_target_path)
 
     print('[NOTE] Modified master is saved.')
     print()

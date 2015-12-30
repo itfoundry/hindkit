@@ -206,7 +206,7 @@ def match_matra_i_alts(style, offset_range = (0, 0)):
             stem_right_margin = abs(anchor.x)
             break
     else:
-        print("Error: Can't find the stem anchor in glyph `mE`!")
+        raise SystemExit("[WARNING] Can't find the stem anchor in glyph `mE`!")
 
     tolerance_of_mI_stretch_shormI_numbere = (font[SCRIPT_PREFIX + 'VA'].width - stem_right_margin) / 2
     long_base_names = []

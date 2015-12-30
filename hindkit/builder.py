@@ -3,6 +3,7 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import subprocess, os, pickle, time, argparse
 import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit
+import hindkit.devanagari
 
 class Builder(object):
 
@@ -56,6 +57,9 @@ class Builder(object):
             '-o', '--options', action = 'store',
             help = '"0" for none, "1" for "makeinstances", "2" for "checkoutlines", and "3" for "autohint".'
         )
+
+        if not os.path.exists('temp'):
+            subprocess.call(['mkdir', 'temp'])
 
     def _parse_args(self):
         args = self.parser.parse_args()
@@ -155,14 +159,23 @@ class Builder(object):
             f.write('\n'.join(lines))
             f.write('\n')
 
-    def import_glyphs(self, source_path_body, excluding=[], deriving=[]):
+    def import_glyphs(self, from_dir, to_dir='', excluding=[], deriving=[]):
+
+        full_from_dir = os.path.join(hindkit.constants.paths.MASTERS, from_dir)
+        full_to_dir = os.path.join(hindkit.constants.paths.MASTERS, to_dir)
 
         if self.prepare_styles:
 
             for master in self.family.masters:
+
+                from_master_name = get_font_path(full_from_dir, master.name + '.ufo')
+                to_master_name = get_font_path(full_to_dir, master.name + '.ufo')
+
+                print(from_master_name, to_master_name)
+
                 info = {
-                    'source_path': source_path_body + '-' + master.name + '.ufo',
-                    'target_path': master.path,
+                    'source_path': os.path.join(full_from_dir, from_master_name),
+                    'target_path': os.path.join(full_to_dir, to_master_name),
                     'excluding': excluding,
                     'deriving': deriving,
                     'working_directory': self.family.working_directory,
@@ -188,7 +201,7 @@ class Builder(object):
                 self.enabled_styles = [self.family.styles[0], self.family.styles[-1]]
 
         if self.family.script in ['Devanagari', 'Gujarati']:
-            hindkit.devanagari.SCRIPT_PREFIX = hindkit.constants.INDIC_SCRIPTS[self.family.script.lower()]['abbreviation']
+            hindkit.devanagari.SCRIPT_PREFIX = hindkit.constants.misc.INDIC_SCRIPTS[self.family.script.lower()]['abbreviation']
 
         if self.prepare_styles:
 
@@ -229,7 +242,7 @@ class Builder(object):
 
                 # Prepare makeInstancesUFO arguments
 
-                arguments = ['-d', 'font.designspace']
+                arguments = ['-d', hindkit.constants.paths.DESIGNSPACE]
 
                 if not self.checkoutlines:
                     arguments.append('-c')
@@ -297,7 +310,7 @@ class Builder(object):
                         genMkmkFeature = self.enable_mark_to_mark_positioning,
                         writeClassesFile = True,
                         indianScriptsFormat = (
-                            True if self.family.script.lower() in hindkit.constants.INDIC_SCRIPTS
+                            True if self.family.script.lower() in hindkit.constants.misc.INDIC_SCRIPTS
                             else False
                         ),
                     )
@@ -457,3 +470,11 @@ def generate_glyph_classes(family, font, glyph_classes, output_path = None):
     if output_path:
         with open(output_path, 'w') as file:
             file.write('\n'.join(output_lines))
+
+def get_font_path(directory, suffix=''):
+    font_file_name = ''
+    for file_name in os.listdir(directory):
+        if file_name.endswith(suffix):
+            font_file_name = file_name
+            break
+    return font_file_name
