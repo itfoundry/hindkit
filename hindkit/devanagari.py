@@ -92,20 +92,20 @@ def restore_abvm_content(abvm_content):
 
 def write_mI_matches_to_files(directory, mI_table, long_base_names):
 
-    with open(directory + '/abvm.fea', 'r') as f:
-        abvm_content = f.read()
+    # with open(directory + '/abvm.fea', 'r') as f:
+    #     abvm_content = f.read()
 
-    original_abvm_content = restore_abvm_content(abvm_content)
+    # original_abvm_content = restore_abvm_content(abvm_content)
 
-    original_abvm_lookup = re.search(
-        r'(?m)^lookup MARK_BASE_{0} \{{\n(.+\n)+^\}} MARK_BASE_{0};'.format(MATRA_I_ANCHOR_NAME),
-        original_abvm_content
-    ).group()
+    # original_abvm_lookup = re.search(
+    #     r'(?m)^lookup MARK_BASE_{0} \{{\n(.+\n)+^\}} MARK_BASE_{0};'.format(MATRA_I_ANCHOR_NAME),
+    #     original_abvm_content
+    # ).group()
 
-    modified_abvm_lookup = original_abvm_lookup.replace(
-        'pos base {}{}'.format(SCRIPT_PREFIX, MATRA_I_NAME_STEM),
-        'pos base @generated_MATRA_I_BASES_'
-    )
+    # modified_abvm_lookup = original_abvm_lookup.replace(
+    #     'pos base {}{}'.format(SCRIPT_PREFIX, MATRA_I_NAME_STEM),
+    #     'pos base @generated_MATRA_I_BASES_'
+    # )
 
     Reph_positioning_offset = mI_table[0].glyph.width
 
@@ -128,28 +128,28 @@ def write_mI_matches_to_files(directory, mI_table, long_base_names):
             print('\t       `%s` is not used.' % mI.glyph.name)
             to_comment_substitute_rule = True
 
-            modified_abvm_lookup = modified_abvm_lookup.replace(
-                '\tpos base @generated_MATRA_I_BASES_' + mI_number,
-                '#\tpos base @generated_MATRA_I_BASES_' + mI_number
-            )
+            # modified_abvm_lookup = modified_abvm_lookup.replace(
+            #     '\tpos base @generated_MATRA_I_BASES_' + mI_number,
+            #     '#\tpos base @generated_MATRA_I_BASES_' + mI_number
+            # )
 
-        locator = '@generated_MATRA_I_BASES_%s <anchor ' % mI_number
+        # locator = '@generated_MATRA_I_BASES_%s <anchor ' % mI_number
+        #
+        # search_result = re.search(
+        #     locator + r'\-?\d+',
+        #     modified_abvm_lookup
+        # )
 
-        search_result = re.search(
-            locator + r'\-?\d+',
-            modified_abvm_lookup
-        )
-
-        if search_result:
-            x = search_result.group().split(' ')[-1]
-            modified_x = str(int(x) - Reph_positioning_offset)
-            modified_abvm_lookup = modified_abvm_lookup.replace(
-                locator + x,
-                locator + modified_x,
-            )
-
-        else:
-            print("\t[!] `%s` doesn't have the anchor for Reph." % mI.glyph.name)
+        # if search_result:
+        #     x = search_result.group().split(' ')[-1]
+        #     modified_x = str(int(x) - Reph_positioning_offset)
+        #     modified_abvm_lookup = modified_abvm_lookup.replace(
+        #         locator + x,
+        #         locator + modified_x,
+        #     )
+        #
+        # else:
+        #     print("\t[!] `%s` doesn't have the anchor for Reph." % mI.glyph.name)
 
         class_def_lines.extend(
             kit.builder.compose_glyph_class_def_lines(
@@ -169,15 +169,15 @@ def write_mI_matches_to_files(directory, mI_table, long_base_names):
 
     substitute_rule_lines.append('}} {};'.format(lookup_name))
 
-    commented_original_abvm_lookup = '# ' + original_abvm_lookup.replace('\n', '\n# ')
+    # commented_original_abvm_lookup = '# ' + original_abvm_lookup.replace('\n', '\n# ')
 
-    modified_abvm_content = original_abvm_content.replace(
-        original_abvm_lookup,
-        commented_original_abvm_lookup + '\n\n\n' + modified_abvm_lookup
-    )
+    # modified_abvm_content = original_abvm_content.replace(
+    #     original_abvm_lookup,
+    #     commented_original_abvm_lookup + '\n\n\n' + modified_abvm_lookup
+    # )
 
-    with open(directory + '/abvm.fea', 'w') as f:
-        f.write(modified_abvm_content)
+    # with open(directory + '/abvm.fea', 'w') as f:
+    #     f.write(modified_abvm_content)
 
     with open(directory + '/matra_i_matching.fea', 'w') as f:
         result_lines = (
