@@ -8,5 +8,5 @@ setuptools.setup(
     version = hindkit.__version__,
     author = 'Liang Hai',
     author_email = 'lianghai@gmail.com',
-    packages = ['hindkit', 'hindkit.constants'],
+    packages = ['hindkit', 'hindkit.constants', 'hindkit.resources'],
 )

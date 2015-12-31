@@ -2,6 +2,9 @@
 
 from __future__ import division, absolute_import, print_function, unicode_literals
 
+import os, collections
+import hindkit
+
 DEFAULT_CLIENT = 'googlefonts'
 
 from . import styles
@@ -20,6 +23,23 @@ DERIVING_MAP = {
     'NULL': None,
     'uni200B': None,
 }
+
+CONSONANT_STEMS = '''
+K KH G GH NG
+C CH J JH NY
+TT TTH DD DDH NN
+T TH D DH N
+P PH B BH M
+Y R L V
+SH SS S H
+TTT NNN YY RR RRR LL LLL
+TS DZ W ZH
+'''.split()
+
+VOWEL_STEMS = '''
+AA I II U UU vR vRR vL vLL
+E EE AI O OO AU
+'''.split()
 
 INDIC_SCRIPTS = {
 
@@ -84,3 +104,29 @@ INDIC_SCRIPTS = {
         'tag': 'sinh',
     },
 }
+
+def memoize(f):
+    memo = {}
+    def decorator():
+        if f not in memo:
+            memo[f] = f()
+        return memo[f]
+    return decorator
+
+@memoize
+def get_unicode_scalar_to_unicode_name_map():
+    scalar_to_name_map = {}
+    with open(hindkit._unwrap_path_relative_to_package_dir('resources/UnicodeData.txt')) as f:
+        for line in f:
+            scalar, name, rest = line.split(';', 2)
+            scalar_to_name_map[scalar] = name
+    return scalar_to_name_map
+
+@memoize
+def get_aglfn():
+    aglfn = collections.OrderedDict()
+    with open(hindkit._unwrap_path_relative_to_package_dir('resources/aglfn.txt')) as f:
+        for line in f.read().splitlines():
+            if not line.startswith('#'):
+                unicode_scalar, glyph_name, unicode_name = line.split(';')
+                aglfn[glyph_name] = (unicode_scalar, unicode_name)
