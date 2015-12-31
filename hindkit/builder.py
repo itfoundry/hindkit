@@ -4,7 +4,10 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 
 import subprocess, os, time, argparse
 import defcon, mutatorMath.ufo.document, WriteFeaturesKernFDK, WriteFeaturesMarkFDK
-import hindkit
+import hindkit, hindkit.constants, hindkit.devanagari
+
+import hindkit.patches
+defcon.Glyph.insertAnchor = hindkit.patches.insertAnchor
 
 class Builder(object):
 
@@ -91,12 +94,6 @@ class Builder(object):
         subprocess.call(['rm', '-fr', hindkit.constants.paths.BUILD])
         subprocess.call(['mkdir', hindkit.constants.paths.BUILD])
 
-    def _unwrap_path_relative_to_package_dir(self, relative_path):
-        return os.path.join(hindkit.__path__[0], relative_path)
-
-    def _unwrap_path_relative_to_cwd(self, relative_path):
-        return os.path.join(self.family.cwd, relative_path)
-
     def set_options(self, options = []):
 
         for supported_option in [
@@ -125,7 +122,7 @@ class Builder(object):
     def generate_designspace(self):
 
         doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
-            self._unwrap_path_relative_to_cwd(
+            hindkit._unwrap_path_relative_to_cwd(
                 hindkit.constants.paths.DESIGNSPACE
             )
         )
@@ -134,7 +131,7 @@ class Builder(object):
 
             doc.addSource(
 
-                path = self._unwrap_path_relative_to_cwd(master.path),
+                path = hindkit._unwrap_path_relative_to_cwd(master.path),
                 name = 'master-' + master.name,
                 location = {'weight': master.interpolation_value},
 
@@ -155,7 +152,7 @@ class Builder(object):
                 location = {'weight': style.interpolation_value},
                 familyName = self.family.output_name,
                 styleName = style.name,
-                fileName = self._unwrap_path_relative_to_cwd(style.path),
+                fileName = hindkit._unwrap_path_relative_to_cwd(style.path),
                 postScriptFontName = style.output_full_name_postscript,
                 # styleMapFamilyName = None,
                 # styleMapStyleName = None,
@@ -205,83 +202,6 @@ class Builder(object):
             f.write(hindkit.constants.templates.FMNDB_HEAD)
             f.write('\n'.join(lines))
             f.write('\n')
-
-    def import_glyphs(self, from_dir, to_dir='', excluding=[], deriving=[]):
-
-        full_from_dir = os.path.join(hindkit.constants.paths.MASTERS, from_dir)
-        full_to_dir = os.path.join(hindkit.constants.paths.MASTERS, to_dir)
-
-        if self.prepare_styles:
-
-            for master in self.family.masters:
-
-                from_master_name = get_font_path(full_from_dir, master.name + '.ufo')
-                to_master_name = get_font_path(full_to_dir, master.name + '.ufo')
-
-                print(from_master_name, to_master_name)
-
-                info = {
-                    'source_path': os.path.join(full_from_dir, from_master_name),
-                    'target_path': os.path.join(full_to_dir, to_master_name),
-                    'excluding': excluding,
-                    'deriving': deriving,
-                    'working_directory': self.family.working_directory,
-                }
-
-                font_source_path = self._unwrap_path_relative_to_cwd(info['source_path'])
-                font_source = defcon.Font(font_source_path)
-
-                font_target_path = self._unwrap_path_relative_to_cwd(info['target_path'])
-                font_target = defcon.Font(font_target_path)
-
-                new_names = set(font_source.keys())
-                insider_names = set(font_target.keys())
-                excluding_names = set(info['excluding'])
-                deriving_names = set(info['deriving'])
-
-                new_names.difference_update(insider_names)
-                new_names.difference_update(excluding_names)
-
-                print('[NOTE] Incerting glyphs from `{}`...'.format(info['source_path']))
-                print()
-                print('[NOTE] Excluding: {}'.format(info['excluding']))
-
-                for name in new_names:
-                    glyph = font_source[name]
-                    print(glyph.name, end=' ')
-                    try:
-                        font_target.insertGlyph(glyph)
-                    except AssertionError:
-                        print('[AssertionError]', end=' ')
-                    print(glyph.name, end=' ')
-                print('\n')
-
-                DERIVING_MAP = {
-                    'CR': 'space',
-                    'uni00A0': 'space',
-                    'NULL': None,
-                    'uni200B': None,
-                }
-
-                print('[NOTE] Deriving glyphs...')
-                for glyph_target_name in deriving_names:
-                    glyph_source_name = DERIVING_MAP[glyph_target_name]
-                    print(glyph_target_name, end=' ')
-                    if glyph_source_name:
-                        font_target.newGlyph(glyph_target_name)
-                        font_target[glyph_target_name]._set_width(
-                            font_target[glyph_source_name].width
-                        )
-                    else:
-                        if glyph_target_name not in font_target:
-                            font_target.newGlyph(glyph_target_name)
-                print('\n')
-
-                subprocess.call(['rm', '-fr', font_target_path])
-                font_target.save(font_target_path)
-
-                print('[NOTE] Modified master is saved.')
-                print()
 
     def build(self, additional_arguments = []):
 
@@ -574,3 +494,43 @@ def get_font_path(directory, suffix=''):
             font_file_name = file_name
             break
     return font_file_name
+
+def import_glyphs(
+    from_masters, to_masters, save_to_masters,
+    excluding_names=[], deriving_names=[],
+):
+
+    for from_path, to_path, save_to_path in zip(from_masters, to_masters, save_to_masters):
+
+        from_master = defcon.Font(from_path)
+        to_master = defcon.Font(to_path)
+
+        new_names = set(from_master.keys())
+        existing_names = set(to_master.keys())
+        new_names.difference_update(existing_names)
+        new_names.difference_update(set(excluding_names))
+        new_names = sort_glyphs(from_master.glyphOrder, new_names)
+
+        print('[NOTE] Excluding: {}'.format(excluding_names))
+        print('[NOTE] Importing glyphs from `{}`...'.format(from_path))
+        for new_name in new_names:
+            print(new_name, end=' ')
+            to_master.newGlyph(new_name)
+            to_master[new_name].copyDataFromGlyph(from_master[new_name])
+        else:
+            print()
+
+        print('[NOTE] Deriving glyphs...')
+        for new_name in deriving_names:
+            source_name = hindkit.constants.misc.DERIVING_MAP[new_name]
+            print('({} =>) {}'.format(source_name, new_name), end=' ')
+            to_master.newGlyph(new_name)
+            if source_name:
+                to_master[new_name].width = to_master[source_name].width
+        print('\n')
+
+        subprocess.call(['rm', '-fr', save_to_path])
+        to_master.save(save_to_path)
+
+        print('[NOTE] Modified master is saved.')
+        print()

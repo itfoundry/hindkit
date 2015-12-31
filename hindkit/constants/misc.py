@@ -14,6 +14,13 @@ CLIENTS = {
     },
 }
 
+DERIVING_MAP = {
+    'CR': 'space',
+    'uni00A0': 'space',
+    'NULL': None,
+    'uni200B': None,
+}
+
 INDIC_SCRIPTS = {
 
     'devanagari': {
