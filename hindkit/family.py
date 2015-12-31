@@ -34,7 +34,6 @@ class Family(object):
 
         self.output_name_affix = '{}'
         self.goadb_path = hindkit.constants.paths.GOADB
-        self.cwd = os.path.realpath(os.getcwdu())
 
     @property
     def output_name(self):

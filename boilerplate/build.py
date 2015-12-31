@@ -5,7 +5,7 @@ kit.confirm_version('1.0.0')
 
 # - - -
 
-family = kit.Family(
+family = kit.family.Family(
     trademark = 'Hind',
     script = 'Bangla',
     # hide_script_name = True,
@@ -24,7 +24,7 @@ family.set_styles()
 
 # - - -
 
-builder = kit.Builder(family)
+builder = kit.builder.Builder(family)
 
 builder.fontrevision = '1.000'
 
