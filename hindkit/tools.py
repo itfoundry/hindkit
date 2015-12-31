@@ -279,8 +279,9 @@ class Builder(object):
                     print('[Note] Generating glyph classes for mI and mII matching...\n')
                     glyph_classes.extend([
                         ('generated_MATRA_I_ALTS', hindkit.devanagari.glyph_filter_matra_i_alts),
-                        ('generated_BASES_FOR_MATRA_I', hindkit.devanagari.glyph_filter_bases_for_matra_i),
-                        ('generated_BASES_FOR_WIDE_MATRA_II', hindkit.devanagari.glyph_filter_bases_for_wide_matra_ii),
+                        ('generated_BASES_ALIVE', devanagari.glyph_filter_bases_alive),
+                        ('generated_BASES_DEAD', devanagari.glyph_filter_bases_dead),
+                        # ('generated_BASES_FOR_WIDE_MATRA_II', hindkit.devanagari.glyph_filter_bases_for_wide_matra_ii),
                     ])
 
                 generate_glyph_classes(
