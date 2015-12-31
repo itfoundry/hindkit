@@ -203,6 +203,50 @@ class Builder(object):
             f.write('\n'.join(lines))
             f.write('\n')
 
+    def import_glyphs(
+        self,
+        from_masters,
+        to_masters,
+        save_to_masters,
+        excluding_names=[],
+        deriving_names=[],
+    ):
+
+        for from_path, to_path, save_to_path in zip(from_masters, to_masters, save_to_masters):
+
+            from_master = defcon.Font(from_path)
+            to_master = defcon.Font(to_path)
+
+            new_names = set(from_master.keys())
+            existing_names = set(to_master.keys())
+            new_names.difference_update(existing_names)
+            new_names.difference_update(set(excluding_names))
+            new_names = sort_glyphs(from_master.glyphOrder, new_names)
+
+            print('[NOTE] Excluding: {}'.format(excluding_names))
+            print('[NOTE] Importing glyphs from `{}`...'.format(from_path))
+            for new_name in new_names:
+                print(new_name, end=' ')
+                to_master.newGlyph(new_name)
+                to_master[new_name].copyDataFromGlyph(from_master[new_name])
+            else:
+                print()
+
+            print('[NOTE] Deriving glyphs...')
+            for new_name in deriving_names:
+                source_name = hindkit.constants.misc.DERIVING_MAP[new_name]
+                print('({} =>) {}'.format(source_name, new_name), end=' ')
+                to_master.newGlyph(new_name)
+                if source_name:
+                    to_master[new_name].width = to_master[source_name].width
+            print('\n')
+
+            subprocess.call(['rm', '-fr', save_to_path])
+            to_master.save(save_to_path)
+
+            print('[NOTE] Modified master is saved.')
+            print()
+
     def build(self, additional_arguments = []):
 
         print()
@@ -486,51 +530,3 @@ def generate_glyph_classes(family, font, glyph_classes, output_path = None):
     if output_path:
         with open(output_path, 'w') as file:
             file.write('\n'.join(output_lines))
-
-def get_font_path(directory, suffix=''):
-    font_file_name = ''
-    for file_name in os.listdir(directory):
-        if file_name.endswith(suffix):
-            font_file_name = file_name
-            break
-    return font_file_name
-
-def import_glyphs(
-    from_masters, to_masters, save_to_masters,
-    excluding_names=[], deriving_names=[],
-):
-
-    for from_path, to_path, save_to_path in zip(from_masters, to_masters, save_to_masters):
-
-        from_master = defcon.Font(from_path)
-        to_master = defcon.Font(to_path)
-
-        new_names = set(from_master.keys())
-        existing_names = set(to_master.keys())
-        new_names.difference_update(existing_names)
-        new_names.difference_update(set(excluding_names))
-        new_names = sort_glyphs(from_master.glyphOrder, new_names)
-
-        print('[NOTE] Excluding: {}'.format(excluding_names))
-        print('[NOTE] Importing glyphs from `{}`...'.format(from_path))
-        for new_name in new_names:
-            print(new_name, end=' ')
-            to_master.newGlyph(new_name)
-            to_master[new_name].copyDataFromGlyph(from_master[new_name])
-        else:
-            print()
-
-        print('[NOTE] Deriving glyphs...')
-        for new_name in deriving_names:
-            source_name = hindkit.constants.misc.DERIVING_MAP[new_name]
-            print('({} =>) {}'.format(source_name, new_name), end=' ')
-            to_master.newGlyph(new_name)
-            if source_name:
-                to_master[new_name].width = to_master[source_name].width
-        print('\n')
-
-        subprocess.call(['rm', '-fr', save_to_path])
-        to_master.save(save_to_path)
-
-        print('[NOTE] Modified master is saved.')
-        print()
