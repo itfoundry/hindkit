@@ -3,9 +3,8 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import subprocess, os, time, argparse
-import defcon, mutatorMath.ufo.document
-import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
-import hindkit, hindkit.devanagari
+import defcon, mutatorMath.ufo.document, WriteFeaturesKernFDK, WriteFeaturesMarkFDK
+import hindkit
 
 class Builder(object):
 
@@ -92,11 +91,11 @@ class Builder(object):
         subprocess.call(['rm', '-fr', hindkit.constants.paths.BUILD])
         subprocess.call(['mkdir', hindkit.constants.paths.BUILD])
 
-    def _unwrap_the_path_relative_to_package_dir(self, relative_path):
+    def _unwrap_path_relative_to_package_dir(self, relative_path):
         return os.path.join(hindkit.__path__[0], relative_path)
 
-    def _unwrap_the_path_relative_to_working_dir(self, relative_path):
-        return os.path.join(self.family.working_directory, relative_path)
+    def _unwrap_path_relative_to_cwd(self, relative_path):
+        return os.path.join(self.family.cwd, relative_path)
 
     def set_options(self, options = []):
 
@@ -126,14 +125,16 @@ class Builder(object):
     def generate_designspace(self):
 
         doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
-            self._unwrap_the_path_relative_to_working_dir(hindkit.constants.paths.DESIGNSPACE)
+            self._unwrap_path_relative_to_cwd(
+                hindkit.constants.paths.DESIGNSPACE
+            )
         )
 
         for i, master in enumerate(self.family.masters):
 
             doc.addSource(
 
-                path = self._unwrap_the_path_relative_to_working_dir(master.path),
+                path = self._unwrap_path_relative_to_cwd(master.path),
                 name = 'master-' + master.name,
                 location = {'weight': master.interpolation_value},
 
@@ -154,7 +155,7 @@ class Builder(object):
                 location = {'weight': style.interpolation_value},
                 familyName = self.family.output_name,
                 styleName = style.name,
-                fileName = self._unwrap_the_path_relative_to_working_dir(style.path),
+                fileName = self._unwrap_path_relative_to_cwd(style.path),
                 postScriptFontName = style.output_full_name_postscript,
                 # styleMapFamilyName = None,
                 # styleMapStyleName = None,
@@ -227,10 +228,10 @@ class Builder(object):
                     'working_directory': self.family.working_directory,
                 }
 
-                font_source_path = self._unwrap_the_path_relative_to_working_dir(info['source_path'])
+                font_source_path = self._unwrap_path_relative_to_cwd(info['source_path'])
                 font_source = defcon.Font(font_source_path)
 
-                font_target_path = self._unwrap_the_path_relative_to_working_dir(info['target_path'])
+                font_target_path = self._unwrap_path_relative_to_cwd(info['target_path'])
                 font_target = defcon.Font(font_target_path)
 
                 new_names = set(font_source.keys())
