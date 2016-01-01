@@ -77,11 +77,12 @@ class Builder(object):
             path_variable_name = function.__name__[len('generate_'):] + '_path'
             path = self.__dict__[path_variable_name]
             temp_path = os.path.join(hindkit.constants.paths.TEMP, path)
+            self.__dict__[path_variable_name] = temp_path
             if os.path.exists(path):
                 print('copying')
                 subprocess.call(['cp', '-fr', path, temp_path])
-            self.__dict__[path_variable_name] = temp_path
-            function(self)
+            else:
+                function(self)
         return decorator
 
     def _parse_args(self):
