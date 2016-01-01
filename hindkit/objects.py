@@ -125,8 +125,11 @@ class _BaseStyle(object):
     def path(self):
         return os.path.join(self.directory, self.file_name)
 
-    def open_font(self):
-        return robofab.world.OpenFont(self.path)
+    def open_font(self, is_temp=False):
+        path = self.path
+        if is_temp:
+            path = os.path.join(hindkit.constants.paths.TEMP, path)
+        return robofab.world.OpenFont(path)
 
 class Master(_BaseStyle):
 

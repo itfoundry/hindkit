@@ -62,22 +62,20 @@ class Builder(object):
             help = '"0" for none, "1" for "makeinstances", "2" for "checkoutlines", and "3" for "autohint".'
         )
 
-        if not os.path.exists('temp'):
-            subprocess.call(['mkdir', 'temp'])
+        _reset(hindkit.constants.paths.TEMP)
 
         self.masters_path = hindkit.constants.paths.MASTERS
         self.instances_path = hindkit.constants.paths.INSTANCES
         self.designspace_path = hindkit.constants.paths.DESIGNSPACE
         self.fmndb_path = hindkit.constants.paths.FMNDB
-        self.goadb_path = hindkit.constants.paths.GOADB
+        self.goadb_path = self.family.goadb_path
         self.build_path = hindkit.constants.paths.BUILD
 
     def _check_overriding(function):
         def decorator(self):
-            path = self.__dict__[function.__name__[len('generate_'):] + '_path']
+            path = self.__dict__[function.__name__[len('prepare_'):] + '_path']
             if os.path.exists(path):
-                print('copying')
-                subprocess.call(['cp', '-fr', path, _get_temp_path(path)])
+                subprocess.call(['cp', '-fr', path, _temp(path)])
             else:
                 function(self)
         return decorator
@@ -106,11 +104,6 @@ class Builder(object):
             message_lines.extend(['', '[Note] Exit.', ''])
             raise SystemExit('\n'.join(message_lines))
 
-    def _reset_build_directory(self):
-        print('[Note] Resetting the build directory...\n')
-        subprocess.call(['rm', '-fr', hindkit.constants.paths.BUILD])
-        subprocess.call(['mkdir', hindkit.constants.paths.BUILD])
-
     def set_options(self, options = []):
 
         for supported_option in [
@@ -135,10 +128,6 @@ class Builder(object):
                 self.__dict__[supported_option] = True
 
         self._parse_args()
-
-    # @_check_overriding
-    # def generate_masters(self):
-    #     pass
 
     def import_glyphs(
         self,
@@ -184,15 +173,17 @@ class Builder(object):
             print('[NOTE] Modified master is saved.')
             print()
 
-    # @_check_overriding
-    # def generate_instances(self):
-    #     pass
+    @_check_overriding
+    def prepare_masters(self):
+        print('[WARNING] No masters!')
 
     @_check_overriding
-    def generate_designspace(self):
+    def prepare_designspace(self):
 
         doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
-            hindkit._unwrap_path_relative_to_cwd(self.designspace_path)
+            hindkit._unwrap_path_relative_to_cwd(
+                _temp(self.designspace_path)
+            )
         )
 
         for i, master in enumerate(self.family.masters):
@@ -220,7 +211,9 @@ class Builder(object):
                 location = {'weight': style.interpolation_value},
                 familyName = self.family.output_name,
                 styleName = style.name,
-                fileName = hindkit._unwrap_path_relative_to_cwd(style.path),
+                fileName = hindkit._unwrap_path_relative_to_cwd(
+                    _temp(style.path)
+                ),
                 postScriptFontName = style.output_full_name_postscript,
                 # styleMapFamilyName = None,
                 # styleMapStyleName = None,
@@ -236,7 +229,62 @@ class Builder(object):
         doc.save()
 
     @_check_overriding
-    def generate_fmndb(self):
+    def prepare_instances(self):
+
+        print('[Note] Resetting instance directories...\n')
+        _reset(_temp(self.instances_path))
+        for style in self.enabled_styles:
+            subprocess.call(['mkdir', _temp(style.directory)])
+
+        if self.makeinstances:
+
+            self.prepare_designspace()
+
+            print('[Note] Start interpolating masters...\n')
+
+            # Prepare makeInstancesUFO arguments
+
+            arguments = ['-d', _temp(self.designspace_path)]
+
+            if not self.checkoutlines:
+                arguments.append('-c')
+            if not self.autohint:
+                arguments.append('-a')
+
+            # Run makeInstancesUFO
+
+            subprocess.call(['makeInstancesUFO'] + arguments)
+
+            # Remove the log file
+
+            subprocess.call(['rm', '-f', 'mutatorMath.log'])
+
+            print()
+            print('[Note] Done interpolating masters.\n')
+
+        else:
+
+            print('[Note] Copying masters to be instances.\n')
+
+            for index, (master, style) in enumerate(zip(self.family.masters, self.enabled_styles)):
+
+                subprocess.call(['cp', '-fr', master.path, _temp(style.path)])
+
+                font = style.open_font(is_temp=True)
+                font.info.postscriptFontName = style.output_full_name_postscript
+
+                if index != 0:
+                    font.groups.update(self.family.masters[0].open_font().groups)
+                font.save()
+
+                if self.checkoutlines:
+                    subprocess.call(['checkOutlinesUFO', '-e', '-all', _temp(style.path)])
+
+                if self.autohint:
+                    subprocess.call(['autohint', '-q','-nb', _temp(style.path)])
+
+    @_check_overriding
+    def prepare_fmndb(self):
 
         f_name = self.family.output_name
         lines = []
@@ -267,14 +315,91 @@ class Builder(object):
 
             lines.extend(comment_lines)
 
-        with open(self.fmndb_path, 'w') as f:
+        with open(_temp(self.fmndb_path), 'w') as f:
             f.write(hindkit.constants.templates.FMNDB_HEAD)
             f.write('\n'.join(lines))
             f.write('\n')
 
-    # @_check_overriding
-    # def generate_build(self):
-    #     pass
+    @_check_overriding
+    def prepare_goadb(self):
+        print('[WARNING] Not able to prepare GOADB yet.')
+
+    # @_check_overriding()
+    def prepare_build(self, additional_arguments):
+
+        if not self.keep_build_directory:
+            print('[Note] Resetting the build directory...\n')
+            _reset(self.build_path)
+
+        self.prepare_fmndb()
+        self.prepare_goadb()
+
+        for style in self.enabled_styles:
+
+            print('[Note] Compiling OTFs for "{}":'.format(style.name))
+
+            _check_ps_name(style)
+
+            with open(os.path.join(_temp(style.directory), 'features'), 'w') as file:
+                file.write(hindkit.constants.templates.FEATURES)
+
+            with open(os.path.join(_temp(style.directory), 'weightclass.fea'), 'w') as file:
+                file.write(hindkit.constants.templates.WEIGHTCLASS.format(str(style.weight_class)))
+
+            otf_path = os.path.join(self.build_path, style.otf_name)
+
+            # Prepare makeotf arguments
+
+            arguments = [
+                '-f', _temp(style.path),
+                '-o', otf_path,
+                '-mf', _temp(self.fmndb_path),
+                '-gf', _temp(self.goadb_path),
+                '-r',
+                '-shw',
+                '-rev', self.fontrevision,
+                '-omitMacNames',
+            ]
+
+            # Style linking:
+
+            if self.do_style_linking:
+                if style.is_bold:
+                    arguments.append('-b')
+                if style.is_italic:
+                    arguments.append('-i')
+
+            # New bits in OS/2.fsSelection
+
+            if self.use_os_2_version_4:
+                for digit, boolean in [
+                    ('7', self.prefer_typo_metrics),
+                    ('8', self.is_width_weight_slope_only),
+                    ('9', style.is_oblique),
+                ]:
+                    arguments.append('-osbOn' if boolean else '-osbOff')
+                    arguments.append(digit)
+
+            arguments.extend(additional_arguments)
+
+            # Run makeotf
+
+            subprocess.call(['makeotf'] + arguments)
+
+            # Remove the project file
+
+            project_file_path = os.path.join(_temp(style.directory), 'current.fpr')
+            subprocess.call(['rm', '-f', project_file_path])
+
+            # Copy the compiled font file to Adobe's fonts folder
+
+            if os.path.exists(otf_path) and os.path.exists(hindkit.constants.paths.OUTPUT):
+                subprocess.call(['cp', '-f', otf_path, hindkit.constants.paths.OUTPUT])
+
+            print()
+
+        print('[Note] Done compiling OTFs.\n')
+
 
     def build(self, additional_arguments = []):
 
@@ -294,9 +419,9 @@ class Builder(object):
 
         if self.prepare_styles:
 
-            self._check_master_files()
-
             if self.enable_mark_positioning:
+
+                self._check_master_files()
 
                 print('[Note] Generating the glyph class for combining marks...\n')
 
@@ -320,56 +445,7 @@ class Builder(object):
                     output_path = 'features/GENERATED_classes.fea'
                 )
 
-            print('[Note] Resetting instance directories...\n')
-            subprocess.call(['rm', '-fr', hindkit.constants.paths.INSTANCES])
-            subprocess.call(['mkdir', hindkit.constants.paths.INSTANCES])
-            for style in self.enabled_styles:
-                subprocess.call(['mkdir', style.directory])
-
-            if self.makeinstances:
-
-                print('[Note] Start interpolating masters...\n')
-
-                # Prepare makeInstancesUFO arguments
-
-                arguments = ['-d', self.designspace_path]
-
-                if not self.checkoutlines:
-                    arguments.append('-c')
-                if not self.autohint:
-                    arguments.append('-a')
-
-                # Run makeInstancesUFO
-
-                subprocess.call(['makeInstancesUFO'] + arguments)
-
-                # Remove the log file
-
-                subprocess.call(['rm', '-f', 'mutatorMath.log'])
-
-                print()
-                print('[Note] Done interpolating masters.\n')
-
-            else:
-
-                print('[Note] Copying masters to be instances.\n')
-
-                for index, (master, style) in enumerate(zip(self.family.masters, self.enabled_styles)):
-
-                    subprocess.call(['cp', '-fr', master.path, style.path])
-
-                    font = style.open_font()
-                    font.info.postscriptFontName = style.output_full_name_postscript
-
-                    if index != 0:
-                        font.groups.update(self.family.masters[0].open_font().groups)
-                    font.save()
-
-                    if self.checkoutlines:
-                        subprocess.call(['checkOutlinesUFO', '-e', '-all', style.path])
-
-                    if self.autohint:
-                        subprocess.call(['autohint', '-q','-nb', style.path])
+            self.prepare_instances()
 
         if self.prepare_features and (self.enable_kerning or self.enable_mark_positioning):
 
@@ -381,8 +457,8 @@ class Builder(object):
 
                 if self.enable_kerning:
                     WriteFeaturesKernFDK.KernDataClass(
-                        font = style.open_font(),
-                        folderPath = style.directory,
+                        font = style.open_font(is_temp=True),
+                        folderPath = _temp(style.directory),
                         minKern = 3,
                         writeTrimmed = False,
                         writeSubtables = True,
@@ -394,8 +470,8 @@ class Builder(object):
                     WriteFeaturesMarkFDK.kCombMarksClassName = 'generated_MARKS'
 
                     WriteFeaturesMarkFDK.MarkDataClass(
-                        font = style.open_font(),
-                        folderPath = style.directory,
+                        font = style.open_font(is_temp=True),
+                        folderPath = _temp(style.directory),
                         trimCasingTags = False,
                         genMkmkFeature = self.enable_mark_to_mark_positioning,
                         writeClassesFile = True,
@@ -440,78 +516,7 @@ class Builder(object):
 
         if self.compile:
 
-            if not self.keep_build_directory:
-                self._reset_build_directory()
-
-            for style in self.enabled_styles:
-
-                print('[Note] Compiling OTFs for "{}":'.format(style.name))
-
-                font = style.open_font()
-                if font.info.postscriptFontName != style.output_full_name_postscript:
-                    font.info.postscriptFontName = style.output_full_name_postscript
-                    print('\n[Note] Fixed the PostScript name.')
-                    font.save()
-
-                with open(os.path.join(style.directory, 'features'), 'w') as file:
-                    file.write(hindkit.constants.templates.FEATURES)
-
-                with open(os.path.join(style.directory, 'weightclass.fea'), 'w') as file:
-                    file.write(hindkit.constants.templates.WEIGHTCLASS.format(str(style.weight_class)))
-
-                otf_path = os.path.join(hindkit.constants.paths.BUILD, style.otf_name)
-
-                # Prepare makeotf arguments
-
-                arguments = [
-                    '-f', style.path,
-                    '-o', otf_path,
-                    '-mf', self.family.fmndb_path,
-                    '-gf', self.family.goadb_path,
-                    '-r',
-                    '-shw',
-                    '-rev', self.fontrevision,
-                    '-omitMacNames',
-                ]
-
-                # Style linking:
-
-                if self.do_style_linking:
-                    if style.is_bold:
-                        arguments.append('-b')
-                    if style.is_italic:
-                        arguments.append('-i')
-
-                # New bits in OS/2.fsSelection
-
-                if self.use_os_2_version_4:
-                    for digit, boolean in [
-                        ('7', self.prefer_typo_metrics),
-                        ('8', self.is_width_weight_slope_only),
-                        ('9', style.is_oblique),
-                    ]:
-                        arguments.append('-osbOn' if boolean else '-osbOff')
-                        arguments.append(digit)
-
-                arguments.extend(additional_arguments)
-
-                # Run makeotf
-
-                subprocess.call(['makeotf'] + arguments)
-
-                # Remove the project file
-
-                project_file_path = os.path.join(style.directory, 'current.fpr')
-                subprocess.call(['rm', '-f', project_file_path])
-
-                # Copy the compiled font file to Adobe's fonts folder
-
-                if os.path.exists(otf_path) and os.path.exists(hindkit.constants.paths.OUTPUT):
-                    subprocess.call(['cp', '-f', otf_path, hindkit.constants.paths.OUTPUT])
-
-                print()
-
-            print('[Note] Done compiling OTFs.\n')
+            self.prepare_build(additional_arguments)
 
         print('[Note] {} Done building.\n'.format(time.strftime('%H:%M:%S')))
 
@@ -560,3 +565,17 @@ def generate_glyph_classes(family, font, glyph_classes, output_path = None):
     if output_path:
         with open(output_path, 'w') as file:
             file.write('\n'.join(output_lines))
+
+def _temp(path):
+    return os.path.join(hindkit.constants.paths.TEMP, path)
+
+def _reset(path):
+    subprocess.call(['rm', '-fr', path])
+    subprocess.call(['mkdir', path])
+
+def _check_ps_name(style):
+    font = style.open_font(is_temp=True)
+    if font.info.postscriptFontName != style.output_full_name_postscript:
+        font.info.postscriptFontName = style.output_full_name_postscript
+        print('\n[Note] Fixed the PostScript name.')
+        font.save()
