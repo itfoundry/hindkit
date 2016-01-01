@@ -11,7 +11,7 @@ DUAL = [
     ('Bold',    100, 700),
 ]
 
-STANDARD = [
+ITF = [
     ('Light',      0, 300),
     ('Regular',   21, 400),
     ('Medium',    44, 500),
@@ -19,7 +19,7 @@ STANDARD = [
     ('Bold',     100, 700),
 ]
 
-STANDARD_CamelCase = [
+ITF_CamelCase = [
     ('Light',      0, 300),
     ('Regular',   21, 400),
     ('Medium',    44, 500),

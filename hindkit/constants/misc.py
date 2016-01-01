@@ -10,10 +10,10 @@ DEFAULT_CLIENT = 'googlefonts'
 from . import styles
 CLIENTS = {
     'itf': {
-        'style_scheme': styles.STANDARD,
+        'style_scheme': styles.ITF,
     },
     'googlefonts': {
-        'style_scheme': styles.STANDARD_CamelCase,
+        'style_scheme': styles.ITF_CamelCase,
     },
 }
 
