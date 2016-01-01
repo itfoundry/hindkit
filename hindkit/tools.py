@@ -65,6 +65,26 @@ class Builder(object):
         if not os.path.exists('temp'):
             subprocess.call(['mkdir', 'temp'])
 
+        self.masters_path = hindkit.constants.paths.MASTERS
+        self.instances_path = hindkit.constants.paths.INSTANCES
+        self.designspace_path = hindkit.constants.paths.DESIGNSPACE
+        self.fmndb_path = hindkit.constants.paths.FMNDB
+        self.goadb_path = hindkit.constants.paths.GOADB
+        self.build_path = hindkit.constants.paths.BUILD
+
+    def _check_overriding(function):
+        def decorator(self):
+            path_variable_name = function.__name__[len('generate_'):] + '_path'
+            path = self.__dict__[path_variable_name]
+            if os.path.exists(path):
+                return
+            else:
+                self.__dict__[path_variable_name] = os.path.join(
+                    hindkit.constants.paths.TEMP, path
+                )
+                function(self)
+        return decorator
+
     def _parse_args(self):
         args = self.parser.parse_args()
         if args.stages:
@@ -119,89 +139,9 @@ class Builder(object):
 
         self._parse_args()
 
-    def generate_designspace(self):
-
-        doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
-            hindkit._unwrap_path_relative_to_cwd(
-                hindkit.constants.paths.DESIGNSPACE
-            )
-        )
-
-        for i, master in enumerate(self.family.masters):
-
-            doc.addSource(
-
-                path = hindkit._unwrap_path_relative_to_cwd(master.path),
-                name = 'master-' + master.name,
-                location = {'weight': master.interpolation_value},
-
-                copyLib    = True if i == 0 else False,
-                copyGroups = True if i == 0 else False,
-                copyInfo   = True if i == 0 else False,
-
-                # muteInfo = False,
-                # muteKerning = False,
-                # mutedGlyphNames = None,
-
-            )
-
-        for style in self.family.styles:
-
-            doc.startInstance(
-                name = 'instance-' + style.name,
-                location = {'weight': style.interpolation_value},
-                familyName = self.family.output_name,
-                styleName = style.name,
-                fileName = hindkit._unwrap_path_relative_to_cwd(style.path),
-                postScriptFontName = style.output_full_name_postscript,
-                # styleMapFamilyName = None,
-                # styleMapStyleName = None,
-            )
-
-            doc.writeInfo()
-
-            if self.family.has_kerning:
-                doc.writeKerning()
-
-            doc.endInstance()
-
-        doc.save()
-
-    def generate_fmndb(self):
-
-        f_name = self.family.output_name
-        lines = []
-
-        for style in self.family.styles:
-
-            lines.append('')
-            lines.append('[{}]'.format(style.output_full_name_postscript))
-            lines.append('  f = {}'.format(f_name))
-            lines.append('  s = {}'.format(style.name))
-
-            l_name = style.output_full_name
-            comment_lines = []
-
-            if self.do_style_linking:
-                if style.name == 'Regular':
-                    l_name = l_name.replace(' Regular', '')
-                else:
-                    if style.is_bold:
-                        comment_lines.append('  # IsBoldStyle')
-                        l_name = l_name.replace(' Bold', '')
-                    if style.is_italic:
-                        comment_lines.append('  # IsItalicStyle')
-                        l_name = l_name.replace(' Italic', '')
-
-            if l_name != f_name:
-                lines.append('  l = {}'.format(l_name))
-
-            lines.extend(comment_lines)
-
-        with open(hindkit.constants.paths.FMNDN, 'w') as f:
-            f.write(hindkit.constants.templates.FMNDB_HEAD)
-            f.write('\n'.join(lines))
-            f.write('\n')
+    # @_check_overriding
+    # def generate_masters(self):
+    #     pass
 
     def import_glyphs(
         self,
@@ -246,6 +186,98 @@ class Builder(object):
 
             print('[NOTE] Modified master is saved.')
             print()
+
+    # @_check_overriding
+    # def generate_instances(self):
+    #     pass
+
+    @_check_overriding
+    def generate_designspace(self):
+
+        doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
+            hindkit._unwrap_path_relative_to_cwd(self.designspace_path)
+        )
+
+        for i, master in enumerate(self.family.masters):
+
+            doc.addSource(
+
+                path = hindkit._unwrap_path_relative_to_cwd(master.path),
+                name = 'master-' + master.name,
+                location = {'weight': master.interpolation_value},
+
+                copyLib    = True if i == 0 else False,
+                copyGroups = True if i == 0 else False,
+                copyInfo   = True if i == 0 else False,
+
+                # muteInfo = False,
+                # muteKerning = False,
+                # mutedGlyphNames = None,
+
+            )
+
+        for style in self.family.styles:
+
+            doc.startInstance(
+                name = 'instance-' + style.name,
+                location = {'weight': style.interpolation_value},
+                familyName = self.family.output_name,
+                styleName = style.name,
+                fileName = hindkit._unwrap_path_relative_to_cwd(style.path),
+                postScriptFontName = style.output_full_name_postscript,
+                # styleMapFamilyName = None,
+                # styleMapStyleName = None,
+            )
+
+            doc.writeInfo()
+
+            if self.family.has_kerning:
+                doc.writeKerning()
+
+            doc.endInstance()
+
+        doc.save()
+
+    @_check_overriding
+    def generate_fmndb(self):
+
+        f_name = self.family.output_name
+        lines = []
+
+        for style in self.family.styles:
+
+            lines.append('')
+            lines.append('[{}]'.format(style.output_full_name_postscript))
+            lines.append('  f = {}'.format(f_name))
+            lines.append('  s = {}'.format(style.name))
+
+            l_name = style.output_full_name
+            comment_lines = []
+
+            if self.do_style_linking:
+                if style.name == 'Regular':
+                    l_name = l_name.replace(' Regular', '')
+                else:
+                    if style.is_bold:
+                        comment_lines.append('  # IsBoldStyle')
+                        l_name = l_name.replace(' Bold', '')
+                    if style.is_italic:
+                        comment_lines.append('  # IsItalicStyle')
+                        l_name = l_name.replace(' Italic', '')
+
+            if l_name != f_name:
+                lines.append('  l = {}'.format(l_name))
+
+            lines.extend(comment_lines)
+
+        with open(self.fmndb_path, 'w') as f:
+            f.write(hindkit.constants.templates.FMNDB_HEAD)
+            f.write('\n'.join(lines))
+            f.write('\n')
+
+    # @_check_overriding
+    # def generate_build(self):
+    #     pass
 
     def build(self, additional_arguments = []):
 
@@ -303,7 +335,7 @@ class Builder(object):
 
                 # Prepare makeInstancesUFO arguments
 
-                arguments = ['-d', hindkit.constants.paths.DESIGNSPACE]
+                arguments = ['-d', self.designspace_path]
 
                 if not self.checkoutlines:
                     arguments.append('-c')
@@ -437,7 +469,7 @@ class Builder(object):
                 arguments = [
                     '-f', style.path,
                     '-o', otf_path,
-                    '-mf', hindkit.constants.paths.FMNDN,
+                    '-mf', self.family.fmndb_path,
                     '-gf', self.family.goadb_path,
                     '-r',
                     '-shw',
