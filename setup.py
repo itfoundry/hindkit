@@ -1,12 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env AFDKOPython
 
 import setuptools
-import hindkit as kit
+import hindkit
 
 setuptools.setup(
     name = 'hindkit',
-    version = kit.__version__,
+    version = hindkit.__version__,
     author = 'Liang Hai',
     author_email = 'lianghai@gmail.com',
-    packages = ['hindkit', 'hindkit.constants', 'hindkit.scripts', 'hindkit.AFDKOPython'],
+    packages = ['hindkit', 'hindkit.constants', 'hindkit.resources'],
 )

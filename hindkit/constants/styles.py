@@ -1,4 +1,17 @@
-STANDARD = [
+#!/usr/bin/env AFDKOPython
+
+from __future__ import division, absolute_import, print_function, unicode_literals
+
+SINGLE = [
+    ('Regular', 0, 400),
+]
+
+DUAL = [
+    ('Regular',   0, 400),
+    ('Bold',    100, 700),
+]
+
+ITF = [
     ('Light',      0, 300),
     ('Regular',   21, 400),
     ('Medium',    44, 500),
@@ -6,7 +19,7 @@ STANDARD = [
     ('Bold',     100, 700),
 ]
 
-STANDARD_CamelCase = [
+ITF_CamelCase = [
     ('Light',      0, 300),
     ('Regular',   21, 400),
     ('Medium',    44, 500),

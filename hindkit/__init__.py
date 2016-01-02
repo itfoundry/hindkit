@@ -1,12 +1,16 @@
-from __future__ import division, print_function, unicode_literals
+#!/usr/bin/env AFDKOPython
 
-__version__ = '0.3.2'
+from __future__ import division, absolute_import, print_function, unicode_literals
 
-from hindkit.constants import paths, linguistics, styles, templates
-from hindkit.family    import Family, Master, Style
-from hindkit.builder   import Builder
+__version__ = '1.0.0'
 
-def confirm_version(required_version):
-    if __version__ != required_version:
-        message = templates.EXIT_MESSAGE.format(required_version, __version__)
-        raise SystemExit(message)
+import os
+
+def _unwrap_path_relative_to_package_dir(relative_path):
+    return os.path.join(__path__[0], relative_path)
+
+def _unwrap_path_relative_to_cwd(relative_path):
+    return os.path.join(os.path.realpath(os.getcwdu()), relative_path)
+
+from hindkit.objects import Family, Master, Style
+from hindkit.tools import Builder

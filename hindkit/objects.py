@@ -1,17 +1,27 @@
-from __future__ import division, print_function, unicode_literals
+#!/usr/bin/env AFDKOPython
+
+from __future__ import division, absolute_import, print_function, unicode_literals
 
 import os
 import robofab.world
-import hindkit as kit
+import hindkit.constants
 
 class Family(object):
 
+    default_client = hindkit.constants.misc.DEFAULT_CLIENT
+
     def __init__(
         self,
+        client = None,
         trademark = '',
         script = '',
         hide_script_name = False,
     ):
+
+        if client:
+            self.client = client
+        else:
+            self.client = self.default_client
 
         self.trademark = trademark
         self.script = script
@@ -23,8 +33,7 @@ class Family(object):
         self.name_postscript = self.name.replace(' ', '')
 
         self.output_name_affix = '{}'
-        self.goadb_path = kit.paths.GOADB
-        self.working_directory = os.path.realpath(os.getcwd())
+        self.goadb_path = hindkit.constants.paths.GOADB
 
     @property
     def output_name(self):
@@ -71,7 +80,10 @@ class Family(object):
             else:
                 self.__dict__['has_' + module] = False
 
-    def set_styles(self, style_scheme = kit.styles.STANDARD_CamelCase):
+    def set_styles(self, style_scheme = None):
+
+        if not style_scheme:
+            style_scheme = hindkit.constants.misc.CLIENTS[self.client]['style_scheme']
 
         self.styles = []
 
@@ -83,14 +95,6 @@ class Family(object):
                 weight_class = weight_class,
             )
             self.styles.append(style)
-
-    def dump(self):
-        dictionary = self.__dict__.copy()
-        for i in ['output_name', 'output_name_postscript']:
-            dictionary[i] = self.__getattribute__(i)
-        for i in ['masters', 'styles']:
-            dictionary[i] = [j.dump() for j in self.__getattribute__(i)]
-        return dictionary
 
 class _BaseStyle(object):
 
@@ -121,21 +125,17 @@ class _BaseStyle(object):
     def path(self):
         return os.path.join(self.directory, self.file_name)
 
-    def open_font(self):
-        return robofab.world.OpenFont(self.path)
-
-    def dump(self):
-        dictionary = self.__dict__.copy()
-        dictionary['_family'] = repr(dictionary['_family'])
-        for i in ['directory', 'file_name', 'path']:
-            dictionary[i] = self.__getattribute__(i)
-        return dictionary
+    def open_font(self, is_temp=False):
+        path = self.path
+        if is_temp:
+            path = os.path.join(hindkit.constants.paths.TEMP, path)
+        return robofab.world.OpenFont(path)
 
 class Master(_BaseStyle):
 
     @property
     def directory(self):
-        return kit.paths.MASTERS
+        return hindkit.constants.paths.MASTERS
 
     @property
     def file_name(self):
@@ -156,6 +156,7 @@ class Style(_BaseStyle):
         is_italic = None,
         is_oblique = None,
         _output_full_name_postscript = None,
+        _otf_name = None,
     ):
 
         super(Style, self).__init__(_family, name, interpolation_value)
@@ -179,9 +180,11 @@ class Style(_BaseStyle):
 
         self._output_full_name_postscript = _output_full_name_postscript
 
+        self._otf_name = _otf_name
+
     @property
     def directory(self):
-        return os.path.join(kit.paths.INSTANCES, self.name_postscript)
+        return os.path.join(hindkit.constants.paths.INSTANCES, self.name_postscript)
 
     @property
     def file_name(self):
@@ -203,9 +206,10 @@ class Style(_BaseStyle):
             output_full_name_postscript = self._family.output_name_postscript + '-' + self.name_postscript
         return output_full_name_postscript
 
-    def dump(self):
-        dictionary = self.__dict__.copy()
-        dictionary['_family'] = repr(dictionary['_family'])
-        for i in ['directory', 'file_name', 'path', 'output_full_name', 'output_full_name_postscript']:
-            dictionary[i] = self.__getattribute__(i)
-        return dictionary
+    @property
+    def otf_name(self):
+        if self._otf_name:
+            otf_name = self._otf_name
+        else:
+            otf_name = self.output_full_name_postscript + '.otf'
+        return otf_name
