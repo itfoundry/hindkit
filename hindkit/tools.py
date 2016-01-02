@@ -76,7 +76,10 @@ class Builder(object):
             path = self.__dict__[function.__name__[len('prepare_'):] + '_path']
             if os.path.exists(path):
                 subprocess.call(['cp', '-fr', path, _temp(path)])
-                function(self, is_passing=True)
+                if function.__name__ == 'prepare_instances':
+                    function(self, is_passing=True)
+                else:
+                    pass
             else:
                 function(self)
         return decorator
