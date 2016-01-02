@@ -589,8 +589,9 @@ def _reset(path):
     subprocess.call(['mkdir', path])
 
 def _check_ps_name(style):
-    font = style.open_font(is_temp=True)
-    if font.info.postscriptFontName != style.output_full_name_postscript:
-        font.info.postscriptFontName = style.output_full_name_postscript
-        print('\n[Note] Fixed the PostScript name.')
-        font.save()
+    if style.file_name.endswith('.ufo'):
+        font = style.open_font(is_temp=True)
+        if font.info.postscriptFontName != style.output_full_name_postscript:
+            font.info.postscriptFontName = style.output_full_name_postscript
+            print('\n[Note] Fixed the PostScript name.')
+            font.save()
