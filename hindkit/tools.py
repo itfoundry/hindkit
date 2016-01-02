@@ -76,6 +76,7 @@ class Builder(object):
             path = self.__dict__[function.__name__[len('prepare_'):] + '_path']
             if os.path.exists(path):
                 subprocess.call(['cp', '-fr', path, _temp(path)])
+                function(self, is_passing=True)
             else:
                 function(self)
         return decorator
@@ -228,60 +229,74 @@ class Builder(object):
 
         doc.save()
 
+    def do_makeInstancesUFO_postprocessing(self, styles):
+        newInstancesList = [_temp(i.path) for i in styles]
+        if self.checkoutlines or self.autohint:
+            print("Applying post-processing...")
+            options = {
+                'doOverlapRemoval': self.checkoutlines,
+                'doAutoHint': self.autohint,
+                'allowDecimalCoords': False,
+            }
+            for instancePath in newInstancesList:
+                hindkit.patches.updateInstance(options, instancePath)
+
     @_check_overriding
-    def prepare_instances(self):
+    def prepare_instances(self, is_passing=False):
 
-        print('[Note] Resetting instance directories...\n')
-        _reset(_temp(self.instances_path))
-        for style in self.enabled_styles:
-            subprocess.call(['mkdir', _temp(style.directory)])
+        if is_passing:
 
-        if self.makeinstances:
-
-            self.prepare_designspace()
-
-            print('[Note] Start interpolating masters...\n')
-
-            # Prepare makeInstancesUFO arguments
-
-            arguments = ['-d', _temp(self.designspace_path)]
-
-            if not self.checkoutlines:
-                arguments.append('-c')
-            if not self.autohint:
-                arguments.append('-a')
-
-            # Run makeInstancesUFO
-
-            subprocess.call(['makeInstancesUFO'] + arguments)
-
-            # Remove the log file
-
-            subprocess.call(['rm', '-f', 'mutatorMath.log'])
-
-            print()
-            print('[Note] Done interpolating masters.\n')
+            self.do_makeInstancesUFO_postprocessing(self.family.styles)
 
         else:
 
-            print('[Note] Copying masters to be instances.\n')
+            print('[Note] Resetting instance directories...\n')
+            _reset(_temp(self.instances_path))
+            for style in self.enabled_styles:
+                subprocess.call(['mkdir', _temp(style.directory)])
 
-            for index, (master, style) in enumerate(zip(self.family.masters, self.enabled_styles)):
+            if self.makeinstances:
 
-                subprocess.call(['cp', '-fr', master.path, _temp(style.path)])
+                self.prepare_designspace()
 
-                font = style.open_font(is_temp=True)
-                font.info.postscriptFontName = style.output_full_name_postscript
+                print('[Note] Start interpolating masters...\n')
 
-                if index != 0:
-                    font.groups.update(self.family.masters[0].open_font().groups)
-                font.save()
+                # Prepare makeInstancesUFO arguments
 
-                if self.checkoutlines:
-                    subprocess.call(['checkOutlinesUFO', '-e', '-all', _temp(style.path)])
+                arguments = ['-d', _temp(self.designspace_path)]
 
-                if self.autohint:
-                    subprocess.call(['autohint', '-q','-nb', _temp(style.path)])
+                if not self.checkoutlines:
+                    arguments.append('-c')
+                if not self.autohint:
+                    arguments.append('-a')
+
+                # Run makeInstancesUFO
+
+                subprocess.call(['makeInstancesUFO'] + arguments)
+
+                # Remove the log file
+
+                subprocess.call(['rm', '-f', 'mutatorMath.log'])
+
+                print()
+                print('[Note] Done interpolating masters.\n')
+
+            else:
+
+                print('[Note] Copying masters to be instances.\n')
+
+                for index, (master, style) in enumerate(zip(self.family.masters, self.enabled_styles)):
+
+                    subprocess.call(['cp', '-fr', master.path, _temp(style.path)])
+
+                    font = style.open_font(is_temp=True)
+                    font.info.postscriptFontName = style.output_full_name_postscript
+
+                    if index != 0:
+                        font.groups.update(self.family.masters[0].open_font().groups)
+                    font.save()
+
+                self.do_makeInstancesUFO_postprocessing(self.enabled_styles)
 
     @_check_overriding
     def prepare_fmndb(self):
