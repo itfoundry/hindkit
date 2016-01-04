@@ -6,7 +6,7 @@ TEMP = 'temp'
 OVERRIDING = ''
 
 MASTERS = 'masters'
-INSTANCES = 'instances'
+STYLES = 'styles'
 DESIGNSPACE = 'font.designspace'
 FMNDB = 'FontMenuNameDB'
 GOADB = 'GlyphOrderAndAliasDB'

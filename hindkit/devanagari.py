@@ -5,6 +5,30 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import re, collections
 import hindkit.constants
 
+
+def prepare_features_devanagari(family):
+
+    light, bold = devanagari_offset_matrix
+    light_min, light_max = light
+    bold_min, bold_max = bold
+
+    axis_start = family.masters[0].interpolation_value
+    axis_end = family.masters[-1].interpolation_value
+    axis_range = axis_end - axis_start
+    if axis_range == 0:
+        ratio = 1
+    else:
+        ratio = (style.interpolation_value - axis_start) / axis_range
+    offset_tuple = (
+        light_min + (bold_min - light_min) * ratio,
+        light_max + (bold_max - light_max) * ratio,
+    )
+
+    hindkit.devanagari.match_matra_i_alts(
+        style,
+        offset_range = offset_tuple
+    )
+
 def match_mI():
     pass
 def position_marks():

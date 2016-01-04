@@ -194,7 +194,7 @@ class Style(_BaseStyle):
 
     @property
     def directory(self):
-        return os.path.join(hindkit.constants.paths.INSTANCES, self.name_postscript)
+        return os.path.join(hindkit.constants.paths.STYLES, self.name_postscript)
 
     @property
     def file_name(self):
