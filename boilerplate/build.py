@@ -24,28 +24,18 @@ family.set_styles()
 
 # - - -
 
-builder = kit.builder.Builder(family)
-
-builder.fontrevision = '1.000'
-
-builder.set_options([
-
-    'prepare_styles',   # stage i
-    'prepare_features', # stage ii
-    'compile',          # stage iii
-
-    'makeinstances', #!
-    'checkoutlines', #!
-    'autohint',      #!
-
-    'do_style_linking',
-    'use_os_2_version_4',
-    'prefer_typo_metrics',
-    'is_width_weight_slope_only',
-
-])
-
-builder.generate_designspace()
-builder.generate_fmndb()
+builder = kit.builder.Builder(
+    family,
+    fontrevision = '1.000',
+    options = [
+        'run_makeinstances', #!
+        'run_checkoutlines', #!
+        'run_autohint',      #!
+        'do_style_linking',
+        'use_os_2_version_4',
+        'prefer_typo_metrics',
+        'is_width_weight_slope_only',
+    ],
+)
 
 builder.build()

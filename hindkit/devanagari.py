@@ -5,7 +5,12 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import re, collections
 import hindkit.constants
 
-SCRIPT_PREFIX = 'dv'
+def match_mI():
+    pass
+def position_marks():
+    pass
+
+# SCRIPT_PREFIX = 'dv'
 MATRA_I_NAME_STEM = 'mI.'
 MATRA_I_ANCHOR_NAME = 'abvm.i'
 
@@ -15,17 +20,23 @@ ALIVE_CONSONANTS = [i + 'A' for i in hindkit.constants.misc.CONSONANT_STEMS] + \
                    'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
 DEAD_CONSONANTS = hindkit.constants.misc.CONSONANT_STEMS
 
-def glyph_filter_matra_i_alts(glyph):
-    match = re.match(SCRIPT_PREFIX + MATRA_I_NAME_STEM + r'\d\d$', glyph.name)
+def get_script_prefix(script_name):
+    return hindkit.constants.misc.INDIC_SCRIPTS[script_name.lower()]['abbreviation']
+
+def glyph_filter_matra_i_alts(family, glyph):
+    match = re.match(
+        get_script_prefix(family.script) + MATRA_I_NAME_STEM + r'\d\d$',
+        glyph.name,
+    )
     return bool(match)
 
-def glyph_filter_bases_for_matra_i(glyph):
+def glyph_filter_bases_for_matra_i(family, glyph):
     return glyph_filter_bases_alive(glyph)
 
 def get_end(glyph):
     name = glyph.name
     end = ''
-    if name.startswith(SCRIPT_PREFIX):
+    if name.startswith(get_script_prefix(family.script)):
         main, sep, suffix = name[2:].partition('.')
         end = main.split('_')[-1]
         if end.endswith('xA'):
@@ -34,15 +45,17 @@ def get_end(glyph):
             end = end[:-1]
     return end
 
-def glyph_filter_bases_alive(glyph):
+def glyph_filter_bases_alive(family, glyph):
     return get_end(glyph) in ALIVE_CONSONANTS
 
-def glyph_filter_bases_dead(glyph):
+def glyph_filter_bases_dead(family, glyph):
     return get_end(glyph) in DEAD_CONSONANTS
 
-def glyph_filter_bases_for_wide_matra_ii(glyph):
+def glyph_filter_bases_for_wide_matra_ii(family, glyph):
     name = glyph.name
-    if name.startswith(SCRIPT_PREFIX) and SCRIPT_PREFIX == 'dv':
+    if name.startswith(
+        hindkit.constants.misc.INDIC_SCRIPTS['devanagari']['abbreviation']
+    ):
         name = name[2:]
     return name in POTENTIAL_BASES_FOR_WIDE_MATRA_II
 

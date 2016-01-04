@@ -35,6 +35,8 @@ class Family(object):
         self.output_name_affix = '{}'
         self.goadb_path = hindkit.constants.paths.GOADB
 
+        self.modules = []
+
     @property
     def output_name(self):
         return self.output_name_affix.format(self.name)
@@ -69,16 +71,14 @@ class Family(object):
         if not self.masters:
             self.masters = [Master(self, 'Light', 0), Master(self, 'Bold', 100)]
 
-        for module in [
-            'kerning',
-            'mark_positioning',
-            'mark_to_mark_positioning',
-            'devanagari_matra_i_variants',
-        ]:
-            if module in modules:
-                self.__dict__['has_' + module] = True
-            else:
-                self.__dict__['has_' + module] = False
+        self.modules = [
+            i for i in modules if i in [
+                'kerning',
+                'mark_positioning',
+                'mark_to_mark_positioning',
+                'devanagari_matra_i_variants',
+            ]
+        ]
 
     def set_styles(self, style_scheme = None):
 
@@ -95,6 +95,16 @@ class Family(object):
                 weight_class = weight_class,
             )
             self.styles.append(style)
+
+    def get_styles_that_are_directly_derived_from_masters(self):
+        master_positions = [
+            master.interpolation_value for master in self.masters
+        ]
+        styles_that_are_directly_derived_from_masters = []
+        for style in self.styles:
+            if style.interpolation_value in master_positions:
+                styles_that_are_directly_derived_from_masters.append(style)
+        return styles_that_are_directly_derived_from_masters
 
 class _BaseStyle(object):
 
