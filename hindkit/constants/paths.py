@@ -14,4 +14,4 @@ BUILD = 'build'
 
 OUTPUT = '/Library/Application Support/Adobe/Fonts'
 
-CLASSES = 'features/GENERATED_classes.fea'
+CLASSES = 'features/generated_classes.fea'

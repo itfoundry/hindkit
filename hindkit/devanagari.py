@@ -6,7 +6,7 @@ import re, collections
 import hindkit.constants
 
 
-def prepare_features_devanagari(family):
+def prepare_features_devanagari(family, style):
 
     light, bold = devanagari_offset_matrix
     light_min, light_max = light
@@ -149,7 +149,7 @@ def write_mI_matches_to_files(directory, mI_table, long_base_names):
     )
 
     substitute_rule_lines = []
-    lookup_name = 'GENERATED_matra_i_matching'
+    lookup_name = 'generated_matra_i_matching'
 
     substitute_rule_lines.append('lookup {} {{'.format(lookup_name))
 

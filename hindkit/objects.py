@@ -16,6 +16,7 @@ class Family(object):
         trademark = '',
         script = '',
         hide_script_name = False,
+        designers = '',
     ):
 
         if client:
@@ -36,6 +37,8 @@ class Family(object):
         self.goadb_path = hindkit.constants.paths.GOADB
 
         self.modules = []
+
+        self.designers = designers
 
     @property
     def output_name(self):

@@ -4,7 +4,8 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 
 import subprocess, os, argparse
 import mutatorMath.ufo.document, WriteFeaturesKernFDK, WriteFeaturesMarkFDK
-import hindkit, hindkit.constants, hindkit.devanagari, hindkit.patches
+import hindkit, hindkit.devanagari, hindkit.patches
+import hindkit.constants as constants
 
 class Builder(object):
 
@@ -12,6 +13,7 @@ class Builder(object):
         self,
         family,
         fontrevision = '1.000',
+        vertical_metrics = {}
         options = [],
     ):
 
@@ -19,34 +21,44 @@ class Builder(object):
         self.fontrevision = fontrevision
 
         self.abstract_paths = {
-            'masters': hindkit.constants.paths.MASTERS,
-            'designspace': hindkit.constants.paths.DESIGNSPACE,
-            'styles': hindkit.constants.paths.STYLES,
-            'fmndb': hindkit.constants.paths.FMNDB,
+            'masters': constants.paths.MASTERS,
+            'designspace': constants.paths.DESIGNSPACE,
+            'styles': constants.paths.STYLES,
+            'fmndb': constants.paths.FMNDB,
             'goadb': self.family.goadb_path,
-            'build': hindkit.constants.paths.BUILD,
+            'build': constants.paths.BUILD,
         }
 
-        for supported_option in [
+        self.vertical_metrics = vertical_metrics
+        if self.vertical_metrics:
+            self.vertical_metrics['TypoAscender'] = self.vertical_metrics['Ascender']
+            self.vertical_metrics['TypoDescender'] = self.vertical_metrics['Descender']
+            self.vertical_metrics['TypoLineGap'] = self.vertical_metrics['LineGap']
+            self.vertical_metrics['winAscent'] = self.vertical_metrics['TypoAscender'] + self.vertical_metrics['LineGap'] / 2
+            self.vertical_metrics['winDescent'] = abs(self.vertical_metrics['TypoDescender']) + self.vertical_metrics['LineGap'] / 2
 
+
+        self.devanagari_offset_matrix = ((0, 0), (0, 0))
+
+        self.options = {
+            'stage_prepare_styles': True,
+            'stage_prepare_features': True,
+            'stage_compile': True,
+        }
+        for predefined_option in [
             'run_makeinstances',
             'run_checkoutlines',
             'run_autohint',
-
             'do_style_linking',
             'use_os_2_version_4',
             'prefer_typo_metrics',
             'is_width_weight_slope_only',
-
-            # 'keep_build_directory',
-
+            'override_GDEF',
         ]:
-            if supported_option in options:
-                self.__dict__[supported_option] = True
+            if predefined_option in options:
+                self.options[predefined_option] = True
             else:
-                self.__dict__[supported_option] = False
-
-        # argparse
+                self.options[predefined_option] = False
 
         parser = argparse.ArgumentParser(
             description = 'execute `AFDKOPython build.py` to run stages as specified in build.py, or append arguments to override.'
@@ -65,39 +77,35 @@ class Builder(object):
         )
         args = parser.parse_args()
 
-        self.allow_stage_prepare_styles = True
-        self.allow_stage_prepare_features = True
-        self.allow_stage_compile = True
-
         if args.stages:
             stages = str(args.stages)
-            self.allow_stage_prepare_styles = True if '1' in stages else False
-            self.allow_stage_prepare_features = True if '2' in stages else False
-            self.allow_stage_compile = True if '3' in stages else False
+            self.options['stage_prepare_styles'] = True if '1' in stages else False
+            self.options['stage_prepare_features'] = True if '2' in stages else False
+            self.options['stage_compile'] = True if '3' in stages else False
         if args.options:
             options = str(args.options)
-            self.run_makeinstances = True if '1' in options else False
-            self.run_checkoutlines = True if '2' in options else False
-            self.run_autohint = True if '3' in options else False
+            self.options['run_makeinstances'] = True if '1' in options else False
+            self.options['run_checkoutlines'] = True if '2' in options else False
+            self.options['run_autohint'] = True if '3' in options else False
         if args.test:
-            self.run_makeinstances = False
+            self.options['run_makeinstances'] = False
 
-        if self.run_makeinstances:
+        if self.options['run_makeinstances']:
             self.styles_to_be_built = self.family.styles()
         else:
             self.styles_to_be_built = self.family.get_styles_that_are_directly_derived_from_masters()
 
         if not ('kerning' or 'mark_positioning') in self.family.modules:
-            self.allow_stage_prepare_features = False
+            self.options['stage_prepare_features'] = False
 
-    def prepare_masters(self): # TODO
+    def _prepare_masters(self): # TODO
         OUTPUT = self.abstract_paths('masters')
         if overriding_exists(OUTPUT):
             return
         else:
             raise SystemExit('[WARNING] Not able to prepare masters yet.')
 
-    def prepare_designspace(self):
+    def _prepare_designspace(self):
 
         OUTPUT = self.abstract_paths('designspace')
         if overriding_exists(OUTPUT):
@@ -155,7 +163,7 @@ class Builder(object):
         OUTPUT = self.abstract_paths('styles')
         if overriding_exists(OUTPUT):
             return
-        self.prepare_masters()
+        self._prepare_masters()
         if not input_exists(DEPENDENCIES):
             raise SystemExit()
 
@@ -163,14 +171,14 @@ class Builder(object):
         for style in self.styles_to_be_built:
             subprocess.call(['mkdir', temp(style.directory)])
 
-        if self.run_makeinstances:
+        if self.options['run_makeinstances']:
 
-            self.prepare_designspace()
+            self._prepare_designspace()
 
             arguments = ['-d', temp(self.abstract_paths('designspace'))]
-            if not self.run_checkoutlines:
+            if not self.options['run_checkoutlines']:
                 arguments.append('-c')
-            if not self.run_autohint:
+            if not self.options['run_autohint']:
                 arguments.append('-a')
 
             subprocess.call(['makeInstancesUFO'] + arguments)
@@ -190,7 +198,7 @@ class Builder(object):
             return
 
         newInstancesList = [temp(i.path) for i in styles]
-        if self.run_checkoutlines or self.run_autohint:
+        if self.options['run_checkoutlines'] or self.options['run_autohint']:
             options = {
                 'doOverlapRemoval': self.run_checkoutlines,
                 'doAutoHint': self.run_autohint,
@@ -199,48 +207,136 @@ class Builder(object):
             for instancePath in newInstancesList:
                 hindkit.patches.updateInstance(options, instancePath)
 
-    def prepare_features(self, devanagari_offset_matrix = ((0, 0), (0, 0))):
+    def prepare_features(self):
+        self._prepare_features_general()
+        self._prepare_features_style_dependent()
+
+    def _prepare_features_general(self):
+
+        lines = []
+
+        # START
+
+        tables = collections.OrderedDict(
+            'hhea': [],
+            'OS/2': [],
+            'GDEF': [],
+            'name': [],
+        )
+
+        GDEF_records = {
+            'bases': '',
+            'ligatures': '',
+            'marks': '',
+            'components': '',
+        }
+
+        if 'mark_positioning' in self.family.modules:
+            lines.append('include (../../../{});'.format(constants.paths.CLASSES))
+            GDEF_records['marks'] = '@{}'.format(constants.misc.MARKS_CLASS_NAME)
+
+        tables['OS/2'].extend(
+            'include (weightclass.fea);',
+            'Vendor "{}";'.format(Vendor),
+        )
+
+        if self.vertical_metrics:
+            tables['hhea'].extend(
+                i.format(**self.vertical_metrics)
+                for i in [
+                    'Ascender {Ascender};',
+                    'Descender {Descender};',
+                    'LineGap {LineGap};',
+                ]
+            )
+            tables['OS/2'].extend(
+                i.format(**self.vertical_metrics)
+                for i in [
+                    'TypoAscender {TypoAscender};',
+                    'TypoDescender {TypoDescender};',
+                    'TypoLineGap {TypoLineGap};',
+                    'winAscent {winAscent}',
+                    'winDescent {winDescent}',
+                ]
+            ]
+
+        # tables['OS/2'].extend(self.generate_UnicodeRange)
+        # tables['OS/2'].extend(self.generate_CodePageRange)
+
+        if 'override_GDEF' in self.options:
+            tables['GDEF'].extend(
+                'GlyphClassDef {bases}, {ligatures}, {marks}, {components};'.format(**GDEF_records)
+            )
+
+                # self.family
+                # self.family.client
+                # self.family.trademark
+                # self.family.script
+
+        tables['name'].extend(
+            [
+                'nameid  0 "Copyright {} Indian Type Foundry. All rights reserved.";'.format(time.year),
+                'nameid  7 "{} is a trademark of the Indian Type Foundry.";'.format(self.family.trademark),
+                'nameid  8 "Indian Type Foundry";',
+                'nameid  9 "{}";'.format(self.family.designers),
+                'nameid 10 "{}";'.format(self.family.description),
+                'nameid 11 "http://www.indiantypefoundry.com";',
+                'nameid 12 "";',
+                'nameid 13 "This Font Software is protected under domestic and international trademark and copyright law. You agree to identify the ITF fonts by name and credit the ITF\'s ownership of the trademarks and copyrights in any design or production credits.";',
+                'nameid 14 "http://www.indiantypefoundry.com/licensing/eula/";',
+                'nameid 19 "{}";'.format(constants.misc.SAMPLE_TEXT[self.family.script]),
+            ]
+        )
+
+        for name, entries in tables.items():
+            if entries:
+                lines.append('table {} {'.format(name))
+                lines.extend('  ' + i for i in entries)
+                lines.append('} {};'.format(name))
+
+        # END
+
+        # GPOS
+
+        for style in self.styles_to_be_built:
+            directory = temp(style.directory)
+            with open(os.path.join(directory, 'features'), 'w') as f:
+                lines = [
+                    'table head { FontRevision 1.000; } head;',
+                    'include (../../../features/generated_features_start.fea);',
+                    'include (../../../features/features.fea);',
+                    'include (../../../features/generated_features_end.fea);',
+                ]
+                f.write('\n'.join(lines) + '\n')
+            with open(os.path.join(directory, 'WeightClass.fea'), 'w') as f:
+                f.write(constants.templates.WEIGHTCLASS.format(str(style.weight_class)))
+
+    def _prepare_features_style_dependent(self):
 
         DEPENDENCIES = [i.path for i in self.styles_to_be_built]
         if not input_exists(DEPENDENCIES):
             raise SystemExit()
 
+        if 'kerning' in self.family.modules:
+            self._prepare_features_kerning()
         if 'mark_positioning' in self.family.modules:
-            self._pre_prepare_features()
+            self._prepare_features_mark_positioning()
 
+    def _prepare_features_kerning(self):
         for style in self.styles_to_be_built:
+            WriteFeaturesKernFDK.KernDataClass(
+                font = style.open_font(is_temp=True),
+                folderPath = temp(style.directory),
+                minKern = 3,
+                writeTrimmed = False,
+                writeSubtables = True,
+                fileName = 'kern.fea',
+            )
 
-            if 'kerning' in self.family.modules:
-                WriteFeaturesKernFDK.KernDataClass(
-                    font = style.open_font(is_temp=True),
-                    folderPath = temp(style.directory),
-                    minKern = 3,
-                    writeTrimmed = False,
-                    writeSubtables = True,
-                    fileName = 'kern.fea',
-                )
-
-            if 'mark_positioning' in self.family.modules:
-                WriteFeaturesMarkFDK.kCombMarksClassName = 'generated_MARKS'
-                WriteFeaturesMarkFDK.MarkDataClass(
-                    font = style.open_font(is_temp=True),
-                    folderPath = temp(style.directory),
-                    trimCasingTags = False,
-                    genMkmkFeature = 'mark_to_mark_positioning' in self.family.modules,
-                    writeClassesFile = True,
-                    indianScriptsFormat = (
-                        True if self.family.script.lower() in hindkit.constants.misc.INDIC_SCRIPTS
-                        else False
-                    ),
-                )
-
-            if ('mark_positioning' and 'devanagari_matra_i_variants') in self.family.modules:
-                hindkit.devanagari.prepare_features_devanagari(self.family)
-
-    def _pre_prepare_features(self):
+    def _prepare_features_mark_positioning(self):
 
         glyph_classes = []
-        glyph_classes.extend([('generated_MARKS', glyph_filter_marks)])
+        glyph_classes.extend([(constants.misc.MARKS_CLASS_NAME, glyph_filter_marks)])
 
         if 'devanagari_matra_i_variants' in self.family.modules:
             glyph_classes.extend([
@@ -258,8 +354,26 @@ class Builder(object):
             font.groups.update(style_0.groups)
             font.save()
 
+        for style in self.styles_to_be_built:
+
+            WriteFeaturesMarkFDK.kCombMarksClassName = constants.misc.MARKS_CLASS_NAME
+            WriteFeaturesMarkFDK.MarkDataClass(
+                font = style.open_font(is_temp=True),
+                folderPath = temp(style.directory),
+                trimCasingTags = False,
+                genMkmkFeature = 'mark_to_mark_positioning' in self.family.modules,
+                writeClassesFile = True,
+                indianScriptsFormat = (
+                    True if self.family.script.lower() in constants.misc.INDIC_SCRIPTS
+                    else False
+                ),
+            )
+
+            if 'devanagari_matra_i_variants' in self.family.modules:
+                hindkit.devanagari.prepare_features_devanagari(self.family, style)
+
     def _generate_glyph_classes(self, font, glyph_classes):
-        output_path = hindkit.constants.paths.CLASSES
+        output_path = constants.paths.CLASSES
         glyph_order = [
             development_name for
             production_name, development_name, unicode_mapping in
@@ -296,7 +410,7 @@ class Builder(object):
             l_name = style.output_full_name
             comment_lines = []
 
-            if self.do_style_linking:
+            if self.options['do_style_linking']:
                 if style.name == 'Regular':
                     l_name = l_name.replace(' Regular', '')
                 else:
@@ -313,7 +427,7 @@ class Builder(object):
             lines.extend(comment_lines)
 
         with open(temp(OUTPUT), 'w') as f:
-            f.write(hindkit.constants.templates.FMNDB_HEAD)
+            f.write(constants.templates.FMNDB_HEAD)
             f.write('\n'.join(lines))
             f.write('\n')
 
@@ -341,11 +455,6 @@ class Builder(object):
                     font.info.postscriptFontName = style.output_full_name_postscript
                     font.save()
 
-            with open(os.path.join(temp(style.directory), 'features'), 'w') as file:
-                file.write(hindkit.constants.templates.FEATURES)
-            with open(os.path.join(temp(style.directory), 'weightclass.fea'), 'w') as file:
-                file.write(hindkit.constants.templates.WEIGHTCLASS.format(str(style.weight_class)))
-
             otf_path = os.path.join(self.build_path, style.otf_name)
 
             arguments = [
@@ -358,12 +467,12 @@ class Builder(object):
                 '-rev', self.fontrevision,
                 '-omitMacNames',
             ]
-            if self.do_style_linking:
+            if self.options['do_style_linking']:
                 if style.is_bold:
                     arguments.append('-b')
                 if style.is_italic:
                     arguments.append('-i')
-            if self.use_os_2_version_4:
+            if self.options['use_os_2_version_4']:
                 for digit, boolean in [
                     ('7', self.prefer_typo_metrics),
                     ('8', self.is_width_weight_slope_only),
@@ -377,15 +486,15 @@ class Builder(object):
             project_file_path = os.path.join(temp(style.directory), 'current.fpr')
             remove_files(project_file_path)
 
-            if os.path.exists(otf_path) and os.path.exists(hindkit.constants.paths.OUTPUT):
-                subprocess.call(['cp', '-f', otf_path, hindkit.constants.paths.OUTPUT])
+            if os.path.exists(otf_path) and os.path.exists(constants.paths.OUTPUT):
+                subprocess.call(['cp', '-f', otf_path, constants.paths.OUTPUT])
 
     def build(self):
-        if self.allow_stage_prepare_styles:
+        if 'stage_prepare_styles' in self.options:
             self.prepare_styles()
-        if self.allow_stage_prepare_features:
+        if 'stage_prepare_features' in self.options:
             self.prepare_features()
-        if self.allow_stage_compile:
+        if 'stage_compile' in self.options:
             self.prepare_fmndb()
             self.prepare_goadb()
             self.compile()
@@ -430,10 +539,10 @@ def reset_dir(path):
 # ---
 
 def overriding(abstract_path):
-    return os.path.join(hindkit.constants.paths.OVERRIDING, abstract_path)
+    return os.path.join(constants.paths.OVERRIDING, abstract_path)
 
 def temp(abstract_path):
-    return os.path.join(hindkit.constants.paths.TEMP, abstract_path)
+    return os.path.join(constants.paths.TEMP, abstract_path)
 
 def overriding_exists(overriding_path):
     overriding_path = overriding(overriding_path)
@@ -488,7 +597,7 @@ def import_glyphs(
             pass
 
         for new_name in deriving_names:
-            source_name = hindkit.constants.misc.DERIVING_MAP[new_name]
+            source_name = constants.misc.DERIVING_MAP[new_name]
             to_master.newGlyph(new_name)
             if source_name:
                 to_master[new_name].width = to_master[source_name].width
