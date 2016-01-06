@@ -4,11 +4,11 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 
 import os
 import robofab.world
-import hindkit.constants
+import hindkit.constants as constants
 
 class Family(object):
 
-    default_client = hindkit.constants.misc.DEFAULT_CLIENT
+    default_client = constants.misc.DEFAULT_CLIENT
 
     def __init__(
         self,
@@ -34,11 +34,11 @@ class Family(object):
         self.name_postscript = self.name.replace(' ', '')
 
         self.output_name_affix = '{}'
-        self.goadb_path = hindkit.constants.paths.GOADB
-
-        self.modules = []
 
         self.designers = designers
+
+        self.masters = []
+        self.styles = []
 
     @property
     def output_name(self):
@@ -51,7 +51,7 @@ class Family(object):
     @property
     def goadb(self):
 
-        with open(self.goadb_path, 'r') as file:
+        with open(constants.paths.GOADB, 'r') as file:
             goadb_content = file.read()
 
         goadb = []
@@ -68,27 +68,15 @@ class Family(object):
 
         return goadb
 
-    def set_masters(self, masters = [], modules = []):
-
+    def set_masters(self, masters = []):
         self.masters = masters
         if not self.masters:
             self.masters = [Master(self, 'Light', 0), Master(self, 'Bold', 100)]
 
-        self.modules = [
-            i for i in modules if i in [
-                'kerning',
-                'mark_positioning',
-                'mark_to_mark_positioning',
-                'devanagari_matra_i_variants',
-            ]
-        ]
-
-    def set_styles(self, style_scheme = None):
+    def set_styles(self, style_scheme = []):
 
         if not style_scheme:
-            style_scheme = hindkit.constants.misc.CLIENTS[self.client]['style_scheme']
-
-        self.styles = []
+            style_scheme = constants.misc.CLIENTS[self.client]['style_scheme']
 
         for style_name, interpolation_value, weight_class in style_scheme:
             style = Style(
@@ -141,14 +129,14 @@ class _BaseStyle(object):
     def open_font(self, is_temp=False):
         path = self.path
         if is_temp:
-            path = os.path.join(hindkit.constants.paths.TEMP, path)
+            path = os.path.join(constants.paths.TEMP, path)
         return robofab.world.OpenFont(path)
 
 class Master(_BaseStyle):
 
     @property
     def directory(self):
-        return hindkit.constants.paths.MASTERS
+        return constants.paths.MASTERS
 
     @property
     def file_name(self):
@@ -197,7 +185,7 @@ class Style(_BaseStyle):
 
     @property
     def directory(self):
-        return os.path.join(hindkit.constants.paths.STYLES, self.name_postscript)
+        return os.path.join(constants.paths.STYLES, self.name_postscript)
 
     @property
     def file_name(self):

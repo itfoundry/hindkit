@@ -6,12 +6,13 @@ TEMP = 'temp'
 OVERRIDING = ''
 
 MASTERS = 'masters'
-STYLES = 'styles'
 DESIGNSPACE = 'font.designspace'
+STYLES = 'styles'
+FEATURES = 'features'
 FMNDB = 'FontMenuNameDB'
 GOADB = 'GlyphOrderAndAliasDB'
 BUILD = 'build'
 
 OUTPUT = '/Library/Application Support/Adobe/Fonts'
 
-CLASSES = 'features/generated_classes.fea'
+CLASSES = 'classes.fea'

@@ -5,7 +5,7 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import os, collections
 import hindkit
 
-MARKS_CLASS_NAME = 'generated_marks'
+MARKS_CLASS_NAME = 'COMBINING_MARKS'
 
 DERIVING_MAP = {
     'CR': 'space',
