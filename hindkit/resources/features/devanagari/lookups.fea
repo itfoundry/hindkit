@@ -95,11 +95,11 @@ lookup rkrf_new {
 # ----------------
 
 lookup blwf_new {
-  sub dvVirama dvRA by dvRakar;
+  sub dvVirama dvRA by dvRAc2;
 } blwf_new;
 
 lookup blwf_old {
-  sub dvRA dvVirama by dvRakar;
+  sub dvRA dvVirama by dvRAc2;
 } blwf_old;
 
 
@@ -218,93 +218,93 @@ lookup half_old {
 
 lookup vatu_old {
 
-  sub dvKA   dvRakar by   dvK_RA;
-  sub dvKHA  dvRakar by  dvKH_RA;
-  sub dvGA   dvRakar by   dvG_RA;
-  sub dvGHA  dvRakar by  dvGH_RA;
-  sub dvNGA  dvRakar by  dvNG_RA;
-  sub dvCA   dvRakar by   dvC_RA;
-  sub dvCHA  dvRakar by  dvCH_RA;
-  sub dvJA   dvRakar by   dvJ_RA;
-  sub dvJHA  dvRakar by  dvJH_RA;
-  sub dvNYA  dvRakar by  dvNY_RA;
-  sub dvTTA  dvRakar by  dvTT_RA;
-  sub dvTTHA dvRakar by dvTTH_RA;
-  sub dvDDA  dvRakar by  dvDD_RA;
-  sub dvDDHA dvRakar by dvDDH_RA;
-  sub dvNNA  dvRakar by  dvNN_RA;
-  sub dvTA   dvRakar by   dvT_RA;
-  sub dvTHA  dvRakar by  dvTH_RA;
-  sub dvDA   dvRakar by   dvD_RA;
-  sub dvDHA  dvRakar by  dvDH_RA;
-  sub dvNA   dvRakar by   dvN_RA;
-  sub dvPA   dvRakar by   dvP_RA;
-  sub dvPHA  dvRakar by  dvPH_RA;
-  sub dvBA   dvRakar by   dvB_RA;
-  sub dvBHA  dvRakar by  dvBH_RA;
-  sub dvMA   dvRakar by   dvM_RA;
-  sub dvYA   dvRakar by   dvY_RA;
+  sub dvKA   dvRAc2 by   dvK_RA;
+  sub dvKHA  dvRAc2 by  dvKH_RA;
+  sub dvGA   dvRAc2 by   dvG_RA;
+  sub dvGHA  dvRAc2 by  dvGH_RA;
+  sub dvNGA  dvRAc2 by  dvNG_RA;
+  sub dvCA   dvRAc2 by   dvC_RA;
+  sub dvCHA  dvRAc2 by  dvCH_RA;
+  sub dvJA   dvRAc2 by   dvJ_RA;
+  sub dvJHA  dvRAc2 by  dvJH_RA;
+  sub dvNYA  dvRAc2 by  dvNY_RA;
+  sub dvTTA  dvRAc2 by  dvTT_RA;
+  sub dvTTHA dvRAc2 by dvTTH_RA;
+  sub dvDDA  dvRAc2 by  dvDD_RA;
+  sub dvDDHA dvRAc2 by dvDDH_RA;
+  sub dvNNA  dvRAc2 by  dvNN_RA;
+  sub dvTA   dvRAc2 by   dvT_RA;
+  sub dvTHA  dvRAc2 by  dvTH_RA;
+  sub dvDA   dvRAc2 by   dvD_RA;
+  sub dvDHA  dvRAc2 by  dvDH_RA;
+  sub dvNA   dvRAc2 by   dvN_RA;
+  sub dvPA   dvRAc2 by   dvP_RA;
+  sub dvPHA  dvRAc2 by  dvPH_RA;
+  sub dvBA   dvRAc2 by   dvB_RA;
+  sub dvBHA  dvRAc2 by  dvBH_RA;
+  sub dvMA   dvRAc2 by   dvM_RA;
+  sub dvYA   dvRAc2 by   dvY_RA;
   # Reph
-  sub dvLA   dvRakar by   dvL_RA;
-  sub dvVA   dvRakar by   dvV_RA;
-  sub dvSHA  dvRakar by  dvSH_RA;
-  sub dvSSA  dvRakar by  dvSS_RA;
-  sub dvSA   dvRakar by   dvS_RA;
-  sub dvHA   dvRakar by   dvH_RA;
-  sub dvLLA  dvRakar by  dvLL_RA;
+  sub dvLA   dvRAc2 by   dvL_RA;
+  sub dvVA   dvRAc2 by   dvV_RA;
+  sub dvSHA  dvRAc2 by  dvSH_RA;
+  sub dvSSA  dvRAc2 by  dvSS_RA;
+  sub dvSA   dvRAc2 by   dvS_RA;
+  sub dvHA   dvRAc2 by   dvH_RA;
+  sub dvLLA  dvRAc2 by  dvLL_RA;
 
-  sub dvKxA   dvRakar by   dvKx_RA;
-  sub dvKHxA  dvRakar by  dvKHx_RA;
-  sub dvGxA   dvRakar by   dvGx_RA;
-  sub dvJxA   dvRakar by   dvJx_RA;
-  sub dvPHxA  dvRakar by  dvPHx_RA;
+  sub dvKxA   dvRAc2 by   dvKx_RA;
+  sub dvKHxA  dvRAc2 by  dvKHx_RA;
+  sub dvGxA   dvRAc2 by   dvGx_RA;
+  sub dvJxA   dvRAc2 by   dvJx_RA;
+  sub dvPHxA  dvRAc2 by  dvPHx_RA;
 
-  sub dvK_SSA dvRakar by dvK_SS_RA;
-  sub dvJ_NYA dvRakar by dvJ_NY_RA;
+  sub dvK_SSA dvRAc2 by dvK_SS_RA;
+  sub dvJ_NYA dvRAc2 by dvJ_NY_RA;
 
-  sub dvK   dvRakar by   dvK_R;
-  sub dvKH  dvRakar by  dvKH_R;
-  sub dvG   dvRakar by   dvG_R;
-  sub dvGH  dvRakar by  dvGH_R;
-  sub dvNG  dvRakar by  dvNG_R;
-  sub dvC   dvRakar by   dvC_R;
-  sub dvCH  dvRakar by  dvCH_R;
-  sub dvJ   dvRakar by   dvJ_R;
-  sub dvJH  dvRakar by  dvJH_R;
-  sub dvNY  dvRakar by  dvNY_R;
-  sub dvTT  dvRakar by  dvTT_R;
-  sub dvTTH dvRakar by dvTTH_R;
-  sub dvDD  dvRakar by  dvDD_R;
-  sub dvDDH dvRakar by dvDDH_R;
-  sub dvNN  dvRakar by  dvNN_R;
-  sub dvT   dvRakar by   dvT_R;
-  sub dvTH  dvRakar by  dvTH_R;
-  sub dvD   dvRakar by   dvD_R;
-  sub dvDH  dvRakar by  dvDH_R;
-  sub dvN   dvRakar by   dvN_R;
-  sub dvP   dvRakar by   dvP_R;
-  sub dvPH  dvRakar by  dvPH_R;
-  sub dvB   dvRakar by   dvB_R;
-  sub dvBH  dvRakar by  dvBH_R;
-  sub dvM   dvRakar by   dvM_R;
-  sub dvY   dvRakar by   dvY_R;
+  sub dvK   dvRAc2 by   dvK_R;
+  sub dvKH  dvRAc2 by  dvKH_R;
+  sub dvG   dvRAc2 by   dvG_R;
+  sub dvGH  dvRAc2 by  dvGH_R;
+  sub dvNG  dvRAc2 by  dvNG_R;
+  sub dvC   dvRAc2 by   dvC_R;
+  sub dvCH  dvRAc2 by  dvCH_R;
+  sub dvJ   dvRAc2 by   dvJ_R;
+  sub dvJH  dvRAc2 by  dvJH_R;
+  sub dvNY  dvRAc2 by  dvNY_R;
+  sub dvTT  dvRAc2 by  dvTT_R;
+  sub dvTTH dvRAc2 by dvTTH_R;
+  sub dvDD  dvRAc2 by  dvDD_R;
+  sub dvDDH dvRAc2 by dvDDH_R;
+  sub dvNN  dvRAc2 by  dvNN_R;
+  sub dvT   dvRAc2 by   dvT_R;
+  sub dvTH  dvRAc2 by  dvTH_R;
+  sub dvD   dvRAc2 by   dvD_R;
+  sub dvDH  dvRAc2 by  dvDH_R;
+  sub dvN   dvRAc2 by   dvN_R;
+  sub dvP   dvRAc2 by   dvP_R;
+  sub dvPH  dvRAc2 by  dvPH_R;
+  sub dvB   dvRAc2 by   dvB_R;
+  sub dvBH  dvRAc2 by  dvBH_R;
+  sub dvM   dvRAc2 by   dvM_R;
+  sub dvY   dvRAc2 by   dvY_R;
   # Reph
-  sub dvL   dvRakar by   dvL_R;
-  sub dvV   dvRakar by   dvV_R;
-  sub dvSH  dvRakar by  dvSH_R;
-  sub dvSS  dvRakar by  dvSS_R;
-  sub dvS   dvRakar by   dvS_R;
-  sub dvH   dvRakar by   dvH_R;
-  sub dvLL  dvRakar by  dvLL_R;
+  sub dvL   dvRAc2 by   dvL_R;
+  sub dvV   dvRAc2 by   dvV_R;
+  sub dvSH  dvRAc2 by  dvSH_R;
+  sub dvSS  dvRAc2 by  dvSS_R;
+  sub dvS   dvRAc2 by   dvS_R;
+  sub dvH   dvRAc2 by   dvH_R;
+  sub dvLL  dvRAc2 by  dvLL_R;
 
-  sub dvKx   dvRakar by   dvKx_R;
-  sub dvKHx  dvRakar by  dvKHx_R;
-  sub dvGx   dvRakar by   dvGx_R;
-  sub dvJx   dvRakar by   dvJx_R;
-  sub dvPHx  dvRakar by  dvPHx_R;
+  sub dvKx   dvRAc2 by   dvKx_R;
+  sub dvKHx  dvRAc2 by  dvKHx_R;
+  sub dvGx   dvRAc2 by   dvGx_R;
+  sub dvJx   dvRAc2 by   dvJx_R;
+  sub dvPHx  dvRAc2 by  dvPHx_R;
 
-  sub dvK_SS dvRakar by dvK_SS_R;
-  sub dvJ_NY dvRakar by dvJ_NY_R;
+  sub dvK_SS dvRAc2 by dvK_SS_R;
+  sub dvJ_NY dvRAc2 by dvJ_NY_R;
 
 } vatu_old;
 

@@ -48,8 +48,8 @@ lookup psts {
   sub tmLLA  tmmI by  tmLLI;
   sub tmRRA  tmmI by  tmRRI;
   sub tmNNNA tmmI by tmNNNI;
-  sub tmSHA  tmmI by  tmSHI;
   sub tmJA   tmmI by   tmJI;
+  sub tmSHA  tmmI by  tmSHI;
   sub tmSSA  tmmI by  tmSSI;
   sub tmSA   tmmI by   tmSI;
   sub tmHA   tmmI by   tmHI;
@@ -73,8 +73,8 @@ lookup psts {
   sub tmLLA  tmmII by  tmLLII;
   sub tmRRA  tmmII by  tmRRII;
   sub tmNNNA tmmII by tmNNNII;
-  sub tmSHA  tmmII by  tmSHII;
   sub tmJA   tmmII by   tmJII;
+  sub tmSHA  tmmII by  tmSHII;
   sub tmSSA  tmmII by  tmSSII;
   sub tmSA   tmmII by   tmSII;
   sub tmHA   tmmII by   tmHII;
@@ -98,8 +98,8 @@ lookup psts {
   sub tmLLA  tmmU by  tmLLU;
   sub tmRRA  tmmU by  tmRRU;
   sub tmNNNA tmmU by tmNNNU;
-  sub tmSHA  tmmU by  tmSHU;
   sub tmJA   tmmU by   tmJU;
+  sub tmSHA  tmmU by  tmSHU;
   sub tmSSA  tmmU by  tmSSU;
   sub tmSA   tmmU by   tmSU;
   sub tmHA   tmmU by   tmHU;
@@ -123,8 +123,8 @@ lookup psts {
   sub tmLLA  tmmUU by  tmLLUU;
   sub tmRRA  tmmUU by  tmRRUU;
   sub tmNNNA tmmUU by tmNNNUU;
-  sub tmSHA  tmmUU by  tmSHUU;
   sub tmJA   tmmUU by   tmJUU;
+  sub tmSHA  tmmUU by  tmSHUU;
   sub tmSSA  tmmUU by  tmSSUU;
   sub tmSA   tmmUU by   tmSUU;
   sub tmHA   tmmUU by   tmHUU;

@@ -1,19 +1,18 @@
 #!/usr/bin/env AFDKOPython
-
+# encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import re, collections
 import hindkit.constants
 
+def prep_features_devanagari(builder, style):
 
-def prepare_features_devanagari(family, style):
-
-    light, bold = devanagari_offset_matrix
+    light, bold = builder.devanagari_offset_matrix
     light_min, light_max = light
     bold_min, bold_max = bold
 
-    axis_start = family.masters[0].interpolation_value
-    axis_end = family.masters[-1].interpolation_value
+    axis_start = builder.family.masters[0].interpolation_value
+    axis_end = builder.family.masters[-1].interpolation_value
     axis_range = axis_end - axis_start
     if axis_range == 0:
         ratio = 1
@@ -25,6 +24,7 @@ def prepare_features_devanagari(family, style):
     )
 
     hindkit.devanagari.match_matra_i_alts(
+        builder,
         style,
         offset_range = offset_tuple
     )
@@ -34,7 +34,6 @@ def match_mI():
 def position_marks():
     pass
 
-# SCRIPT_PREFIX = 'dv'
 MATRA_I_NAME_STEM = 'mI.'
 MATRA_I_ANCHOR_NAME = 'abvm.i'
 
@@ -55,9 +54,9 @@ def glyph_filter_matra_i_alts(family, glyph):
     return bool(match)
 
 def glyph_filter_bases_for_matra_i(family, glyph):
-    return glyph_filter_bases_alive(glyph)
+    return glyph_filter_bases_alive(family, glyph)
 
-def get_end(glyph):
+def get_end(family, glyph):
     name = glyph.name
     end = ''
     if name.startswith(get_script_prefix(family.script)):
@@ -70,10 +69,10 @@ def get_end(glyph):
     return end
 
 def glyph_filter_bases_alive(family, glyph):
-    return get_end(glyph) in ALIVE_CONSONANTS
+    return get_end(family, glyph) in ALIVE_CONSONANTS
 
 def glyph_filter_bases_dead(family, glyph):
-    return get_end(glyph) in DEAD_CONSONANTS
+    return get_end(family, glyph) in DEAD_CONSONANTS
 
 def glyph_filter_bases_for_wide_matra_ii(family, glyph):
     name = glyph.name
@@ -124,7 +123,9 @@ def restore_abvm_content(abvm_content):
 
     return original_abvm_content
 
-def write_mI_matches_to_files(directory, mI_table, long_base_names):
+def write_mI_matches_to_files(builder, directory, mI_table, long_base_names):
+
+    script_prefix = get_script_prefix(builder.family.script)
 
     # with open(directory + '/abvm.fea', 'r') as f:
     #     abvm_content = f.read()
@@ -137,19 +138,19 @@ def write_mI_matches_to_files(directory, mI_table, long_base_names):
     # ).group()
 
     # modified_abvm_lookup = original_abvm_lookup.replace(
-    #     'pos base {}{}'.format(SCRIPT_PREFIX, MATRA_I_NAME_STEM),
-    #     'pos base @generated_MATRA_I_BASES_'
+    #     'pos base {}{}'.format(script_prefix, MATRA_I_NAME_STEM),
+    #     'pos base @MATRA_I_BASES_'
     # )
 
     Reph_positioning_offset = mI_table[0].glyph.width
 
     class_def_lines = []
     class_def_lines.extend(
-        hindkit.builder.compose_glyph_class_def_lines('generated_MATRA_I_BASES_TOO_LONG', long_base_names)
+        hindkit.tools.compose_glyph_class_def_lines('MATRA_I_BASES_TOO_LONG', long_base_names)
     )
 
     substitute_rule_lines = []
-    lookup_name = 'generated_matra_i_matching'
+    lookup_name = 'matra_i_matching'
 
     substitute_rule_lines.append('lookup {} {{'.format(lookup_name))
 
@@ -163,11 +164,11 @@ def write_mI_matches_to_files(directory, mI_table, long_base_names):
             to_comment_substitute_rule = True
 
             # modified_abvm_lookup = modified_abvm_lookup.replace(
-            #     '\tpos base @generated_MATRA_I_BASES_' + mI_number,
-            #     '#\tpos base @generated_MATRA_I_BASES_' + mI_number
+            #     '\tpos base @MATRA_I_BASES_' + mI_number,
+            #     '#\tpos base @MATRA_I_BASES_' + mI_number
             # )
 
-        # locator = '@generated_MATRA_I_BASES_%s <anchor ' % mI_number
+        # locator = '@MATRA_I_BASES_%s <anchor ' % mI_number
         #
         # search_result = re.search(
         #     locator + r'\-?\d+',
@@ -186,16 +187,16 @@ def write_mI_matches_to_files(directory, mI_table, long_base_names):
         #     print("\t[!] `%s` doesn't have the anchor for Reph." % mI.glyph.name)
 
         class_def_lines.extend(
-            hindkit.builder.compose_glyph_class_def_lines(
-                'generated_MATRA_I_BASES_' + mI_number,
+            hindkit.tools.compose_glyph_class_def_lines(
+                'MATRA_I_BASES_' + mI_number,
                 mI.matches
             )
         )
 
         substitute_rule_lines.append(
-            "{}sub {}mI' @generated_MATRA_I_BASES_{} by {};".format(
+            "{}sub {}mI' @MATRA_I_BASES_{} by {};".format(
                 '# ' if to_comment_substitute_rule else '  ',
-                SCRIPT_PREFIX,
+                script_prefix,
                 mI_number,
                 mI.glyph.name
             )
@@ -213,19 +214,21 @@ def write_mI_matches_to_files(directory, mI_table, long_base_names):
     # with open(directory + '/abvm.fea', 'w') as f:
     #     f.write(modified_abvm_content)
 
-    with open(directory + '/matra_i_matching.fea', 'w') as f:
+    with open(hindkit.tools.temp(directory + '/matra_i_matching.fea'), 'w') as f:
         result_lines = (
             ['# CLASSES', ''] + class_def_lines +
             ['# RULES', ''] + substitute_rule_lines
         )
         f.write('\n'.join(result_lines) + '\n')
 
-def match_matra_i_alts(style, offset_range = (0, 0)):
+def match_matra_i_alts(builder, style, offset_range = (0, 0)):
 
-    font = style.open_font()
+    script_prefix = get_script_prefix(builder.family.script)
 
-    mI_list   = [font[glyph_name] for glyph_name in sorted(font.groups['generated_MATRA_I_ALTS'])]
-    base_list = [font[glyph_name] for glyph_name in font.groups['generated_BASES_FOR_MATRA_I']]
+    font = style.open_font(is_temp=True)
+
+    mI_list   = [font[glyph_name] for glyph_name in sorted(font.groups['MATRA_I_ALTS'])]
+    base_list = [font[glyph_name] for glyph_name in font.groups['BASES_ALIVE']]
 
     MatchRow = collections.namedtuple('MatchRow', 'glyph, stretch, matches')
 
@@ -237,14 +240,14 @@ def match_matra_i_alts(style, offset_range = (0, 0)):
         ) for mI in mI_list
     ]
 
-    for anchor in font[SCRIPT_PREFIX + 'mE'].anchors:
+    for anchor in font[script_prefix + 'mE'].anchors:
         if anchor.name in ['_' + name for name in STEM_ANCHOR_NAMES]:
             stem_right_margin = abs(anchor.x)
             break
     else:
         raise SystemExit("[WARNING] Can't find the stem anchor in glyph `mE`!")
 
-    tolerance_of_mI_stretch_shormI_numbere = (font[SCRIPT_PREFIX + 'VA'].width - stem_right_margin) / 2
+    tolerance_of_mI_stretch_shormI_numbere = (font[script_prefix + 'VA'].width - stem_right_margin) / 2
     long_base_names = []
 
     stem_positions = [get_stem_position(b, stem_right_margin) for b in base_list]
@@ -281,7 +284,7 @@ def match_matra_i_alts(style, offset_range = (0, 0)):
                         mI_table[index - 1].matches.append(base_name)
                     break
 
-    write_mI_matches_to_files(style.directory, mI_table, long_base_names)
+    write_mI_matches_to_files(builder, style.directory, mI_table, long_base_names)
 
 POTENTIAL_BASES_FOR_WIDE_MATRA_II = '''
 KA PHA KxA PHxA K_RA PH_RA Kx_RA PHx_RA

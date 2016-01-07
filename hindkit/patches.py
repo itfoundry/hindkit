@@ -1,5 +1,5 @@
 #!/usr/bin/env AFDKOPython
-
+# encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 # defcon.Glyph.insertAnchor
@@ -69,7 +69,7 @@ def updateInstance(options, fontInstancePath):
             print()
             print(log)
             print("Error in checkOutlinesUFO %s" % (fontInstancePath))
-            raise(SnapShotError)
+            # raise(SnapShotError)
         else:
             print()
 
@@ -101,7 +101,7 @@ def updateInstance(options, fontInstancePath):
             print()
             print(log)
             print("Error in autohinting %s" % (fontInstancePath))
-            raise(SnapShotError)
+            # raise(SnapShotError)
         else:
             print()
 

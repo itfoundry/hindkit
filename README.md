@@ -16,5 +16,4 @@ This package hosts the build system for the Hind multiscript project:
 ## Dependencies
 
 - AFDKO http://www.adobe.com/devnet/opentype/afdko.html
-- WriteFeaturesKernFDK.py and WriteFeaturesMarkFDK.py https://github.com/adobe-type-tools/python-modules
-- RoboFab http://download.robofab.com/
+- WriteFeaturesKernFDK.py and WriteFeaturesMarkFDK.py (to be added to AFDKO's built-in Python (`AFDKOPython`)'s `site-packages`: `FDK/Tools/osx/Python/AFDKOPython27/lib/python2.7/site-packages`.) https://github.com/adobe-type-tools/python-modules

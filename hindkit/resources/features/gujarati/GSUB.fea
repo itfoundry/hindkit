@@ -6,7 +6,6 @@
 # -----------
 
 # feature nukt {
-#   lookup nukt;
 # } nukt;
 
 
@@ -72,7 +71,6 @@ feature half {
 
   script gujr;
     lookup half;
-    lookup half_old;
 
 } half;
 
@@ -110,18 +108,20 @@ feature cjct {
 feature pres {
 
   script DFLT;
+    lookup pres_decompose;
     lookup pres;
-    lookup pres_new;
     lookup GENERATED_matra_i_matching;
 
   script gjr2;
+    lookup pres_decompose;
     lookup pres;
-    lookup pres_new;
     lookup GENERATED_matra_i_matching;
 
   script gujr;
+    lookup pres_decompose;
+    # lookup pres_old; # The same as `lookup cjct_new` in this font
+    lookup cjct_new;
     lookup pres;
-    lookup pres_old;
     lookup GENERATED_matra_i_matching;
 
 } pres;
@@ -132,8 +132,11 @@ feature pres {
 
 feature abvs {
   lookup abvs_ra_matra_vocalic_liquids;
+  lookup abvs_consonant_vowel_ligatures;
   lookup abvs;
-  lookup REUSED_marks_for_matra_i;
+  # lookup REUSED_marks_for_matra_i;
+  lookup abvs_matrai_step_A;
+  lookup abvs_matrai_step_B;
 } abvs;
 
 
@@ -141,7 +144,22 @@ feature abvs {
 # -----------------------
 
 feature blws {
-  lookup blws;
+
+  script DFLT;
+    lookup blws_contextual;
+    lookup blws;
+
+  script gjr2;
+    lookup blws_contextual;
+    lookup blws;
+
+  script gujr;
+    lookup blws_old_1;
+    lookup blws_old_2;
+    lookup blws_old_3;
+    lookup blws_contextual;
+    lookup blws;
+
 } blws;
 
 
@@ -149,7 +167,6 @@ feature blws {
 # ----------------------
 
 # feature psts {
-#   lookup REUSED_matra_ii_matching;
 # } psts;
 
 

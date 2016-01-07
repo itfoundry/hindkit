@@ -1,5 +1,5 @@
 #!/usr/bin/env AFDKOPython
-
+# encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import subprocess, os, argparse, collections
@@ -34,6 +34,7 @@ class Builder(object):
 
             'prep_kerning':          self.family._has_kerning(),
             'prep_mark_positioning': self.family._has_mark_positioning(),
+            'prep_mark_to_mark_positioning': self.family._has_mark_positioning(),
             'prep_mI_variants':      self.family._has_mI_variants(),
 
             'run_stage_prep_styles':   True,
@@ -122,10 +123,12 @@ class Builder(object):
             return
 
         if not bool(self.family.masters):
-            return
-
+            self.family.set_masters([
+                hindkit.Master(self.family, i.name, i.interpolation_value)
+                for i in self.family.styles
+            ])
         DEPENDENCIES = [i.path for i in self.family.masters]
-        self._prep_masters()
+        # self._prep_masters()
         if not input_exists(DEPENDENCIES):
             raise SystemExit()
 
@@ -154,15 +157,15 @@ class Builder(object):
 
     def _simulate_makeInstancesUFO_postprocess(self, styles):
 
-        DEPENDENCIES = [i.path for i in self.styles_to_be_built]
+        DEPENDENCIES = [temp(i.path) for i in self.styles_to_be_built]
         if not input_exists(DEPENDENCIES):
             return
 
         newInstancesList = [temp(i.path) for i in styles]
         if self.options['run_checkoutlines'] or self.options['run_autohint']:
             options = {
-                'doOverlapRemoval': self.run_checkoutlines,
-                'doAutoHint': self.run_autohint,
+                'doOverlapRemoval': self.options['run_checkoutlines'],
+                'doAutoHint': self.options['run_autohint'],
                 'allowDecimalCoords': False,
             }
             for instancePath in newInstancesList:
@@ -203,7 +206,7 @@ class Builder(object):
                     ('blwm', WriteFeaturesMarkFDK.kBlwmFeatureFileName),
                 ]:
                     if os.path.exists(os.path.join(directory, file_name)):
-                        lines.append('feature {0} { include ({1}); } {0};'.format(feature_name, file_name))
+                        lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, file_name))
 
                 f.writelines(i + '\n' for i in lines)
 
@@ -215,7 +218,7 @@ class Builder(object):
         OUTPUT = os.path.join(constants.paths.FEATURES, 'classes.fea')
         if overriding_exists(OUTPUT):
             return
-        DEPENDENCIES = [i.path for i in self.styles_to_be_built]
+        DEPENDENCIES = [temp(i.path) for i in self.styles_to_be_built]
         if not input_exists(DEPENDENCIES):
             raise SystemExit()
 
@@ -228,13 +231,13 @@ class Builder(object):
 
             if self.options['prep_mI_variants']:
                 glyph_classes.extend([
-                    ('generated_MATRA_I_ALTS', hindkit.devanagari.glyph_filter_matra_i_alts),
-                    ('generated_BASES_ALIVE', devanagari.glyph_filter_bases_alive),
-                    ('generated_BASES_DEAD', devanagari.glyph_filter_bases_dead),
-                    # ('generated_BASES_FOR_WIDE_MATRA_II', hindkit.devanagari.glyph_filter_bases_for_wide_matra_ii),
+                    ('MATRA_I_ALTS', hindkit.devanagari.glyph_filter_matra_i_alts),
+                    ('BASES_ALIVE', hindkit.devanagari.glyph_filter_bases_alive),
+                    ('BASES_DEAD', hindkit.devanagari.glyph_filter_bases_dead),
+                    # ('BASES_FOR_WIDE_MATRA_II', hindkit.devanagari.glyph_filter_bases_for_wide_matra_ii),
                 ])
 
-            style_0 = self.styles_to_be_built[0].open_font()
+            style_0 = self.styles_to_be_built[0].open_font(is_temp=True)
 
             glyph_order = [
                 development_name for
@@ -242,7 +245,12 @@ class Builder(object):
                 self.family.goadb
             ]
             for class_name, filter_function in glyph_classes:
-                glyph_names = [glyph.name for glyph in filter(filter_function, style_0)]
+                glyph_names = [
+                    glyph.name for glyph in filter(
+                        lambda glyph: filter_function(self.family, glyph),
+                        style_0,
+                    )
+                ]
                 glyph_names = sort_glyphs(glyph_order, glyph_names)
                 style_0.groups.update({class_name: glyph_names})
                 lines.extend(
@@ -251,7 +259,7 @@ class Builder(object):
             style_0.save()
 
             for style in self.styles_to_be_built[1:]:
-                font = style.open_font()
+                font = style.open_font(is_temp=True)
                 font.groups.update(style_0.groups)
                 font.save()
 
@@ -353,8 +361,11 @@ class Builder(object):
 
     def _prep_features_GSUB(self):
 
-        OUTPUT = os.path.join(constants.paths.FEATURES, 'GSUB.fea')
-        if overriding_exists(OUTPUT):
+        if overriding_exists(
+            os.path.join(constants.paths.FEATURES, 'GSUB.fea')
+        ) and overriding_exists(
+            os.path.join(constants.paths.FEATURES, 'lookups.fea')
+        ):
             return
 
         premade_feature_dir = hindkit._unwrap_path_relative_to_package_dir(
@@ -371,7 +382,7 @@ class Builder(object):
         OUTPUT = os.path.join(constants.paths.FEATURES, 'GPOS.fea')
         if overriding_exists(OUTPUT):
             return
-        DEPENDENCIES = [i.path for i in self.styles_to_be_built]
+        DEPENDENCIES = [temp(i.path) for i in self.styles_to_be_built]
         if not input_exists(DEPENDENCIES):
             raise SystemExit()
 
@@ -397,7 +408,7 @@ class Builder(object):
                     ),
                 )
                 if self.options['prep_mI_variants']:
-                    hindkit.devanagari.prep_features_devanagari(self.family, style) # NOTE: not pure GPOS
+                    hindkit.devanagari.prep_features_devanagari(self, style) # NOTE: not pure GPOS
 
     def _prep_fmndb(self):
 
@@ -460,7 +471,7 @@ class Builder(object):
         OUTPUT = constants.paths.BUILD
         remove_files(OUTPUT)
         make_dir(OUTPUT)
-        DEPENDENCIES = [i.path for i in self.styles_to_be_built]
+        DEPENDENCIES = [temp(i.path) for i in self.styles_to_be_built]
         if not input_exists(DEPENDENCIES):
             raise SystemExit()
 
@@ -546,11 +557,14 @@ class Builder(object):
 
     def build(self):
         self._derive_options()
-        remove_files(constants.paths.TEMP)
         make_dir(constants.paths.TEMP)
         if self.options['run_stage_prep_styles']:
+            remove_files(temp(constants.paths.STYLES))
+            remove_files(temp(constants.paths.STYLES))
             self.prep_styles()
         if self.options['run_stage_prep_features']:
+            remove_files(temp(constants.paths.FEATURES))
+            make_dir(temp(constants.paths.FEATURES))
             self.prep_features()
         if self.options['run_stage_compile']:
             self.compile()
@@ -575,7 +589,7 @@ def compose_glyph_class_def_lines(class_name, glyph_names):
         glyph_class_def_lines = ['# @{} = [];'.format(class_name), '']
     return glyph_class_def_lines
 
-def glyph_filter_marks(glyph):
+def glyph_filter_marks(family, glyph):
     has_mark_anchor = False
     for anchor in glyph.anchors:
         if anchor.name.startswith('_'):
@@ -589,7 +603,7 @@ def remove_files(path):
     subprocess.call(['rm', '-fr', path])
 
 def make_dir(path):
-    subprocess.call(['mkdir', path])
+    subprocess.call(['mkdir', '-p', path])
 
 # ---
 

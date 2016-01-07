@@ -1,11 +1,11 @@
 #!/usr/bin/env AFDKOPython
-
+# encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import datetime, collections
 from . import styles, misc
 
-DEFAULT = 'google_fonts'
+DEFAULT = 'Google Fonts'
 
 class Client(object):
 
@@ -14,12 +14,12 @@ class Client(object):
         self.family = family
 
         DATA = {
-            'itf': {
+            'ITF': {
                 'info': {
                     'style_scheme': styles.ITF,
                 },
                 'table_name': collections.OrderedDict([
-                    (0, "Copyright {} Indian Type Foundry. All rights reserved.".format(datetime.date.today().year)),
+                    (0, "Copyright {} Indian Type Foundry. All Rights Reserved.".format(datetime.date.today().year)),
                     (7, "{} is a trademark of the Indian Type Foundry.".format(self.family.trademark)),
                     (8, "Indian Type Foundry"),
                     (9, self.family.designers),
@@ -34,7 +34,7 @@ class Client(object):
                     'Vendor': 'ITFO'
                 },
             },
-            'google_fonts': {
+            'Google Fonts': {
                 'info': {
                     'style_scheme': styles.ITF_CamelCase,
                 },
@@ -45,18 +45,19 @@ class Client(object):
                     (14, "http://scripts.sil.org/OFL"),
                 ]),
             },
-            'samsung': {
+            'Samsung': {
                 'info': {
                     'style_scheme': styles.DUAL,
                 },
                 'table_name': collections.OrderedDict([
-                    (7, "Samsung is a trademark of Samsung."),
+                    (0, "Copyright {} Samsung Electronics Co., Ltd. All Rights Reserved.".format(datetime.date.today().year)),
+                    (7, "{} is a trademark of Samsung Electronics Co., Ltd.".format(self.family.trademark)),
                     (9, "Indian Type Foundry"),
                 ]),
             },
         }
 
-        DEFAULT = DATA['itf']
+        DEFAULT = DATA['ITF']
         CURRENT = DATA[self.family.client]
 
         self.info = DEFAULT['info']

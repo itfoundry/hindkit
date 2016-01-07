@@ -1,9 +1,9 @@
 #!/usr/bin/env AFDKOPython
-
+# encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import os
-import robofab.world
+import defcon
 import hindkit.constants as constants
 
 class Family(object):
@@ -148,7 +148,7 @@ class _BaseStyle(object):
         path = self.path
         if is_temp:
             path = os.path.join(constants.paths.TEMP, path)
-        return robofab.world.OpenFont(path)
+        return defcon.Font(path)
 
 class Master(_BaseStyle):
 
