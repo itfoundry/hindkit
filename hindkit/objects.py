@@ -8,7 +8,7 @@ import hindkit.constants as constants
 
 class Family(object):
 
-    default_client = constants.misc.DEFAULT_CLIENT
+    default_client = constants.clients.DEFAULT
 
     def __init__(
         self,
@@ -17,6 +17,8 @@ class Family(object):
         script = '',
         hide_script_name = False,
         designers = '',
+        designer_url = '',
+        description = '',
     ):
 
         if client:
@@ -36,6 +38,8 @@ class Family(object):
         self.output_name_affix = '{}'
 
         self.designers = designers
+        self.designer_url = designer_url
+        self.description = description
 
         self.masters = []
         self.styles = []
@@ -76,7 +80,7 @@ class Family(object):
     def set_styles(self, style_scheme = []):
 
         if not style_scheme:
-            style_scheme = constants.misc.CLIENTS[self.client]['style_scheme']
+            style_scheme = constants.clients.Client(self).style_scheme
 
         for style_name, interpolation_value, weight_class in style_scheme:
             style = Style(
@@ -96,6 +100,15 @@ class Family(object):
             if style.interpolation_value in master_positions:
                 styles_that_are_directly_derived_from_masters.append(style)
         return styles_that_are_directly_derived_from_masters
+
+    def _has_kerning(self): # TODO
+        pass
+
+    def _has_mark_positioning(self): # TODO
+        pass
+
+    def _has_mI_variants(self): # TODO
+        pass
 
 class _BaseStyle(object):
 

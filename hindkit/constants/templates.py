@@ -17,8 +17,6 @@ FMNDB_HEAD = '''\
 #   m = 1, Macintosh Compatible Full Name (Deprecated)
 '''
 
-WEIGHTCLASS = 'WeightClass {};\n'
-
 EXIT_MESSAGE = '''
 [WARNING] Bad version of the package "{}".
           Version "{}" is specified in "build.py" while you have "{}".
