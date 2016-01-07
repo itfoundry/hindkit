@@ -1,0 +1,137 @@
+# -------------------
+# BASIC SHAPING FORMS
+# -------------------
+
+# Akhand Ligatures
+# ----------------
+
+feature akhn {
+  lookup akhn_chillu;
+  lookup akhn_akhand;
+  lookup akhn_conjuncts;
+} akhn;
+
+
+# Reph Forms
+# ----------
+
+# feature rphf {
+# } rphf;
+
+
+# Pre-base Forms
+# ----------------
+
+feature pref {
+
+  script DFLT;
+    lookup pref_mlm2;
+
+  script mlm2;
+    lookup pref_mlm2;
+
+} pref;
+
+
+# Below-base Forms
+# ----------------
+
+feature blwf {
+
+  script DFLT;
+    lookup blwf_mlm2;
+
+  script mlm2;
+    lookup blwf_mlm2;
+
+  script mlym;
+    lookup blwf_mlym;
+
+} blwf;
+
+
+# Post-base Forms
+# ---------------
+
+feature pstf {
+
+  script DFLT;
+    lookup pstf_mlm2;
+
+  script mlm2;
+    lookup pstf_mlm2;
+
+  script mlym;
+    lookup pstf_mlym;
+
+} pstf;
+
+
+# Conjunct Forms
+# --------------
+# Adobe's engine doesn't support <cjct> properly: pre-base glyphs break conjuncts.
+
+# feature cjct {
+# } cjct;
+
+
+
+# ----------------------------
+# MANDATORY PRESENTATION FORMS
+# ----------------------------
+
+# Pre-base Substitution
+# ---------------------
+
+# feature pres {
+# } pres;
+
+
+# Above-base Substitution
+# -----------------------
+
+# feature abvs {
+#   lookup abvs;
+# } abvs;
+
+
+# Below-base Substitution
+# -----------------------
+
+feature blws {
+    lookup blws;
+} blws;
+
+
+# Post-base Substitution
+# ----------------------
+
+# feature psts {
+# } psts;
+
+
+# Halant Forms
+# ------------
+
+# feature haln {
+# } haln;
+
+
+# Required Contextual Alternates
+# ------------------------------
+# Newly proposed; not in the specification.
+
+# feature rclt {
+# } rclt;
+
+
+
+# --------------------------------
+# DISCRETIONARY PRESENTATION FORMS
+# --------------------------------
+
+# Contextual Alternates
+# ---------------------
+
+# feature calt {
+# } calt;

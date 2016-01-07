@@ -1,0 +1,164 @@
+# -------------------
+# BASIC SHAPING FORMS
+# -------------------
+
+# Akhand Ligatures
+# ----------------
+
+lookup akhn {
+  sub tmKA tmVirama tmSSA by tmKSSA;
+} akhn;
+
+
+# ----------------------------
+# MANDATORY PRESENTATION FORMS
+# ----------------------------
+
+# Post-base Substitution
+# ----------------------
+
+lookup psts_shrii {
+
+  # <SA Virama RA mII> is the legacy sequence.
+
+  # Because Adobe's <taml> engine executes <haln> before <pres>~<psts>,
+  #   `sub [tmSH tmS] tmRA tmmII by tmSHRII;` must present if <haln> is used.
+
+  sub [tmSHA tmSA] tmVirama tmRA tmmII by tmSHRII;
+
+} psts_shrii;
+
+lookup psts {
+
+  sub tmKA   tmmI by   tmKI;
+  sub tmNGA  tmmI by  tmNGI;
+  sub tmCA   tmmI by   tmCI;
+  sub tmNYA  tmmI by  tmNYI;
+  sub tmTTA  tmmI by  tmTTI;
+  sub tmNNA  tmmI by  tmNNI;
+  sub tmTA   tmmI by   tmTI;
+  sub tmNA   tmmI by   tmNI;
+  sub tmPA   tmmI by   tmPI;
+  sub tmMA   tmmI by   tmMI;
+  sub tmYA   tmmI by   tmYI;
+  sub tmRA   tmmI by   tmRI;
+  sub tmLA   tmmI by   tmLI;
+  sub tmVA   tmmI by   tmVI;
+  sub tmLLLA tmmI by tmLLLI;
+  sub tmLLA  tmmI by  tmLLI;
+  sub tmRRA  tmmI by  tmRRI;
+  sub tmNNNA tmmI by tmNNNI;
+  sub tmSHA  tmmI by  tmSHI;
+  sub tmJA   tmmI by   tmJI;
+  sub tmSSA  tmmI by  tmSSI;
+  sub tmSA   tmmI by   tmSI;
+  sub tmHA   tmmI by   tmHI;
+  sub tmKSSA tmmI by tmKSSI;
+
+  sub tmKA   tmmII by   tmKII;
+  sub tmNGA  tmmII by  tmNGII;
+  sub tmCA   tmmII by   tmCII;
+  sub tmNYA  tmmII by  tmNYII;
+  sub tmTTA  tmmII by  tmTTII;
+  sub tmNNA  tmmII by  tmNNII;
+  sub tmTA   tmmII by   tmTII;
+  sub tmNA   tmmII by   tmNII;
+  sub tmPA   tmmII by   tmPII;
+  sub tmMA   tmmII by   tmMII;
+  sub tmYA   tmmII by   tmYII;
+  sub tmRA   tmmII by   tmRII;
+  sub tmLA   tmmII by   tmLII;
+  sub tmVA   tmmII by   tmVII;
+  sub tmLLLA tmmII by tmLLLII;
+  sub tmLLA  tmmII by  tmLLII;
+  sub tmRRA  tmmII by  tmRRII;
+  sub tmNNNA tmmII by tmNNNII;
+  sub tmSHA  tmmII by  tmSHII;
+  sub tmJA   tmmII by   tmJII;
+  sub tmSSA  tmmII by  tmSSII;
+  sub tmSA   tmmII by   tmSII;
+  sub tmHA   tmmII by   tmHII;
+  sub tmKSSA tmmII by tmKSSII;
+
+  sub tmKA   tmmU by   tmKU;
+  sub tmNGA  tmmU by  tmNGU;
+  sub tmCA   tmmU by   tmCU;
+  sub tmNYA  tmmU by  tmNYU;
+  sub tmTTA  tmmU by  tmTTU;
+  sub tmNNA  tmmU by  tmNNU;
+  sub tmTA   tmmU by   tmTU;
+  sub tmNA   tmmU by   tmNU;
+  sub tmPA   tmmU by   tmPU;
+  sub tmMA   tmmU by   tmMU;
+  sub tmYA   tmmU by   tmYU;
+  sub tmRA   tmmU by   tmRU;
+  sub tmLA   tmmU by   tmLU;
+  sub tmVA   tmmU by   tmVU;
+  sub tmLLLA tmmU by tmLLLU;
+  sub tmLLA  tmmU by  tmLLU;
+  sub tmRRA  tmmU by  tmRRU;
+  sub tmNNNA tmmU by tmNNNU;
+  sub tmSHA  tmmU by  tmSHU;
+  sub tmJA   tmmU by   tmJU;
+  sub tmSSA  tmmU by  tmSSU;
+  sub tmSA   tmmU by   tmSU;
+  sub tmHA   tmmU by   tmHU;
+  sub tmKSSA tmmU by tmKSSU;
+
+  sub tmKA   tmmUU by   tmKUU;
+  sub tmNGA  tmmUU by  tmNGUU;
+  sub tmCA   tmmUU by   tmCUU;
+  sub tmNYA  tmmUU by  tmNYUU;
+  sub tmTTA  tmmUU by  tmTTUU;
+  sub tmNNA  tmmUU by  tmNNUU;
+  sub tmTA   tmmUU by   tmTUU;
+  sub tmNA   tmmUU by   tmNUU;
+  sub tmPA   tmmUU by   tmPUU;
+  sub tmMA   tmmUU by   tmMUU;
+  sub tmYA   tmmUU by   tmYUU;
+  sub tmRA   tmmUU by   tmRUU;
+  sub tmLA   tmmUU by   tmLUU;
+  sub tmVA   tmmUU by   tmVUU;
+  sub tmLLLA tmmUU by tmLLLUU;
+  sub tmLLA  tmmUU by  tmLLUU;
+  sub tmRRA  tmmUU by  tmRRUU;
+  sub tmNNNA tmmUU by tmNNNUU;
+  sub tmSHA  tmmUU by  tmSHUU;
+  sub tmJA   tmmUU by   tmJUU;
+  sub tmSSA  tmmUU by  tmSSUU;
+  sub tmSA   tmmUU by   tmSUU;
+  sub tmHA   tmmUU by   tmHUU;
+  sub tmKSSA tmmUU by tmKSSUU;
+
+} psts;
+
+
+# ----------------
+# GENERAL FEATURES
+# ----------------
+
+# Stylistic Sets
+# --------------
+# For InDesign.
+
+lookup ss01 {
+
+  sub tmNNA  tmmAA by  tmNNAA.traditional;
+  sub tmRRA  tmmAA by  tmRRAA.traditional;
+  sub tmNNNA tmmAA by tmNNNAA.traditional;
+
+  sub tmmAI tmNNA  by  tmNNAI.traditional;
+  sub tmmAI tmLA   by   tmLAI.traditional;
+  sub tmmAI tmLLA  by  tmLLAI.traditional;
+  sub tmmAI tmNNNA by tmNNNAI.traditional;
+
+} ss01;
+
+lookup ss02_A {
+  sub tmRA' tmVirama by tmRA.alt;
+} ss02_A;
+
+lookup ss02_B {
+  sub tmRI  by tmRI.alt;
+  sub tmRII by tmRII.alt;
+} ss02_B;

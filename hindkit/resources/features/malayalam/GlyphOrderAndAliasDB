@@ -1,0 +1,450 @@
+.notdef .notdef
+space space uni0020
+mlA mlA uni0D05
+mlAA mlAA uni0D06
+mlI mlI uni0D07
+mlII mlII uni0D08
+mlU mlU uni0D09
+mlUU mlUU uni0D0A
+mlvR mlvR uni0D0B
+mlvRR mlvRR uni0D60
+mlvL mlvL uni0D0C
+mlvLL mlvLL uni0D61
+mlE mlE uni0D0E
+mlEE mlEE uni0D0F
+mlAI mlAI uni0D10
+mlO mlO uni0D12
+mlOO mlOO uni0D13
+mlAU mlAU uni0D14
+mlmAA mlmAA uni0D3E
+mlmI mlmI uni0D3F
+mlmII mlmII uni0D40
+mlmU mlmU uni0D41
+mlmUU mlmUU uni0D42
+mlmvR mlmvR uni0D43
+mlmvRR mlmvRR uni0D44
+mlmvL mlmvL uni0D62
+mlmvLL mlmvLL uni0D63
+mlmE mlmE uni0D46
+mlmEE mlmEE uni0D47
+mlmAI mlmAI uni0D48
+mlmO mlmO uni0D4A
+mlmOO mlmOO uni0D4B
+mlmAU mlmAU uni0D4C
+mlAUlengthmark mlAUlengthmark uni0D57
+mlKA mlKA uni0D15
+mlKHA mlKHA uni0D16
+mlGA mlGA uni0D17
+mlGHA mlGHA uni0D18
+mlNGA mlNGA uni0D19
+mlCA mlCA uni0D1A
+mlCHA mlCHA uni0D1B
+mlJA mlJA uni0D1C
+mlJHA mlJHA uni0D1D
+mlNYA mlNYA uni0D1E
+mlTTA mlTTA uni0D1F
+mlTTHA mlTTHA uni0D20
+mlDDA mlDDA uni0D21
+mlDDHA mlDDHA uni0D22
+mlNNA mlNNA uni0D23
+mlTA mlTA uni0D24
+mlTHA mlTHA uni0D25
+mlDA mlDA uni0D26
+mlDHA mlDHA uni0D27
+mlNA mlNA uni0D28
+mlPA mlPA uni0D2A
+mlPHA mlPHA uni0D2B
+mlBA mlBA uni0D2C
+mlBHA mlBHA uni0D2D
+mlMA mlMA uni0D2E
+mlYA mlYA uni0D2F
+mlRA mlRA uni0D30
+mlLA mlLA uni0D32
+mlVA mlVA uni0D35
+mlSHA mlSHA uni0D36
+mlSSA mlSSA uni0D37
+mlSA mlSA uni0D38
+mlHA mlHA uni0D39
+mlLLA mlLLA uni0D33
+mlLLLA mlLLLA uni0D34
+mlRRA mlRRA uni0D31
+mlNNNA mlNNNA uni0D29
+mlTTTA mlTTTA uni0D3A
+mlKchillu mlKchillu uni0D7F
+mlNNchillu mlNNchillu uni0D7A
+mlNchillu mlNchillu uni0D7B
+mlRRchillu mlRRchillu uni0D7C
+mlLchillu mlLchillu uni0D7D
+mlLLchillu mlLLchillu uni0D7E
+mlAnusvara mlAnusvara uni0D02
+mlCandrabindu mlCandrabindu uni0D01
+mlVisarga mlVisarga uni0D03
+mlVirama mlVirama uni0D4D
+mlDotreph mlDotreph uni0D4E
+mlAvagraha mlAvagraha uni0D3D
+mlZero mlZero uni0D66
+mlOne mlOne uni0D67
+mlTwo mlTwo uni0D68
+mlThree mlThree uni0D69
+mlFour mlFour uni0D6A
+mlFive mlFive uni0D6B
+mlSix mlSix uni0D6C
+mlSeven mlSeven uni0D6D
+mlEight mlEight uni0D6E
+mlNine mlNine uni0D6F
+mlTen mlTen uni0D70
+mlOnehundred mlOnehundred uni0D71
+mlOnethousand mlOnethousand uni0D72
+mlOnequarter mlOnequarter uni0D73
+mlOnehalf mlOnehalf uni0D74
+mlThreequarters mlThreequarters uni0D75
+mlDatemark mlDatemark uni0D79
+danda danda uni0964
+doubledanda doubledanda uni0965
+
+indianrupee indianrupee uni20B9
+
+zerowidthnonjoiner zerowidthnonjoiner uni200C
+zerowidthjoiner zerowidthjoiner uni200D
+dottedcircle dottedcircle uni25CC
+
+ITF ITF
+
+mlKAc2 mlKAc2
+mlKHAc2 mlKHAc2
+mlGAc2 mlGAc2
+mlGHAc2 mlGHAc2
+mlNGAc2 mlNGAc2
+mlCAc2 mlCAc2
+mlCHAc2 mlCHAc2
+mlJAc2 mlJAc2
+mlJHAc2 mlJHAc2
+mlNYAc2 mlNYAc2
+mlTTAc2 mlTTAc2
+mlTTHAc2 mlTTHAc2
+mlDDAc2 mlDDAc2
+mlDDHAc2 mlDDHAc2
+mlNNAc2 mlNNAc2
+mlTAc2 mlTAc2
+mlTHAc2 mlTHAc2
+mlDAc2 mlDAc2
+mlDHAc2 mlDHAc2
+mlNAc2 mlNAc2
+mlPAc2 mlPAc2
+mlPHAc2 mlPHAc2
+mlBAc2 mlBAc2
+mlBHAc2 mlBHAc2
+mlMAc2 mlMAc2
+mlYAc2 mlYAc2
+mlRAc2 mlRAc2
+mlLAc2 mlLAc2
+mlLAc2.narrow mlLAc2.narrow
+mlVAc2 mlVAc2
+mlSHAc2 mlSHAc2
+mlSSAc2 mlSSAc2
+mlSAc2 mlSAc2
+mlHAc2 mlHAc2
+mlLLAc2 mlLLAc2
+mlLLLAc2 mlLLLAc2
+mlRRAc2 mlRRAc2
+mlNNNAc2 mlNNNAc2
+mlTTTAc2 mlTTTAc2
+mlK_KA mlK_KA
+mlK_TA mlK_TA
+mlK_SSA mlK_SSA
+mlG_D_DHA mlG_D_DHA
+mlG_NA mlG_NA
+mlG_MA mlG_MA
+mlG_GHA mlG_GHA
+mlG_DA mlG_DA
+mlNG_KA mlNG_KA
+mlNG_NGA mlNG_NGA
+mlJ_JA mlJ_JA
+mlJ_NYA mlJ_NYA
+mlNY_CA mlNY_CA
+mlNY_CHA mlNY_CHA
+mlNY_NYA mlNY_NYA
+mlTT_TTA mlTT_TTA
+mlNN_TTA mlNN_TTA
+mlNN_DDA mlNN_DDA
+mlNN_DDHA mlNN_DDHA
+mlNN_MA mlNN_MA
+mlT_TA mlT_TA
+mlT_THA mlT_THA
+mlT_NA mlT_NA
+mlT_BHA mlT_BHA
+mlT_MA mlT_MA
+mlT_SA mlT_SA
+mlT_S_THA mlT_S_THA
+mlD_DA mlD_DA
+mlD_DHA mlD_DHA
+mlN_TA mlN_TA
+mlN_THA mlN_THA
+mlN_DA mlN_DA
+mlN_DHA mlN_DHA
+mlN_NA mlN_NA
+mlN_MA mlN_MA
+mlM_PA mlM_PA
+mlM_MA mlM_MA
+mlY_YA mlY_YA
+mlSH_CA mlSH_CA
+mlSH_CHA mlSH_CHA
+mlS_THA mlS_THA
+mlH_NA mlH_NA
+mlH_MA mlH_MA
+mlLL_LLA mlLL_LLA
+mlK_RA mlK_RA
+mlKH_RA mlKH_RA
+mlG_RA mlG_RA
+mlGH_RA mlGH_RA
+mlNG_RA mlNG_RA
+mlC_RA mlC_RA
+mlCH_RA mlCH_RA
+mlJ_RA mlJ_RA
+mlJH_RA mlJH_RA
+mlNY_RA mlNY_RA
+mlTT_RA mlTT_RA
+mlTTH_RA mlTTH_RA
+mlDD_RA mlDD_RA
+mlDDH_RA mlDDH_RA
+mlNN_RA mlNN_RA
+mlT_RA mlT_RA
+mlTH_RA mlTH_RA
+mlD_RA mlD_RA
+mlDH_RA mlDH_RA
+mlN_RA mlN_RA
+mlP_RA mlP_RA
+mlPH_RA mlPH_RA
+mlB_RA mlB_RA
+mlBH_RA mlBH_RA
+mlM_RA mlM_RA
+mlY_RA mlY_RA
+mlL_RA mlL_RA
+mlV_RA mlV_RA
+mlSH_RA mlSH_RA
+mlSS_RA mlSS_RA
+mlS_RA mlS_RA
+mlH_RA mlH_RA
+mlK_K_RA mlK_K_RA
+mlK_T_RA mlK_T_RA
+mlG_D_DH_RA mlG_D_DH_RA
+mlNN_TT_RA mlNN_TT_RA
+mlNN_DD_RA mlNN_DD_RA
+mlT_T_RA mlT_T_RA
+mlT_S_RA mlT_S_RA
+mlD_DH_RA mlD_DH_RA
+mlN_T_RA mlN_T_RA
+mlN_D_RA mlN_D_RA
+mlN_DH_RA mlN_DH_RA
+mlN_N_RA mlN_N_RA
+mlN_M_RA mlN_M_RA
+mlM_P_RA mlM_P_RA
+mlRR_RR_RA mlRR_RR_RA
+
+mlmU.attaching mlmU.attaching
+mlmUU.attaching mlmUU.attaching
+mlmvR.attaching mlmvR.attaching
+mlmvRR.attaching mlmvRR.attaching
+mlmU.attaching.alt mlmU.attaching.alt
+mlmUU.attaching.alt mlmUU.attaching.alt
+mlmvR.attaching.alt mlmvR.attaching.alt
+mlmvRR.attaching.alt mlmvRR.attaching.alt
+mlmU.attaching.below mlmU.attaching.below
+mlmUU.attaching.below mlmUU.attaching.below
+mlmvR.attaching.below mlmvR.attaching.below
+mlmvR.attaching.below.alt mlmvR.attaching.below.alt
+
+mlK_KAc2 mlK_KAc2
+mlK_SSAc2 mlK_SSAc2
+mlJ_NYAc2 mlJ_NYAc2
+mlT_TAc2 mlT_TAc2
+mlN_NAc2 mlN_NAc2
+mlRR_RRAc2 mlRR_RRAc2
+mlK_RAc2 mlK_RAc2
+mlCH_RAc2 mlCH_RAc2
+mlTT_RAc2 mlTT_RAc2
+mlT_RAc2 mlT_RAc2
+mlP_RAc2 mlP_RAc2
+mlSH_RAc2 mlSH_RAc2
+mlS_RAc2 mlS_RAc2
+mlRR_RR_RAc2 mlRR_RR_RAc2
+
+mlKA_mU mlKA_mU
+mlGA_mU mlGA_mU
+mlNGA_mU mlNGA_mU
+mlCHA_mU mlCHA_mU
+mlJA_mU mlJA_mU
+mlNYA_mU mlNYA_mU
+mlNNA_mU mlNNA_mU
+mlTA_mU mlTA_mU
+mlNA_mU mlNA_mU
+mlBHA_mU mlBHA_mU
+mlRA_mU mlRA_mU
+mlSHA_mU mlSHA_mU
+mlHA_mU mlHA_mU
+mlLLLA_mU mlLLLA_mU
+mlKA_mUU mlKA_mUU
+mlGA_mUU mlGA_mUU
+mlNGA_mUU mlNGA_mUU
+mlCHA_mUU mlCHA_mUU
+mlJA_mUU mlJA_mUU
+mlNYA_mUU mlNYA_mUU
+mlNNA_mUU mlNNA_mUU
+mlTA_mUU mlTA_mUU
+mlNA_mUU mlNA_mUU
+mlBHA_mUU mlBHA_mUU
+mlRA_mUU mlRA_mUU
+mlSHA_mUU mlSHA_mUU
+mlHA_mUU mlHA_mUU
+mlLLLA_mUU mlLLLA_mUU
+mlKA_mvR mlKA_mvR
+mlGA_mvR mlGA_mvR
+mlCHA_mvR mlCHA_mvR
+mlJA_mvR mlJA_mvR
+mlJHA_mvR mlJHA_mvR
+mlTTA_mvR mlTTA_mvR
+mlDDA_mvR mlDDA_mvR
+mlDDHA_mvR mlDDHA_mvR
+mlTA_mvR mlTA_mvR
+mlDA_mvR mlDA_mvR
+mlDHA_mvR mlDHA_mvR
+mlNA_mvR mlNA_mvR
+mlBHA_mvR mlBHA_mvR
+mlYA_mvR mlYA_mvR
+mlRA_mvR mlRA_mvR
+mlSHA_mvR mlSHA_mvR
+mlSA_mvR mlSA_mvR
+mlHA_mvR mlHA_mvR
+mlKA_mvRR mlKA_mvRR
+mlGA_mvRR mlGA_mvRR
+mlJA_mvRR mlJA_mvRR
+mlJHA_mvRR mlJHA_mvRR
+mlTTA_mvRR mlTTA_mvRR
+mlTA_mvRR mlTA_mvRR
+mlDA_mvRR mlDA_mvRR
+mlDHA_mvRR mlDHA_mvRR
+mlNA_mvRR mlNA_mvRR
+mlBHA_mvRR mlBHA_mvRR
+mlSA_mvRR mlSA_mvRR
+mlK_KA_mU mlK_KA_mU
+mlK_KA_mUU mlK_KA_mUU
+mlK_KA_mvR mlK_KA_mvR
+mlK_TA_mU mlK_TA_mU
+mlK_TA_mUU mlK_TA_mUU
+mlK_TA_mvR mlK_TA_mvR
+mlK_TA_mvRR mlK_TA_mvRR
+mlG_DA_mvR mlG_DA_mvR
+mlG_D_DHA_mvR mlG_D_DHA_mvR
+mlG_NA_mU mlG_NA_mU
+mlG_NA_mUU mlG_NA_mUU
+mlNG_KA_mU mlNG_KA_mU
+mlNG_KA_mUU mlNG_KA_mUU
+mlNG_KA_mvR mlNG_KA_mvR
+mlJ_JA_mU mlJ_JA_mU
+mlJ_JA_mUU mlJ_JA_mUU
+mlJ_JA_mvR mlJ_JA_mvR
+mlJ_NYA_mU mlJ_NYA_mU
+mlJ_NYA_mUU mlJ_NYA_mUU
+mlNY_CHA_mU mlNY_CHA_mU
+mlNY_CHA_mUU mlNY_CHA_mUU
+mlNY_CHA_mvR mlNY_CHA_mvR
+mlNY_JA_mUU mlNY_JA_mUU
+mlNY_NYA_mU mlNY_NYA_mU
+mlNY_NYA_mUU mlNY_NYA_mUU
+mlNN_DDA_mvR mlNN_DDA_mvR
+mlNN_DDHA_mvR mlNN_DDHA_mvR
+mlT_TA_mU mlT_TA_mU
+mlT_TA_mUU mlT_TA_mUU
+mlT_TA_mvR mlT_TA_mvR
+mlT_TA_mvRR mlT_TA_mvRR
+mlT_NA_mU mlT_NA_mU
+mlT_NA_mUU mlT_NA_mUU
+mlT_NA_mvR mlT_NA_mvR
+mlT_NA_mvRR mlT_NA_mvRR
+mlT_BHA_mU mlT_BHA_mU
+mlT_BHA_mUU mlT_BHA_mUU
+mlT_BHA_mvR mlT_BHA_mvR
+mlT_SA_mvR mlT_SA_mvR
+mlT_SA_mvRR mlT_SA_mvRR
+mlD_DA_mvR mlD_DA_mvR
+mlD_DA_mvRR mlD_DA_mvRR
+mlD_DHA_mvR mlD_DHA_mvR
+mlD_DHA_mvRR mlD_DHA_mvRR
+mlN_TA_mU mlN_TA_mU
+mlN_TA_mUU mlN_TA_mUU
+mlN_TA_mvR mlN_TA_mvR
+mlN_TA_mvRR mlN_TA_mvRR
+mlN_DA_mvR mlN_DA_mvR
+mlN_DHA_mvR mlN_DHA_mvR
+mlN_NA_mU mlN_NA_mU
+mlN_NA_mUU mlN_NA_mUU
+mlN_NA_mvR mlN_NA_mvR
+mlSH_CHA_mU mlSH_CHA_mU
+mlSH_CHA_mUU mlSH_CHA_mUU
+mlSH_CHA_mvR mlSH_CHA_mvR
+mlH_NA_mU mlH_NA_mU
+mlH_NA_mUU mlH_NA_mUU
+mlBH_RA_mU mlBH_RA_mU
+mlBH_RA_mUU mlBH_RA_mUU
+
+mlKAc2_mU mlKAc2_mU
+mlKAc2_mUU mlKAc2_mUU
+mlKAc2_mvR mlKAc2_mvR
+mlGAc2_mU mlGAc2_mU
+mlGAc2_mUU mlGAc2_mUU
+mlGAc2_mvR mlGAc2_mvR
+mlCHAc2_mU mlCHAc2_mU
+mlCHAc2_mUU mlCHAc2_mUU
+mlCHAc2_mvR mlCHAc2_mvR
+mlJAc2_mU mlJAc2_mU
+mlJAc2_mUU mlJAc2_mUU
+mlJAc2_mvR mlJAc2_mvR
+mlTTAc2_mvR mlTTAc2_mvR
+mlTTAc2_mvRR mlTTAc2_mvRR
+mlNNAc2_mU mlNNAc2_mU
+mlNNAc2_mUU mlNNAc2_mUU
+mlTAc2_mU mlTAc2_mU
+mlTAc2_mUU mlTAc2_mUU
+mlTAc2_mvR mlTAc2_mvR
+mlTAc2_mvRR mlTAc2_mvRR
+mlDAc2_mvR mlDAc2_mvR
+mlDHAc2_mvR mlDHAc2_mvR
+mlDHAc2_mvRR mlDHAc2_mvRR
+mlNAc2_mU mlNAc2_mU
+mlNAc2_mUU mlNAc2_mUU
+mlSHAc2_mU mlSHAc2_mU
+mlSHAc2_mUU mlSHAc2_mUU
+mlSHAc2_mvR mlSHAc2_mvR
+mlSAc2_mvR mlSAc2_mvR
+mlRRAc2_mU mlRRAc2_mU
+mlRRAc2_mUU mlRRAc2_mUU
+mlK_KAc2_mU mlK_KAc2_mU
+mlK_KAc2_mUU mlK_KAc2_mUU
+mlK_KAc2_mvR mlK_KAc2_mvR
+mlT_TAc2_mU mlT_TAc2_mU
+mlT_TAc2_mUU mlT_TAc2_mUU
+mlT_TAc2_mvR mlT_TAc2_mvR
+mlN_NAc2_mU mlN_NAc2_mU
+mlN_NAc2_mUU mlN_NAc2_mUU
+mlRR_RRAc2_mU mlRR_RRAc2_mU
+mlRR_RRAc2_mUU mlRR_RRAc2_mUU
+mlK_RAc2_mU mlK_RAc2_mU
+mlK_RAc2_mUU mlK_RAc2_mUU
+mlCH_RAc2_mU mlCH_RAc2_mU
+mlCH_RAc2_mUU mlCH_RAc2_mUU
+mlT_RAc2_mU mlT_RAc2_mU
+mlT_RAc2_mUU mlT_RAc2_mUU
+mlP_RAc2_mU mlP_RAc2_mU
+mlP_RAc2_mUU mlP_RAc2_mUU
+mlSH_RAc2_mU mlSH_RAc2_mU
+mlSH_RAc2_mUU mlSH_RAc2_mUU
+mlS_RAc2_mU mlS_RAc2_mU
+mlS_RAc2_mUU mlS_RAc2_mUU
+mlRR_RR_RAc2_mU mlRR_RR_RAc2_mU
+mlRR_RR_RAc2_mUU mlRR_RR_RAc2_mUU
+
+mlDoublesign mlDoublesign
+mlDoublesign_mU mlDoublesign_mU
+mlDoublesign_mUU mlDoublesign_mUU
+mlY_YA_mU mlY_YA_mU
+mlY_YA_mUU mlY_YA_mUU

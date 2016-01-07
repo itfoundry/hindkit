@@ -1,0 +1,298 @@
+@mlmU_alt = [
+
+  # sub @mlmU_alt mlmU.attaching' by mlmU.attaching.alt ;
+  # sub @mlmU_alt mlmUU.attaching' by mlmUU.attaching.alt ;
+
+  mlKHA
+  mlGHA
+  mlCA
+  mlTHA
+  mlPA
+  mlPHA
+  mlBA
+  mlMA
+  mlLA
+  mlVA
+  mlSSA
+  mlLLA
+  mlK_SSA
+  mlG_MA
+  mlG_GHA
+  mlNY_CA
+  mlNN_MA
+  mlT_THA
+  mlT_MA
+  mlT_S_THA
+  mlN_THA
+  mlN_MA
+  mlM_PA
+  mlM_MA
+  mlSH_CA
+  mlS_THA
+  mlH_MA
+  mlLL_LLA
+
+];
+
+@mlmvR_alt = [
+
+  # sub @mlmR_alt mlmU.attaching' by mlmR.attaching.alt ;
+  # sub @mlmR_alt mlmUU.attaching' by mlmRR.attaching.alt ;
+
+  mlTHA
+  mlT_THA
+  mlT_S_THA
+  mlN_THA
+  mlS_THA
+  mlPHA
+
+];
+
+@mlmvR_alt_below = [
+
+  # sub @mlmR_alt_below mlmvR.attaching.below' by mlmvR.attaching.below.alt ;
+
+  mlTHAc2
+  mlPHAc2
+
+];
+
+@mlLAc2_narrow = [
+
+  # sub @mlLAc2_narrow mlLAc2' by mlLAc2.narrow ;
+
+  mlTTA
+  mlTTHA
+  mlDA
+  mlBHA
+  mlRA
+  mlRRA
+  mlLLLA
+
+];
+
+
+lookup akhn_chillu {
+  sub mlKA  mlVirama zerowidthjoiner by mlKchillu;
+  sub mlNNA mlVirama zerowidthjoiner by mlNNchillu;
+  sub mlNA  mlVirama zerowidthjoiner by mlNchillu;
+  sub mlRA  mlVirama zerowidthjoiner by mlRRchillu;
+  sub mlLA  mlVirama zerowidthjoiner by mlLchillu;
+  sub mlLLA mlVirama zerowidthjoiner by mlLLchillu;
+} akhn_chillu;
+
+lookup akhn_conjunct {
+  sub mlKA  mlVirama mlKA   by mlK_KA; #? priority
+  sub mlKA  mlVirama mlTA   by mlK_TA;
+  sub mlKA  mlVirama mlSSA  by mlK_SSA; #? priority
+  sub mlGA  mlVirama mlDA mlVirama mlDHA by mlG_D_DHA; #! three consonants
+  sub mlGA  mlVirama mlNA   by mlG_NA;
+  sub mlGA  mlVirama mlMA   by mlG_MA;
+  sub mlGA  mlVirama mlGHA  by mlG_GHA;
+  sub mlGA  mlVirama mlDA   by mlG_DA;
+  sub mlNGA mlVirama mlKA   by mlNG_KA;
+  sub mlNGA mlVirama mlNGA  by mlNG_NGA;
+  sub mlJA  mlVirama mlJA   by mlJ_JA;
+  sub mlJA  mlVirama mlNYA  by mlJ_NYA; #? priority
+  sub mlNYA mlVirama mlCA   by mlNY_CA;
+  sub mlNYA mlVirama mlCHA  by mlNY_CHA;
+  sub mlNYA mlVirama mlNYA  by mlNY_NYA;
+  sub mlTTA mlVirama mlTTA  by mlTT_TTA;
+  sub mlNNA mlVirama mlTTA  by mlNN_TTA;
+  sub mlNNA mlVirama mlDDA  by mlNN_DDA;
+  sub mlNNA mlVirama mlDDHA by mlNN_DDHA;
+  sub mlNNA mlVirama mlMA   by mlNN_MA;
+  sub mlTA  mlVirama mlTA   by mlT_TA; #? priority
+  sub mlTA  mlVirama mlTHA  by mlT_THA;
+  sub mlTA  mlVirama mlNA   by mlT_NA;
+  sub mlTA  mlVirama mlBHA  by mlT_BHA;
+  sub mlTA  mlVirama mlMA   by mlT_MA;
+  sub mlTA  mlVirama mlSA   by mlT_SA;
+  sub mlTA  mlVirama mlSA mlVirama mlTHA by mlT_S_THA; #! three consonants
+  sub mlDA  mlVirama mlDA   by mlD_DA;
+  sub mlDA  mlVirama mlDHA  by mlD_DHA;
+  sub mlNA  mlVirama mlTA   by mlN_TA;
+  sub mlNA  mlVirama mlTHA  by mlN_THA;
+  sub mlNA  mlVirama mlDA   by mlN_DA;
+  sub mlNA  mlVirama mlDHA  by mlN_DHA;
+  sub mlNA  mlVirama mlNA   by mlN_NA;
+  sub mlNA  mlVirama mlMA   by mlN_MA;
+  sub mlMA  mlVirama mlPA   by mlM_PA;
+  sub mlMA  mlVirama mlMA   by mlM_MA;
+  sub mlSHA mlVirama mlCA   by mlSH_CA;
+  sub mlSHA mlVirama mlCHA  by mlSH_CHA;
+  sub mlSA  mlVirama mlTHA  by mlS_THA;
+  sub mlHA  mlVirama mlNA   by mlH_NA;
+  sub mlHA  mlVirama mlMA   by mlH_MA;
+  sub mlLLA mlVirama mlLLA  by mlLL_LLA;
+} akhn_conjunct;
+
+lookup akhn_doublesign {
+  sub mlCA mlVirama' mlCA' by mlDoublesign;
+  sub mlBA mlVirama' mlBA' by mlDoublesign;
+  sub mlYA mlVirama' mlYA' by mlDoublesign;
+  sub mlVA mlVirama' mlVA' by mlDoublesign;
+} akhn_doublesign;
+
+lookup akhn_ra {
+
+  sub mlKA   mlVirama mlRA by mlK_RA;
+  sub mlKHA  mlVirama mlRA by mlKH_RA;
+  sub mlGA   mlVirama mlRA by mlG_RA;
+  sub mlGHA  mlVirama mlRA by mlGH_RA;
+  sub mlNGA  mlVirama mlRA by mlNG_RA;
+  sub mlCA   mlVirama mlRA by mlC_RA;
+  sub mlCHA  mlVirama mlRA by mlCH_RA;
+  sub mlJA   mlVirama mlRA by mlJ_RA;
+  sub mlJHA  mlVirama mlRA by mlJH_RA;
+  sub mlNYA  mlVirama mlRA by mlNY_RA;
+  sub mlTTA  mlVirama mlRA by mlTT_RA;
+  sub mlTTHA mlVirama mlRA by mlTTH_RA;
+  sub mlDDA  mlVirama mlRA by mlDD_RA;
+  sub mlDDHA mlVirama mlRA by mlDDH_RA;
+  sub mlNNA  mlVirama mlRA by mlNN_RA;
+  sub mlTA   mlVirama mlRA by mlT_RA;
+  sub mlTHA  mlVirama mlRA by mlTH_RA;
+  sub mlDA   mlVirama mlRA by mlD_RA;
+  sub mlDHA  mlVirama mlRA by mlDH_RA;
+  sub mlNA   mlVirama mlRA by mlN_RA;
+  sub mlPA   mlVirama mlRA by mlP_RA;
+  sub mlPHA  mlVirama mlRA by mlPH_RA;
+  sub mlBA   mlVirama mlRA by mlB_RA;
+  sub mlBHA  mlVirama mlRA by mlBH_RA;
+  sub mlMA   mlVirama mlRA by mlM_RA;
+  sub mlYA   mlVirama mlRA by mlY_RA;
+  # mlRA
+  sub mlLA   mlVirama mlRA by mlL_RA;
+  sub mlVA   mlVirama mlRA by mlV_RA;
+  sub mlSHA  mlVirama mlRA by mlSH_RA;
+  sub mlSSA  mlVirama mlRA by mlSS_RA;
+  sub mlSA   mlVirama mlRA by mlS_RA;
+  sub mlHA   mlVirama mlRA by mlH_RA;
+  # mlLLA
+  # mlLLLA
+  # mlRRA
+  # mlNNNA
+  # mlTTTA
+
+  sub mlK_KA    mlVirama mlRA by mlK_K_RA;
+  sub mlK_TA    mlVirama mlRA by mlK_T_RA;
+  sub mlG_D_DHA mlVirama mlRA by mlG_D_DH_RA;
+  sub mlNN_TTA  mlVirama mlRA by mlNN_TT_RA;
+  sub mlNN_DDA  mlVirama mlRA by mlNN_DD_RA;
+  sub mlT_TA    mlVirama mlRA by mlT_T_RA;
+  sub mlT_SA    mlVirama mlRA by mlT_S_RA;
+  sub mlD_DHA   mlVirama mlRA by mlD_DH_RA;
+  sub mlN_TA    mlVirama mlRA by mlN_T_RA;
+  sub mlN_DA    mlVirama mlRA by mlN_D_RA;
+  sub mlN_DHA   mlVirama mlRA by mlN_DH_RA;
+  sub mlN_NA    mlVirama mlRA by mlN_N_RA;
+  sub mlN_MA    mlVirama mlRA by mlN_M_RA;
+  sub mlM_PA    mlVirama mlRA by mlM_P_RA;
+
+  sub mlRRA mlVirama mlRRA mlVirama mlRA by mlRR_RR_RA;
+
+} akhn_ra;
+
+
+lookup pref {
+  sub mlVirama mlRA by mlRAc2;
+} pref;
+
+
+lookup blwf {
+
+  sub mlVirama mlKA   by mlKAc2;
+  sub mlVirama mlKHA  by mlKHAc2;
+  sub mlVirama mlGA   by mlGAc2;
+  sub mlVirama mlGHA  by mlGHAc2;
+  sub mlVirama mlNGA  by mlNGAc2;
+  sub mlVirama mlCA   by mlCAc2;
+  sub mlVirama mlCHA  by mlCHAc2;
+  sub mlVirama mlJA   by mlJAc2;
+  sub mlVirama mlJHA  by mlJHAc2;
+  sub mlVirama mlNYA  by mlNYAc2;
+  sub mlVirama mlTTA  by mlTTAc2;
+  sub mlVirama mlTTHA by mlTTHAc2;
+  sub mlVirama mlDDA  by mlDDAc2;
+  sub mlVirama mlDDHA by mlDDHAc2;
+  sub mlVirama mlNNA  by mlNNAc2;
+  sub mlVirama mlTA   by mlTAc2;
+  sub mlVirama mlTHA  by mlTHAc2;
+  sub mlVirama mlDA   by mlDAc2;
+  sub mlVirama mlDHA  by mlDHAc2;
+  sub mlVirama mlNA   by mlNAc2;
+  sub mlVirama mlPA   by mlPAc2;
+  sub mlVirama mlPHA  by mlPHAc2;
+  sub mlVirama mlBA   by mlBAc2;
+  sub mlVirama mlBHA  by mlBHAc2;
+  sub mlVirama mlMA   by mlMAc2;
+  # mlYA
+  # mlRA
+  sub mlVirama mlLA   by mlLAc2;
+  # mlVA
+  sub mlVirama mlSHA  by mlSHAc2;
+  sub mlVirama mlSSA  by mlSSAc2;
+  sub mlVirama mlSA   by mlSAc2;
+  sub mlVirama mlHA   by mlHAc2;
+  sub mlVirama mlLLA  by mlLLAc2;
+  sub mlVirama mlLLLA by mlLLLAc2;
+  sub mlVirama mlRRA  by mlRRAc2;
+  sub mlVirama mlNNNA by mlNNNAc2;
+  sub mlVirama mlTTTA by mlTTTAc2;
+
+  sub mlVirama mlK_KA  by mlK_KAc2;
+  sub mlVirama mlK_SSA by mlK_SSAc2;
+  sub mlVirama mlJ_NYA by mlJ_NYAc2;
+  sub mlVirama mlT_TA  by mlT_TAc2;
+
+  sub mlVirama mlK_RA  by mlK_RAc2;
+  sub mlVirama mlCH_RA by mlCH_RAc2;
+  sub mlVirama mlTT_RA by mlTT_RAc2;
+  sub mlVirama mlT_RA  by mlT_RAc2;
+  sub mlVirama mlP_RA  by mlP_RAc2;
+  sub mlVirama mlSH_RA by mlSH_RAc2;
+  sub mlVirama mlS_RA  by mlS_RAc2;
+
+  sub mlVirama mlRR_RR_RA by mlRR_RR_RAc2;
+
+} blwf;
+
+lookup blwf_additional {
+  sub mlRRAc2 mlRRAc2 by mlRR_RRAc2;
+} blwf_additional;
+
+
+lookup pstf {
+  sub mlVirama mlYA by mlYAc2;
+  sub mlVirama mlVA by mlVAc2;
+} pstf;
+
+
+# lookup cjct {
+#   # sub mlKAc2 mlRAc2 by mlK_RAc2; # Correct, working in Core Text
+#   # sub mlRAc2 mlSA mlKAc2 by mlK_RAc2; # Hacking for InDesign
+#   # sub mlRAc2 mlKA by mlK_RA;
+#   # sub mlKA mlRAc2 by mlK_RA;
+#   # sub mlRRA mlRRAc2 by mlRR_RRA;
+#   sub mlRAc2 mlRRA mlRRAc2 by mlRR_RR_RA;
+# } cjct;
+
+
+# lookup pres {
+#   sub mlRAc2 mlKA by mlK_RA;
+#   # sub mlKA mlRAc2 by mlK_RA;
+#   # sub mlRAc2 mlSA mlKAc2 by mlK_RAc2;
+# } pres;
+
+
+# lookup blws;
+include (../../features/blws.fea);
+
+
+# lookup psts {
+#   sub mlYAc2 mlmU  by mlYAc2_mU;
+#   sub mlYAc2 mlmUU by mlYAc2_mUU;
+#   sub mlVAc2 mlmU  by mlVAc2_mU;
+#   sub mlVAc2 mlmUU by mlVAc2_mUU;
+# } psts;

@@ -1,0 +1,60 @@
+# Substitute orders/priorities:
+
+# Rakar ligatures must form before final reordering, otherwise, after reordering, eg in <RAc2, SA, KAc2>, RAc2 gets separated from the below-base mark. <cjct> would be ideal but InDesign has a bug of reordering earlier than <cjct>. <rkrf> doesn't work in InDesign or Core Text.
+
+# (Start)
+# => Conjuncts (including doublesigned)
+
+# (Otherwise rakar breaks conjuncts)
+# => Rakar conjuncts
+
+# => Pre-base form of RA
+
+# (Must follow <akhn> to form conjuncts and rakars' below-base forms)
+# => Below-base forms
+
+feature akhn {
+  lookup akhn_chillu;
+  lookup akhn_conjunct;
+  lookup akhn_doublesign;
+  lookup akhn_ra;
+} akhn;
+
+feature pref {
+  lookup pref;
+} pref;
+
+feature blwf {
+  lookup blwf;
+  lookup blwf_additional;
+} blwf;
+
+feature pstf {
+  lookup pstf;
+} pstf;
+
+# feature cjct {
+#   lookup cjct;
+# } cjct;
+
+# feature pres {
+#   lookup pres;
+# } pres;
+
+feature blws {
+  lookup blws;
+  lookup blws_1;
+  lookup blws_2;
+  lookup blws_3;
+  lookup blws_contextual;
+} blws;
+
+# feature psts {
+#   lookup psts;
+# } psts;
+
+# feature calt {
+#   sub mlRRA mlRAc2 mlRRA       by mlRR_RRA_RA;
+#   sub mlRRA mlRAc2 mlRRA mlmU  by mlRR_RRA_RA_mU;
+#   sub mlRRA mlRAc2 mlRRA mlmUU by mlRR_RRA_RA_mUU;
+# } calt;

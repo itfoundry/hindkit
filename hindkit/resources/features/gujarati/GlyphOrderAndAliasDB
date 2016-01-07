@@ -1,0 +1,286 @@
+.notdef .notdef
+space space uni0020
+gjA gjA uni0A85
+gjAA gjAA uni0A86
+gjI gjI uni0A87
+gjII gjII uni0A88
+gjU gjU uni0A89
+gjUU gjUU uni0A8A
+gjvR gjvR uni0A8B
+gjvRR gjvRR uni0AE0
+gjvL gjvL uni0A8C
+gjvLL gjvLL uni0AE1
+gjE gjE uni0A8F
+gjAI gjAI uni0A90
+gjO gjO uni0A93
+gjAU gjAU uni0A94
+gjEcandra gjEcandra uni0A8D
+gjOcandra gjOcandra uni0A91
+gjmAA gjmAA uni0ABE
+gjmI gjmI uni0ABF
+gjmII gjmII uni0AC0
+gjmU gjmU uni0AC1
+gjmUU gjmUU uni0AC2
+gjmvR gjmvR uni0AC3
+gjmvRR gjmvRR uni0AC4
+gjmvL gjmvL uni0AE2
+gjmvLL gjmvLL uni0AE3
+gjmE gjmE uni0AC7
+gjmAI gjmAI uni0AC8
+gjmO gjmO uni0ACB
+gjmAU gjmAU uni0ACC
+gjmEcandra gjmEcandra uni0AC5
+gjmOcandra gjmOcandra uni0AC9
+gjKA gjKA uni0A95
+gjKHA gjKHA uni0A96
+gjGA gjGA uni0A97
+gjGHA gjGHA uni0A98
+gjNGA gjNGA uni0A99
+gjCA gjCA uni0A9A
+gjCHA gjCHA uni0A9B
+gjJA gjJA uni0A9C
+gjJHA gjJHA uni0A9D
+gjNYA gjNYA uni0A9E
+gjTTA gjTTA uni0A9F
+gjTTHA gjTTHA uni0AA0
+gjDDA gjDDA uni0AA1
+gjDDHA gjDDHA uni0AA2
+gjNNA gjNNA uni0AA3
+gjTA gjTA uni0AA4
+gjTHA gjTHA uni0AA5
+gjDA gjDA uni0AA6
+gjDHA gjDHA uni0AA7
+gjNA gjNA uni0AA8
+gjPA gjPA uni0AAA
+gjPHA gjPHA uni0AAB
+gjBA gjBA uni0AAC
+gjBHA gjBHA uni0AAD
+gjMA gjMA uni0AAE
+gjYA gjYA uni0AAF
+gjRA gjRA uni0AB0
+gjLA gjLA uni0AB2
+gjVA gjVA uni0AB5
+gjSHA gjSHA uni0AB6
+gjSSA gjSSA uni0AB7
+gjSA gjSA uni0AB8
+gjHA gjHA uni0AB9
+gjLLA gjLLA uni0AB3
+gjK_SSA gjK_SSA
+gjJ_NYA gjJ_NYA
+gjAnusvara gjAnusvara uni0A82
+gjCandrabindu gjCandrabindu uni0A81
+gjVisarga gjVisarga uni0A83
+gjVirama gjVirama uni0ACD
+gjNukta gjNukta uni0ABC
+gjAvagraha gjAvagraha uni0ABD
+gjZero gjZero uni0AE6
+gjOne gjOne uni0AE7
+gjTwo gjTwo uni0AE8
+gjThree gjThree uni0AE9
+gjFour gjFour uni0AEA
+gjFive gjFive uni0AEB
+gjSix gjSix uni0AEC
+gjSeven gjSeven uni0AED
+gjEight gjEight uni0AEE
+gjNine gjNine uni0AEF
+gjOm gjOm uni0AD0
+gjAbbreviationsign gjAbbreviationsign uni0AF0
+gjRupeesign gjRupeesign uni0AF1
+danda danda uni0964
+doubledanda doubledanda uni0965
+indianrupee indianrupee uni20B9
+dottedcircle dottedcircle uni25CC
+gjReph gjReph
+gjRakar gjRakar
+gjK gjK
+gjKH gjKH
+gjG gjG
+gjGH gjGH
+gjNG gjNG
+gjC gjC
+gjCH gjCH
+gjJ gjJ
+gjJH gjJH
+gjNY gjNY
+gjTT gjTT
+gjTTH gjTTH
+gjDD gjDD
+gjDDH gjDDH
+gjNN gjNN
+gjT gjT
+gjTH gjTH
+gjD gjD
+gjDH gjDH
+gjN gjN
+gjP gjP
+gjPH gjPH
+gjB gjB
+gjBH gjBH
+gjM gjM
+gjY gjY
+gjR gjR
+gjL gjL
+gjV gjV
+gjSH gjSH
+gjSS gjSS
+gjS gjS
+gjH gjH
+gjLL gjLL
+gjK_SS gjK_SS
+gjJ_NY gjJ_NY
+gjK_RA gjK_RA
+gjKH_RA gjKH_RA
+gjG_RA gjG_RA
+gjGH_RA gjGH_RA
+gjNG_RA gjNG_RA
+gjC_RA gjC_RA
+gjCH_RA gjCH_RA
+gjJ_RA gjJ_RA
+gjJH_RA gjJH_RA
+gjNY_RA gjNY_RA
+gjTT_RA gjTT_RA
+gjTTH_RA gjTTH_RA
+gjDD_RA gjDD_RA
+gjDDH_RA gjDDH_RA
+gjNN_RA gjNN_RA
+gjT_RA gjT_RA
+gjTH_RA gjTH_RA
+gjD_RA gjD_RA
+gjDH_RA gjDH_RA
+gjN_RA gjN_RA
+gjP_RA gjP_RA
+gjPH_RA gjPH_RA
+gjB_RA gjB_RA
+gjBH_RA gjBH_RA
+gjM_RA gjM_RA
+gjY_RA gjY_RA
+gjR_RA gjR_RA
+gjL_RA gjL_RA
+gjV_RA gjV_RA
+gjSH_RA gjSH_RA
+gjSS_RA gjSS_RA
+gjS_RA gjS_RA
+gjH_RA gjH_RA
+gjLL_RA gjLL_RA
+gjK_SS_RA gjK_SS_RA
+gjJ_NY_RA gjJ_NY_RA
+gjK_R gjK_R
+gjKH_R gjKH_R
+gjG_R gjG_R
+gjGH_R gjGH_R
+gjNG_R gjNG_R
+gjC_R gjC_R
+gjCH_R gjCH_R
+gjJ_R gjJ_R
+gjJH_R gjJH_R
+gjNY_R gjNY_R
+gjTT_R gjTT_R
+gjTTH_R gjTTH_R
+gjDD_R gjDD_R
+gjDDH_R gjDDH_R
+gjNN_R gjNN_R
+gjT_R gjT_R
+gjTH_R gjTH_R
+gjD_R gjD_R
+gjDH_R gjDH_R
+gjN_R gjN_R
+gjP_R gjP_R
+gjPH_R gjPH_R
+gjB_R gjB_R
+gjBH_R gjBH_R
+gjM_R gjM_R
+gjY_R gjY_R
+gjR_R gjR_R
+gjL_R gjL_R
+gjV_R gjV_R
+gjSH_R gjSH_R
+gjSS_R gjSS_R
+gjS_R gjS_R
+gjH_R gjH_R
+gjLL_R gjLL_R
+gjK_SS_R gjK_SS_R
+gjJ_NY_R gjJ_NY_R
+gjmI.alt01 gjmI.alt01
+gjmI.alt02 gjmI.alt02
+gjmI.alt03 gjmI.alt03
+gjmI.alt04 gjmI.alt04
+gjmI.alt05 gjmI.alt05
+gjmI.alt06 gjmI.alt06
+gjmI.alt07 gjmI.alt07
+gjmI.alt08 gjmI.alt08
+gjmI.alt09 gjmI.alt09
+gjmI.alt10 gjmI.alt10
+gjmI.alt11 gjmI.alt11
+gjmI.alt12 gjmI.alt12
+gjmI.alt13 gjmI.alt13
+gjmI.alt14 gjmI.alt14
+gjmI.alt15 gjmI.alt15
+gjmI.alt16 gjmI.alt16
+gjmI.alt17 gjmI.alt17
+gjmI.alt18 gjmI.alt18
+gjmI.alt19 gjmI.alt19
+gjmI.alt20 gjmI.alt20
+gjmI.alt21 gjmI.alt21
+gjmI.alt22 gjmI.alt22
+gjmI.alt23 gjmI.alt23
+gjmI.alt24 gjmI.alt24
+gjmI.alt25 gjmI.alt25
+gjmI.alt26 gjmI.alt26
+gjmI.alt27 gjmI.alt27
+gjmI.alt28 gjmI.alt28
+gjmI.alt29 gjmI.alt29
+gjmI.alt30 gjmI.alt30
+gjmI.alt31 gjmI.alt31
+gjmI.alt32 gjmI.alt32
+gjmI.alt33 gjmI.alt33
+gjmI.alt34 gjmI.alt34
+gjmI.alt35 gjmI.alt35
+gjmI.alt36 gjmI.alt36
+gjmI.alt37 gjmI.alt37
+gjmI.alt38 gjmI.alt38
+gjmI.alt39 gjmI.alt39
+gjmI.alt40 gjmI.alt40
+gjmI.alt41 gjmI.alt41
+gjmI.alt42 gjmI.alt42
+gjmI.alt43 gjmI.alt43
+gjmI.alt44 gjmI.alt44
+gjmI.alt45 gjmI.alt45
+gjmI.alt46 gjmI.alt46
+gjmI.alt47 gjmI.alt47
+gjmI.alt48 gjmI.alt48
+gjmI.alt49 gjmI.alt49
+gjmI.alt50 gjmI.alt50
+gjmI.alt51 gjmI.alt51
+gjmI.alt52 gjmI.alt52
+gjReph_Anusvara gjReph_Anusvara
+gjAnusvara.matrai gjAnusvara.matrai
+gjReph.matrai gjReph.matrai
+gjReph_Anusvara.matrai gjReph_Anusvara.matrai
+gjmII_Anusvara gjmII_Anusvara
+gjmII_Reph gjmII_Reph
+gjmII_Reph_Anusvara gjmII_Reph_Anusvara
+gjmE_Anusvara gjmE_Anusvara
+gjmE_Reph gjmE_Reph
+gjmE_Reph_Anusvara gjmE_Reph_Anusvara
+gjmAI_Anusvara gjmAI_Anusvara
+gjmAI_Reph gjmAI_Reph
+gjmAI_Reph_Anusvara gjmAI_Reph_Anusvara
+gjmO_Anusvara gjmO_Anusvara
+gjmO_Reph gjmO_Reph
+gjmO_Reph_Anusvara gjmO_Reph_Anusvara
+gjmAU_Anusvara gjmAU_Anusvara
+gjmAU_Reph gjmAU_Reph
+gjmAU_Reph_Anusvara gjmAU_Reph_Anusvara
+gjmEcandra_Anusvara gjmEcandra_Anusvara
+gjmOcandra_Anusvara gjmOcandra_Anusvara
+gjJA_mAA gjJA_mAA
+gjJA_mII gjJA_mII
+gjJ_RA_mAA gjJ_RA_mAA
+gjJ_RA_mII gjJ_RA_mII
+gjPHA_mU gjPHA_mU
+gjPHA_mUU gjPHA_mUU
+gjRA_mUU gjRA_mUU
+gjHA_mU gjHA_mU
+gjHA_mUU gjHA_mUU
+gjDA_mvR gjDA_mvR
+gjHA_mvR gjHA_mvR

@@ -44,13 +44,13 @@ class Builder(object):
             'run_checkoutlines': True,
             'run_autohint':      False,
 
+            'override_GDEF': False,
+
             'do_style_linking': False,
 
             'use_os_2_version_4':         True,
             'prefer_typo_metrics':        True,
             'is_width_weight_slope_only': True,
-
-            'override_GDEF': False,
 
         }
 
@@ -186,7 +186,7 @@ class Builder(object):
 
                 lines = ['table head { FontRevision 1.000; } head;']
 
-                for file_name in ['classes', 'tables', 'languagesystems', 'GSUB']:
+                for file_name in ['classes', 'tables', 'languagesystems', 'lookups', 'GSUB']:
                     abstract_path = os.path.join(constants.paths.FEATURES, file_name + '.fea')
                     if os.path.exists(temp(abstract_path)):
                         lines.append('include (../../{});'.format(abstract_path))
@@ -224,7 +224,7 @@ class Builder(object):
         if self.options['prep_mark_positioning']:
 
             glyph_classes = []
-            glyph_classes.extend([(constants.misc.MARKS_CLASS_NAME, glyph_filter_marks)])
+            glyph_classes.extend([(WriteFeaturesMarkFDK.kCombMarksClassName, glyph_filter_marks)])
 
             if self.options['prep_mI_variants']:
                 glyph_classes.extend([
@@ -235,7 +235,6 @@ class Builder(object):
                 ])
 
             style_0 = self.styles_to_be_built[0].open_font()
-            self._generate_glyph_classes(style_0, glyph_classes)
 
             glyph_order = [
                 development_name for
@@ -243,7 +242,7 @@ class Builder(object):
                 self.family.goadb
             ]
             for class_name, filter_function in glyph_classes:
-                glyph_names = [glyph.name for glyph in filter(filter_function, font)]
+                glyph_names = [glyph.name for glyph in filter(filter_function, style_0)]
                 glyph_names = sort_glyphs(glyph_order, glyph_names)
                 style_0.groups.update({class_name: glyph_names})
                 lines.extend(
@@ -309,11 +308,11 @@ class Builder(object):
                 'marks': '',
                 'components': '',
             }
-            if self.options['prep_mark_positioning']:
-                GDEF_records['marks'] = '@{}'.format(constants.misc.MARKS_CLASS_NAME)
-            tables['GDEF'].extend(
+            if self.options['prep_mark_positioning'] or os.path.exists(temp(os.path.join(constants.paths.FEATURES, 'classes.fea'))):
+                GDEF_records['marks'] = '@{}'.format(WriteFeaturesMarkFDK.kCombMarksClassName)
+            tables['GDEF'].extend([
                 'GlyphClassDef {bases}, {ligatures}, {marks}, {components};'.format(**GDEF_records)
-            )
+            ])
 
         tables['name'].extend(
             'nameid {} "{}";'.format(
@@ -358,7 +357,14 @@ class Builder(object):
         if overriding_exists(OUTPUT):
             return
 
-        raise SystemExit('[WARNING] Not able to prep GSUB features yet.')
+        premade_feature_dir = hindkit._unwrap_path_relative_to_package_dir(
+            os.path.join('resources/features', self.family.script.lower())
+        )
+
+        for file_name in ['GSUB.fea', 'lookups.fea']:
+            file_path = os.path.join(premade_feature_dir, file_name)
+            if os.path.exists(file_path):
+                subprocess.call(['cp', '-fr', file_path, temp(os.path.join(constants.paths.FEATURES, file_name))])
 
     def _prep_features_GPOS(self):
 
@@ -379,7 +385,6 @@ class Builder(object):
 
         if self.options['prep_mark_positioning']:
             for style in self.styles_to_be_built:
-                WriteFeaturesMarkFDK.kCombMarksClassName = constants.misc.MARKS_CLASS_NAME
                 WriteFeaturesMarkFDK.MarkDataClass(
                     font = style.open_font(is_temp=True),
                     folderPath = temp(style.directory),
@@ -433,12 +438,19 @@ class Builder(object):
             f.write(constants.templates.FMNDB_HEAD)
             f.writelines(i + '\n' for i in lines)
 
-    def _prep_goadb(self): # TODO
+    def _prep_goadb(self):
+
         OUTPUT = constants.paths.GOADB
         if overriding_exists(OUTPUT):
             return
-        else:
-            raise SystemExit('[WARNING] Not able to prep GOADB yet.')
+
+        premade_feature_dir = hindkit._unwrap_path_relative_to_package_dir(
+            os.path.join('resources/features', self.family.script.lower())
+        )
+
+        file_path = os.path.join(premade_feature_dir, OUTPUT)
+        if os.path.exists(file_path):
+            subprocess.call(['cp', '-fr', file_path, temp(OUTPUT)])
 
     def compile(self):
 

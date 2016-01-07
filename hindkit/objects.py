@@ -55,10 +55,15 @@ class Family(object):
     @property
     def goadb(self):
 
-        with open(constants.paths.GOADB, 'r') as file:
-            goadb_content = file.read()
-
         goadb = []
+
+        try:
+            with open(constants.paths.GOADB, 'r') as file:
+                goadb_content = file.read()
+        except IOError:
+            goadb.append((None, None, None))
+            return goadb
+
         for line in goadb_content.splitlines():
             content = line.partition('#')[0].strip()
             if content:

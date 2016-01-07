@@ -1,0 +1,120 @@
+# -------------------
+# BASIC SHAPING FORMS
+# -------------------
+
+# Akhand Ligatures
+# ----------------
+
+feature akhn {
+  lookup akhn;
+} akhn;
+
+
+# Half Forms
+# ----------
+
+# feature half {
+# } half;
+
+
+# ----------------------------
+# MANDATORY PRESENTATION FORMS
+# ----------------------------
+
+# Pre-base Substitution
+# ---------------------
+
+# feature pres {
+# } pres;
+
+
+# Above-base Substitution
+# -----------------------
+
+# feature abvs {
+# } abvs;
+
+
+# Below-base Substitution
+# -----------------------
+
+# feature blws {
+# } blws;
+
+
+# Post-base Substitution
+# ----------------------
+
+feature psts {
+  lookup psts_shrii;
+  lookup psts;
+} psts;
+
+
+# Halant Forms
+# ------------
+
+# feature haln {
+# } haln;
+
+
+# Required Contextual Alternates
+# ------------------------------
+# Newly proposed. Only implemented by Core Text.
+
+# feature rclt {
+# } rclt;
+
+
+# --------------------------------
+# DISCRETIONARY PRESENTATION FORMS
+# --------------------------------
+
+# Contextual Alternates
+# ---------------------
+
+# feature calt {
+# } calt;
+
+
+# ----------------
+# GENERAL FEATURES
+# ----------------
+
+# Stylistic Sets
+# --------------
+# For InDesign.
+
+feature ss01 {
+
+  featureNames {
+    name   "Traditional Orthography";
+    name 1 "Traditional Orthography"; # Obsolete
+  };
+
+  lookup ss01;
+
+} ss01;
+
+feature ss02 {
+
+  featureNames {
+    name   "Alternative RA";
+    name 1 "Alternative RA"; # Obsolete
+  };
+
+  lookup ss02_A;
+  lookup ss02_B;
+
+} ss02;
+
+
+# Stylistic Alternates
+# --------------------
+# For Photoshop and Illustrator.
+
+feature salt {
+  lookup ss01;
+  lookup ss02_A;
+  lookup ss02_B;
+} salt;

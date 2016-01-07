@@ -1,0 +1,247 @@
+.notdef .notdef
+space space uni0020
+
+tmA tmA uni0B85
+tmAA tmAA uni0B86
+tmI tmI uni0B87
+tmII tmII uni0B88
+tmU tmU uni0B89
+tmUU tmUU uni0B8A
+tmE tmE uni0B8E
+tmEE tmEE uni0B8F
+tmAI tmAI uni0B90
+tmO tmO uni0B92
+tmOO tmOO uni0B93
+tmAU tmAU uni0B94
+
+tmmAA tmmAA uni0BBE
+tmmI tmmI uni0BBF
+tmmII tmmII uni0BC0
+tmmU tmmU uni0BC1
+tmmUU tmmUU uni0BC2
+tmmE tmmE uni0BC6
+tmmEE tmmEE uni0BC7
+tmmAI tmmAI uni0BC8
+tmmO tmmO uni0BCA
+tmmOO tmmOO uni0BCB
+tmmAU tmmAU uni0BCC
+
+tmAUlengthmark tmAUlengthmark uni0BD7
+
+tmKA tmKA uni0B95
+tmNGA tmNGA uni0B99
+tmCA tmCA uni0B9A
+tmNYA tmNYA uni0B9E
+tmTTA tmTTA uni0B9F
+tmNNA tmNNA uni0BA3
+tmTA tmTA uni0BA4
+tmNA tmNA uni0BA8
+tmPA tmPA uni0BAA
+tmMA tmMA uni0BAE
+tmYA tmYA uni0BAF
+tmRA tmRA uni0BB0
+tmLA tmLA uni0BB2
+tmVA tmVA uni0BB5
+tmLLLA tmLLLA uni0BB4
+tmLLA tmLLA uni0BB3
+tmRRA tmRRA uni0BB1
+tmNNNA tmNNNA uni0BA9
+
+tmSHA tmSHA uni0BB6
+tmJA tmJA uni0B9C
+tmSSA tmSSA uni0BB7
+tmSA tmSA uni0BB8
+tmHA tmHA uni0BB9
+
+tmKSSA tmKSSA
+
+tmAnusvara tmAnusvara uni0B82
+tmVisarga tmVisarga uni0B83
+
+tmVirama tmVirama uni0BCD
+
+tmOm tmOm uni0BD0
+
+tmZero tmZero uni0BE6
+tmOne tmOne uni0BE7
+tmTwo tmTwo uni0BE8
+tmThree tmThree uni0BE9
+tmFour tmFour uni0BEA
+tmFive tmFive uni0BEB
+tmSix tmSix uni0BEC
+tmSeven tmSeven uni0BED
+tmEight tmEight uni0BEE
+tmNine tmNine uni0BEF
+
+tmTen tmTen uni0BF0
+tmOnehundred tmOnehundred uni0BF1
+tmOnethousand tmOnethousand uni0BF2
+
+tmDay tmDay uni0BF3
+tmMonth tmMonth uni0BF4
+tmYear tmYear uni0BF5
+tmDebit tmDebit uni0BF6
+tmCredit tmCredit uni0BF7
+tmAsabove tmAsabove uni0BF8
+
+tmRupee tmRupee uni0BF9
+
+tmNumber tmNumber uni0BFA
+
+# Miscellaneous
+
+swastika swastika uni0FD5
+
+indianrupee indianrupee uni20B9
+
+zerowidthnonjoiner zerowidthnonjoiner uni200C
+zerowidthjoiner zerowidthjoiner uni200D
+dottedcircle dottedcircle uni25CC
+
+ITF ITF
+
+# - - -
+
+tmK tmK
+tmNG tmNG
+tmC tmC
+tmNY tmNY
+tmTT tmTT
+tmNN tmNN
+tmT tmT
+tmN tmN
+tmP tmP
+tmM tmM
+tmY tmY
+tmR tmR
+tmL tmL
+tmV tmV
+tmLLL tmLLL
+tmLL tmLL
+tmRR tmRR
+tmNNN tmNNN
+tmSH tmSH
+tmJ tmJ
+tmSS tmSS
+tmS tmS
+tmH tmH
+tmKSS tmKSS
+
+tmKI tmKI
+tmNGI tmNGI
+tmCI tmCI
+tmNYI tmNYI
+tmTTI tmTTI
+tmNNI tmNNI
+tmTI tmTI
+tmNI tmNI
+tmPI tmPI
+tmMI tmMI
+tmYI tmYI
+tmRI tmRI
+tmLI tmLI
+tmVI tmVI
+tmLLLI tmLLLI
+tmLLI tmLLI
+tmRRI tmRRI
+tmNNNI tmNNNI
+tmSHI tmSHI
+tmJI tmJI
+tmSSI tmSSI
+tmSI tmSI
+tmHI tmHI
+tmKSSI tmKSSI
+
+tmKII tmKII
+tmNGII tmNGII
+tmCII tmCII
+tmNYII tmNYII
+tmTTII tmTTII
+tmNNII tmNNII
+tmTII tmTII
+tmNII tmNII
+tmPII tmPII
+tmMII tmMII
+tmYII tmYII
+tmRII tmRII
+tmLII tmLII
+tmVII tmVII
+tmLLLII tmLLLII
+tmLLII tmLLII
+tmRRII tmRRII
+tmNNNII tmNNNII
+tmSHII tmSHII
+tmJII tmJII
+tmSSII tmSSII
+tmSII tmSII
+tmHII tmHII
+tmKSSII tmKSSII
+
+tmKU tmKU
+tmNGU tmNGU
+tmCU tmCU
+tmNYU tmNYU
+tmTTU tmTTU
+tmNNU tmNNU
+tmTU tmTU
+tmNU tmNU
+tmPU tmPU
+tmMU tmMU
+tmYU tmYU
+tmRU tmRU
+tmLU tmLU
+tmVU tmVU
+tmLLLU tmLLLU
+tmLLU tmLLU
+tmRRU tmRRU
+tmNNNU tmNNNU
+tmSHU tmSHU
+tmJU tmJU
+tmSSU tmSSU
+tmSU tmSU
+tmHU tmHU
+tmKSSU tmKSSU
+
+tmKUU tmKUU
+tmNGUU tmNGUU
+tmCUU tmCUU
+tmNYUU tmNYUU
+tmTTUU tmTTUU
+tmNNUU tmNNUU
+tmTUU tmTUU
+tmNUU tmNUU
+tmPUU tmPUU
+tmMUU tmMUU
+tmYUU tmYUU
+tmRUU tmRUU
+tmLUU tmLUU
+tmVUU tmVUU
+tmLLLUU tmLLLUU
+tmLLUU tmLLUU
+tmRRUU tmRRUU
+tmNNNUU tmNNNUU
+tmSHUU tmSHUU
+tmJUU tmJUU
+tmSSUU tmSSUU
+tmSUU tmSUU
+tmHUU tmHUU
+tmKSSUU tmKSSUU
+
+tmSHRII tmSHRII
+
+# - - -
+
+tmNNAA.traditional tmNNAA.traditional
+tmRRAA.traditional tmRRAA.traditional
+tmNNNAA.traditional tmNNNAA.traditional
+
+tmmAI.traditional tmmAI.traditional
+
+tmNNAI.traditional tmNNAI.traditional
+tmLAI.traditional tmLAI.traditional
+tmLLAI.traditional tmLLAI.traditional
+tmNNNAI.traditional tmNNNAI.traditional
+
+tmR.alt tmR.alt
+tmRI.alt tmRI.alt
+tmRII.alt tmRII.alt
