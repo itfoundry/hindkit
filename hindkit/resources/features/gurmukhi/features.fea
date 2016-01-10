@@ -1,0 +1,93 @@
+languagesystem DFLT dflt;
+languagesystem gur2 dflt;
+languagesystem guru dflt;
+
+include (../../features/GENERATED_classes.fea);
+include (../../features/tables.fea);
+include (../../features/lookups.fea);
+
+
+# -------------------
+# BASIC SHAPING FORMS
+# -------------------
+
+# Nukta Forms
+# -----------
+
+feature nukt {
+  lookup nukt;
+} nukt;
+
+
+# Below-base Forms
+# ----------------
+
+feature blwf {
+
+  script DFLT;
+    lookup blwf_new;
+
+  script gur2;
+    lookup blwf_new;
+
+  script guru;
+    lookup blwf_old;
+
+} blwf;
+
+
+# Post-base Forms
+# ----------
+
+feature psts {
+
+  script DFLT;
+    lookup psts_new;
+
+  script gur2;
+    lookup psts_new;
+
+  script guru;
+    lookup psts_old;
+
+} psts;
+
+
+# ----------------------------
+# MANDATORY PRESENTATION FORMS
+# ----------------------------
+
+# Above-base Substitution
+# -----------------------
+
+feature abvs {
+  lookup abvs_matra_bindi;
+  lookup abvs_headline_insertion;
+} abvs;
+
+
+# Below-base Substitution
+# -----------------------
+
+feature blws {
+  lookup blws_matra_uu_alt;
+  lookup blws_consonant_ra_c2;
+} blws;
+
+
+# -----------
+# POSITIONING
+# -----------
+
+# Above- and Below-base Mark Positioning
+# --------------------------------------
+
+include (markclasses.fea);
+
+feature abvm {
+  include (abvm.fea);
+} abvm;
+
+feature blwm {
+  include (blwm.fea);
+} blwm;

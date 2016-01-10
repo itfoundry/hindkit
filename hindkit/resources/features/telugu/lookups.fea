@@ -1,0 +1,797 @@
+# Akhand Ligatures
+# ----------------
+
+lookup akhn_new {
+  sub tlKA tlVirama tlSSA by tlKSSA;
+} akhn_new;
+
+lookup akhn_old_1 {
+  sub tlKA tlSSA tlVirama by tlKSSA;
+  sub tlKA tlVirama tlSSA tlVirama by tlKSSAc2;
+  sub tlKA tlmAA tlSSA tlVirama by tlKSSAA;
+  sub tlKA tlmI  tlSSA tlVirama by tlKSSI;
+  sub tlKA tlmII tlSSA tlVirama by tlKSSII;
+  sub tlKA tlmU  tlSSA tlVirama by tlKSSU;
+  sub tlKA tlmUU tlSSA tlVirama by tlKSSUU;
+  sub tlKA tlmE  tlSSA tlVirama by tlKSSE;
+  sub tlKA tlmEE tlSSA tlVirama by tlKSSEE;
+  sub tlKA tlmE tlAIlengthmark tlSSA tlVirama by tlKSSAI;
+  sub tlKA tlmO  tlSSA tlVirama by tlKSSO;
+  sub tlKA tlmOO tlSSA tlVirama by tlKSSOO;
+  sub tlKA tlmAU tlSSA tlVirama by tlKSSAU;
+} akhn_old_1;
+
+lookup akhn_old_2 {
+  sub tlKSSAI by tlKSSE tlAIlengthmark;
+} akhn_old_2;
+
+
+# Reph Forms
+# ----------
+
+# lookup rphf {
+#   sub tlRA tlVirama by tlReph;
+# } rphf;
+
+
+# Pre-base Forms
+# --------------
+
+# lookup pref_new {
+#   sub tlVirama tlRA by tlRAc2.pre;
+# } pref_new;
+
+
+# Below-base Forms
+# ----------------
+
+lookup blwf_new {
+
+  sub tlVirama tlKA by tlKAc2;
+  sub tlVirama tlKHA by tlKHAc2;
+  sub tlVirama tlGA by tlGAc2;
+  sub tlVirama tlGHA by tlGHAc2;
+  sub tlVirama tlNGA by tlNGAc2;
+  sub tlVirama tlCA by tlCAc2;
+  sub tlVirama tlCHA by tlCHAc2;
+  sub tlVirama tlJA by tlJAc2;
+  sub tlVirama tlJHA by tlJHAc2;
+  sub tlVirama tlNYA by tlNYAc2;
+  sub tlVirama tlTTA by tlTTAc2;
+  sub tlVirama tlTTHA by tlTTHAc2;
+  sub tlVirama tlDDA by tlDDAc2;
+  sub tlVirama tlDDHA by tlDDHAc2;
+  sub tlVirama tlNNA by tlNNAc2;
+  sub tlVirama tlTA by tlTAc2;
+  sub tlVirama tlTHA by tlTHAc2;
+  sub tlVirama tlDA by tlDAc2;
+  sub tlVirama tlDHA by tlDHAc2;
+  sub tlVirama tlNA by tlNAc2;
+  sub tlVirama tlPA by tlPAc2;
+  sub tlVirama tlPHA by tlPHAc2;
+  sub tlVirama tlBA by tlBAc2;
+  sub tlVirama tlBHA by tlBHAc2;
+  sub tlVirama tlMA by tlMAc2;
+  sub tlVirama tlYA by tlYAc2;
+  sub tlVirama tlRA by tlRAc2;
+  sub tlVirama tlLA by tlLAc2;
+  sub tlVirama tlVA by tlVAc2;
+  sub tlVirama tlSHA by tlSHAc2;
+  sub tlVirama tlSSA by tlSSAc2;
+  sub tlVirama tlSA by tlSAc2;
+  sub tlVirama tlHA by tlHAc2;
+
+  sub tlVirama tlRRA by tlRRAc2;
+  sub tlVirama tlRRRA by tlRRRAc2;
+  sub tlVirama tlLLA by tlLLAc2;
+  sub tlVirama tlLLLA by tlLLLAc2;
+
+  # sub tlVirama tlTSA by tlTSAc2;
+  # sub tlVirama tlDZA by tlDZAc2;
+
+  sub tlVirama tlKSSA by tlKSSAc2;
+
+} blwf_new;
+
+lookup blwf_old {
+
+  sub tlKA tlVirama by tlKAc2;
+  sub tlKHA tlVirama by tlKHAc2;
+  sub tlGA tlVirama by tlGAc2;
+  sub tlGHA tlVirama by tlGHAc2;
+  sub tlNGA tlVirama by tlNGAc2;
+  sub tlCA tlVirama by tlCAc2;
+  sub tlCHA tlVirama by tlCHAc2;
+  sub tlJA tlVirama by tlJAc2;
+  sub tlJHA tlVirama by tlJHAc2;
+  sub tlNYA tlVirama by tlNYAc2;
+  sub tlTTA tlVirama by tlTTAc2;
+  sub tlTTHA tlVirama by tlTTHAc2;
+  sub tlDDA tlVirama by tlDDAc2;
+  sub tlDDHA tlVirama by tlDDHAc2;
+  sub tlNNA tlVirama by tlNNAc2;
+  sub tlTA tlVirama by tlTAc2;
+  sub tlTHA tlVirama by tlTHAc2;
+  sub tlDA tlVirama by tlDAc2;
+  sub tlDHA tlVirama by tlDHAc2;
+  sub tlNA tlVirama by tlNAc2;
+  sub tlPA tlVirama by tlPAc2;
+  sub tlPHA tlVirama by tlPHAc2;
+  sub tlBA tlVirama by tlBAc2;
+  sub tlBHA tlVirama by tlBHAc2;
+  sub tlMA tlVirama by tlMAc2;
+  sub tlYA tlVirama by tlYAc2;
+  sub tlRA tlVirama by tlRAc2;
+  sub tlLA tlVirama by tlLAc2;
+  sub tlVA tlVirama by tlVAc2;
+  sub tlSHA tlVirama by tlSHAc2;
+  sub tlSSA tlVirama by tlSSAc2;
+  sub tlSA tlVirama by tlSAc2;
+  sub tlHA tlVirama by tlHAc2;
+
+  sub tlRRA tlVirama by tlRRAc2;
+  sub tlRRRA tlVirama by tlRRRAc2;
+  sub tlLLA tlVirama by tlLLAc2;
+  sub tlLLLA tlVirama by tlLLLAc2;
+
+  # sub tlTSA tlVirama by tlTSAc2;
+  # sub tlDZA tlVirama by tlDZAc2;
+
+  sub tlKSSA tlVirama by tlKSSAc2;
+
+} blwf_old;
+
+
+# Pre-base Substitution
+# ---------------------
+
+lookup pres_1 {
+  sub tlTAc2 tlRAc2 by tlTAc2_RAc2;
+} pres_1;
+
+@c2_below_to_ailengthmark = [
+  tlKHAc2
+  tlGAc2
+  tlGHAc2
+  tlNGAc2
+  tlJAc2
+  tlJHAc2
+  tlNYAc2
+  tlTTAc2
+  tlTTHAc2
+  tlDDAc2
+  tlDDHAc2
+  tlNNAc2
+  tlTAc2
+  tlTHAc2
+  tlDAc2
+  tlDHAc2
+  tlLAc2
+  tlSSAc2
+  tlHAc2
+  tlRRAc2
+  tlRRRAc2
+  tlLLLAc2
+  tlKSSAc2
+  tlTAc2_RAc2
+];
+
+lookup CONTEXTUAL_ailengthmark_to_c2_below {
+  sub tlAIlengthmark' tlKHAc2 by tlKHAc2;
+  sub tlAIlengthmark' tlGAc2 by tlGAc2;
+  sub tlAIlengthmark' tlGHAc2 by tlGHAc2;
+  sub tlAIlengthmark' tlNGAc2 by tlNGAc2;
+  sub tlAIlengthmark' tlJAc2 by tlJAc2;
+  sub tlAIlengthmark' tlJHAc2 by tlJHAc2;
+  sub tlAIlengthmark' tlNYAc2 by tlNYAc2;
+  sub tlAIlengthmark' tlTTAc2 by tlTTAc2;
+  sub tlAIlengthmark' tlTTHAc2 by tlTTHAc2;
+  sub tlAIlengthmark' tlDDAc2 by tlDDAc2;
+  sub tlAIlengthmark' tlDDHAc2 by tlDDHAc2;
+  sub tlAIlengthmark' tlNNAc2 by tlNNAc2;
+  sub tlAIlengthmark' tlTAc2 by tlTAc2;
+  sub tlAIlengthmark' tlTHAc2 by tlTHAc2;
+  sub tlAIlengthmark' tlDAc2 by tlDAc2;
+  sub tlAIlengthmark' tlDHAc2 by tlDHAc2;
+  sub tlAIlengthmark' tlLAc2 by tlLAc2;
+  sub tlAIlengthmark' tlSSAc2 by tlSSAc2;
+  sub tlAIlengthmark' tlHAc2 by tlHAc2;
+  sub tlAIlengthmark' tlRRAc2 by tlRRAc2;
+  sub tlAIlengthmark' tlRRRAc2 by tlRRRAc2;
+  sub tlAIlengthmark' tlLLLAc2 by tlLLLAc2;
+  sub tlAIlengthmark' tlKSSAc2 by tlKSSAc2;
+  sub tlAIlengthmark' tlTAc2_RAc2 by tlTAc2_RAc2;
+} CONTEXTUAL_ailengthmark_to_c2_below;
+
+lookup CONTEXTUAL_c2_below_to_ailengthmark {
+  sub @c2_below_to_ailengthmark by tlAIlengthmark;
+} CONTEXTUAL_c2_below_to_ailengthmark;
+
+lookup pres_2 {
+
+  sub
+    [tlmAA tlmUU tlmO tlmOO tlmAU]
+    [
+      # tlKAc2
+      tlCAc2
+      tlCHAc2
+      tlNAc2
+      tlPAc2
+      tlPHAc2
+      tlBAc2
+      tlBHAc2
+      tlMAc2
+      tlYAc2
+      tlVAc2
+      tlSHAc2
+      tlSAc2
+      # tlLLAc2
+    ]'
+    by
+    [
+      # tlKAc2.alt
+      tlCAc2.alt
+      tlCHAc2.alt
+      tlNAc2.alt
+      tlPAc2.alt
+      tlPHAc2.alt
+      tlBAc2.alt
+      tlBHAc2.alt
+      tlMAc2.alt
+      tlYAc2.alt
+      tlVAc2.alt
+      tlSHAc2.alt
+      tlSAc2.alt
+      # tlLLAc2.alt
+    ];
+
+  sub
+    tlAIlengthmark' lookup CONTEXTUAL_ailengthmark_to_c2_below
+    @c2_below_to_ailengthmark' lookup CONTEXTUAL_c2_below_to_ailengthmark;
+
+  sub
+    [@BELOW_BASE_MATRAS @C2 @C2_LIGATURE @C2_SPACING]
+    [@C2]'
+    by
+    [@C2_SPACING];
+
+  sub
+    [tlKSSA]
+    @C2_POST'
+    by
+    @C2_POST_SPACING;
+
+} pres_2;
+
+
+# Above-base Substitution
+# -----------------------
+
+lookup abvs {
+
+  sub tlKA tlmI by tlKI;
+  sub tlKHA tlmI by tlKHI;
+  sub tlGA tlmI by tlGI;
+  sub tlGHA tlmI by tlGHI;
+  sub tlNGA tlmI by tlNGI;
+  sub tlCA tlmI by tlCI;
+  sub tlCHA tlmI by tlCHI;
+  sub tlJA tlmI by tlJI;
+  sub tlJHA tlmI by tlJHI;
+  sub tlNYA tlmI by tlNYI;
+  sub tlTTA tlmI by tlTTI;
+  sub tlTTHA tlmI by tlTTHI;
+  sub tlDDA tlmI by tlDDI;
+  sub tlDDHA tlmI by tlDDHI;
+  sub tlNNA tlmI by tlNNI;
+  sub tlTA tlmI by tlTI;
+  sub tlTHA tlmI by tlTHI;
+  sub tlDA tlmI by tlDI;
+  sub tlDHA tlmI by tlDHI;
+  sub tlNA tlmI by tlNI;
+  sub tlPA tlmI by tlPI;
+  sub tlPHA tlmI by tlPHI;
+  sub tlBA tlmI by tlBI;
+  sub tlBHA tlmI by tlBHI;
+  sub tlMA tlmI by tlMI;
+  sub tlYA tlmI by tlYI;
+  sub tlRA tlmI by tlRI;
+  sub tlLA tlmI by tlLI;
+  sub tlVA tlmI by tlVI;
+  sub tlSHA tlmI by tlSHI;
+  sub tlSSA tlmI by tlSSI;
+  sub tlSA tlmI by tlSI;
+  sub tlHA tlmI by tlHI;
+
+  sub tlRRA tlmI by tlRRI;
+  sub tlRRRA tlmI by tlRRRI;
+  sub tlLLA tlmI by tlLLI;
+  sub tlLLLA tlmI by tlLLLI;
+
+  sub tlKSSA tlmI by tlKSSI;
+
+  sub tlKA tlmII by tlKII;
+  sub tlKHA tlmII by tlKHII;
+  sub tlGA tlmII by tlGII;
+  sub tlGHA tlmII by tlGHII;
+  sub tlNGA tlmII by tlNGII;
+  sub tlCA tlmII by tlCII;
+  sub tlCHA tlmII by tlCHII;
+  sub tlJA tlmII by tlJII;
+  sub tlJHA tlmII by tlJHII;
+  sub tlNYA tlmII by tlNYII;
+  sub tlTTA tlmII by tlTTII;
+  sub tlTTHA tlmII by tlTTHII;
+  sub tlDDA tlmII by tlDDII;
+  sub tlDDHA tlmII by tlDDHII;
+  sub tlNNA tlmII by tlNNII;
+  sub tlTA tlmII by tlTII;
+  sub tlTHA tlmII by tlTHII;
+  sub tlDA tlmII by tlDII;
+  sub tlDHA tlmII by tlDHII;
+  sub tlNA tlmII by tlNII;
+  sub tlPA tlmII by tlPII;
+  sub tlPHA tlmII by tlPHII;
+  sub tlBA tlmII by tlBII;
+  sub tlBHA tlmII by tlBHII;
+  sub tlMA tlmII by tlMII;
+  sub tlYA tlmII by tlYII;
+  sub tlRA tlmII by tlRII;
+  sub tlLA tlmII by tlLII;
+  sub tlVA tlmII by tlVII;
+  sub tlSHA tlmII by tlSHII;
+  sub tlSSA tlmII by tlSSII;
+  sub tlSA tlmII by tlSII;
+  sub tlHA tlmII by tlHII;
+
+  sub tlRRA tlmII by tlRRII;
+  sub tlRRRA tlmII by tlRRRII;
+  sub tlLLA tlmII by tlLLII;
+  sub tlLLLA tlmII by tlLLLII;
+
+  sub tlKSSA tlmII by tlKSSII;
+
+  sub tlKA tlmE by tlKE;
+  sub tlKHA tlmE by tlKHE;
+  sub tlGA tlmE by tlGE;
+  sub tlGHA tlmE by tlGHE;
+  sub tlNGA tlmE by tlNGE;
+  sub tlCA tlmE by tlCE;
+  sub tlCHA tlmE by tlCHE;
+  sub tlJA tlmE by tlJE;
+  sub tlJHA tlmE by tlJHE;
+  sub tlNYA tlmE by tlNYE;
+  sub tlTTA tlmE by tlTTE;
+  sub tlTTHA tlmE by tlTTHE;
+  sub tlDDA tlmE by tlDDE;
+  sub tlDDHA tlmE by tlDDHE;
+  sub tlNNA tlmE by tlNNE;
+  sub tlTA tlmE by tlTE;
+  sub tlTHA tlmE by tlTHE;
+  sub tlDA tlmE by tlDE;
+  sub tlDHA tlmE by tlDHE;
+  sub tlNA tlmE by tlNE;
+  sub tlPA tlmE by tlPE;
+  sub tlPHA tlmE by tlPHE;
+  sub tlBA tlmE by tlBE;
+  sub tlBHA tlmE by tlBHE;
+  sub tlMA tlmE by tlME;
+  sub tlYA tlmE by tlYE;
+  sub tlRA tlmE by tlRE;
+  sub tlLA tlmE by tlLE;
+  sub tlVA tlmE by tlVE;
+  sub tlSHA tlmE by tlSHE;
+  sub tlSSA tlmE by tlSSE;
+  sub tlSA tlmE by tlSE;
+  sub tlHA tlmE by tlHE;
+
+  sub tlRRA tlmE by tlRRE;
+  sub tlRRRA tlmE by tlRRRE;
+  sub tlLLA tlmE by tlLLE;
+  sub tlLLLA tlmE by tlLLLE;
+
+  sub tlKSSA tlmE by tlKSSE;
+
+  sub tlKA tlmEE by tlKEE;
+  sub tlKHA tlmEE by tlKHEE;
+  sub tlGA tlmEE by tlGEE;
+  sub tlGHA tlmEE by tlGHEE;
+  sub tlNGA tlmEE by tlNGEE;
+  sub tlCA tlmEE by tlCEE;
+  sub tlCHA tlmEE by tlCHEE;
+  sub tlJA tlmEE by tlJEE;
+  sub tlJHA tlmEE by tlJHEE;
+  sub tlNYA tlmEE by tlNYEE;
+  sub tlTTA tlmEE by tlTTEE;
+  sub tlTTHA tlmEE by tlTTHEE;
+  sub tlDDA tlmEE by tlDDEE;
+  sub tlDDHA tlmEE by tlDDHEE;
+  sub tlNNA tlmEE by tlNNEE;
+  sub tlTA tlmEE by tlTEE;
+  sub tlTHA tlmEE by tlTHEE;
+  sub tlDA tlmEE by tlDEE;
+  sub tlDHA tlmEE by tlDHEE;
+  sub tlNA tlmEE by tlNEE;
+  sub tlPA tlmEE by tlPEE;
+  sub tlPHA tlmEE by tlPHEE;
+  sub tlBA tlmEE by tlBEE;
+  sub tlBHA tlmEE by tlBHEE;
+  sub tlMA tlmEE by tlMEE;
+  sub tlYA tlmEE by tlYEE;
+  sub tlRA tlmEE by tlREE;
+  sub tlLA tlmEE by tlLEE;
+  sub tlVA tlmEE by tlVEE;
+  sub tlSHA tlmEE by tlSHEE;
+  sub tlSSA tlmEE by tlSSEE;
+  sub tlSA tlmEE by tlSEE;
+  sub tlHA tlmEE by tlHEE;
+
+  sub tlRRA tlmEE by tlRREE;
+  sub tlRRRA tlmEE by tlRRREE;
+  sub tlLLA tlmEE by tlLLEE;
+  sub tlLLLA tlmEE by tlLLLEE;
+
+  sub tlKSSA tlmEE by tlKSSEE;
+
+  sub tlKA tlmO by tlKO;
+  sub tlKHA tlmO by tlKHO;
+  sub tlGA tlmO by tlGO;
+  sub tlGHA tlmO by tlGHO;
+  sub tlNGA tlmO by tlNGO;
+  sub tlCA tlmO by tlCO;
+  sub tlCHA tlmO by tlCHO;
+  sub tlJA tlmO by tlJO;
+  sub tlJHA tlmO by tlJHO;
+  sub tlNYA tlmO by tlNYO;
+  sub tlTTA tlmO by tlTTO;
+  sub tlTTHA tlmO by tlTTHO;
+  sub tlDDA tlmO by tlDDO;
+  sub tlDDHA tlmO by tlDDHO;
+  sub tlNNA tlmO by tlNNO;
+  sub tlTA tlmO by tlTO;
+  sub tlTHA tlmO by tlTHO;
+  sub tlDA tlmO by tlDO;
+  sub tlDHA tlmO by tlDHO;
+  sub tlNA tlmO by tlNO;
+  sub tlPA tlmO by tlPO;
+  sub tlPHA tlmO by tlPHO;
+  sub tlBA tlmO by tlBO;
+  sub tlBHA tlmO by tlBHO;
+  sub tlMA tlmO by tlMO;
+  sub tlYA tlmO by tlYO;
+  sub tlRA tlmO by tlRO;
+  sub tlLA tlmO by tlLO;
+  sub tlVA tlmO by tlVO;
+  sub tlSHA tlmO by tlSHO;
+  sub tlSSA tlmO by tlSSO;
+  sub tlSA tlmO by tlSO;
+  sub tlHA tlmO by tlHO;
+
+  sub tlRRA tlmO by tlRRO;
+  sub tlRRRA tlmO by tlRRRO;
+  sub tlLLA tlmO by tlLLO;
+  sub tlLLLA tlmO by tlLLLO;
+
+  sub tlKSSA tlmO by tlKSSO;
+
+  sub tlKA tlmOO by tlKOO;
+  sub tlKHA tlmOO by tlKHOO;
+  sub tlGA tlmOO by tlGOO;
+  sub tlGHA tlmOO by tlGHOO;
+  sub tlNGA tlmOO by tlNGOO;
+  sub tlCA tlmOO by tlCOO;
+  sub tlCHA tlmOO by tlCHOO;
+  sub tlJA tlmOO by tlJOO;
+  sub tlJHA tlmOO by tlJHOO;
+  sub tlNYA tlmOO by tlNYOO;
+  sub tlTTA tlmOO by tlTTOO;
+  sub tlTTHA tlmOO by tlTTHOO;
+  sub tlDDA tlmOO by tlDDOO;
+  sub tlDDHA tlmOO by tlDDHOO;
+  sub tlNNA tlmOO by tlNNOO;
+  sub tlTA tlmOO by tlTOO;
+  sub tlTHA tlmOO by tlTHOO;
+  sub tlDA tlmOO by tlDOO;
+  sub tlDHA tlmOO by tlDHOO;
+  sub tlNA tlmOO by tlNOO;
+  sub tlPA tlmOO by tlPOO;
+  sub tlPHA tlmOO by tlPHOO;
+  sub tlBA tlmOO by tlBOO;
+  sub tlBHA tlmOO by tlBHOO;
+  sub tlMA tlmOO by tlMOO;
+  sub tlYA tlmOO by tlYOO;
+  sub tlRA tlmOO by tlROO;
+  sub tlLA tlmOO by tlLOO;
+  sub tlVA tlmOO by tlVOO;
+  sub tlSHA tlmOO by tlSHOO;
+  sub tlSSA tlmOO by tlSSOO;
+  sub tlSA tlmOO by tlSOO;
+  sub tlHA tlmOO by tlHOO;
+
+  sub tlRRA tlmOO by tlRROO;
+  sub tlRRRA tlmOO by tlRRROO;
+  sub tlLLA tlmOO by tlLLOO;
+  sub tlLLLA tlmOO by tlLLLOO;
+
+  sub tlKSSA tlmOO by tlKSSOO;
+
+  sub tlKA tlmAU by tlKAU;
+  sub tlKHA tlmAU by tlKHAU;
+  sub tlGA tlmAU by tlGAU;
+  sub tlGHA tlmAU by tlGHAU;
+  sub tlNGA tlmAU by tlNGAU;
+  sub tlCA tlmAU by tlCAU;
+  sub tlCHA tlmAU by tlCHAU;
+  sub tlJA tlmAU by tlJAU;
+  sub tlJHA tlmAU by tlJHAU;
+  sub tlNYA tlmAU by tlNYAU;
+  sub tlTTA tlmAU by tlTTAU;
+  sub tlTTHA tlmAU by tlTTHAU;
+  sub tlDDA tlmAU by tlDDAU;
+  sub tlDDHA tlmAU by tlDDHAU;
+  sub tlNNA tlmAU by tlNNAU;
+  sub tlTA tlmAU by tlTAU;
+  sub tlTHA tlmAU by tlTHAU;
+  sub tlDA tlmAU by tlDAU;
+  sub tlDHA tlmAU by tlDHAU;
+  sub tlNA tlmAU by tlNAU;
+  sub tlPA tlmAU by tlPAU;
+  sub tlPHA tlmAU by tlPHAU;
+  sub tlBA tlmAU by tlBAU;
+  sub tlBHA tlmAU by tlBHAU;
+  sub tlMA tlmAU by tlMAU;
+  sub tlYA tlmAU by tlYAU;
+  sub tlRA tlmAU by tlRAU;
+  sub tlLA tlmAU by tlLAU;
+  sub tlVA tlmAU by tlVAU;
+  sub tlSHA tlmAU by tlSHAU;
+  sub tlSSA tlmAU by tlSSAU;
+  sub tlSA tlmAU by tlSAU;
+  sub tlHA tlmAU by tlHAU;
+
+  sub tlRRA tlmAU by tlRRAU;
+  sub tlRRRA tlmAU by tlRRRAU;
+  sub tlLLA tlmAU by tlLLAU;
+  sub tlLLLA tlmAU by tlLLLAU;
+
+  sub tlKSSA tlmAU by tlKSSAU;
+
+} abvs;
+
+
+# Below-base Substitution
+# -----------------------
+
+lookup blws {
+
+  sub tlKE tlAIlengthmark by tlKAI;
+  sub tlKHE tlAIlengthmark by tlKHAI;
+  sub tlGE tlAIlengthmark by tlGAI;
+  sub tlGHE tlAIlengthmark by tlGHAI;
+  sub tlNGE tlAIlengthmark by tlNGAI;
+  sub tlCE tlAIlengthmark by tlCAI;
+  sub tlCHE tlAIlengthmark by tlCHAI;
+  sub tlJE tlAIlengthmark by tlJAI;
+  sub tlJHE tlAIlengthmark by tlJHAI;
+  sub tlNYE tlAIlengthmark by tlNYAI;
+  sub tlTTE tlAIlengthmark by tlTTAI;
+  sub tlTTHE tlAIlengthmark by tlTTHAI;
+  sub tlDDE tlAIlengthmark by tlDDAI;
+  sub tlDDHE tlAIlengthmark by tlDDHAI;
+  sub tlNNE tlAIlengthmark by tlNNAI;
+  sub tlTE tlAIlengthmark by tlTAI;
+  sub tlTHE tlAIlengthmark by tlTHAI;
+  sub tlDE tlAIlengthmark by tlDAI;
+  sub tlDHE tlAIlengthmark by tlDHAI;
+  sub tlNE tlAIlengthmark by tlNAI;
+  sub tlPE tlAIlengthmark by tlPAI;
+  sub tlPHE tlAIlengthmark by tlPHAI;
+  sub tlBE tlAIlengthmark by tlBAI;
+  sub tlBHE tlAIlengthmark by tlBHAI;
+  sub tlME tlAIlengthmark by tlMAI;
+  sub tlYE tlAIlengthmark by tlYAI;
+  sub tlRE tlAIlengthmark by tlRAI;
+  sub tlLE tlAIlengthmark by tlLAI;
+  sub tlVE tlAIlengthmark by tlVAI;
+  sub tlSHE tlAIlengthmark by tlSHAI;
+  sub tlSSE tlAIlengthmark by tlSSAI;
+  sub tlSE tlAIlengthmark by tlSAI;
+  sub tlHE tlAIlengthmark by tlHAI;
+
+  sub tlRRE tlAIlengthmark by tlRRAI;
+  sub tlRRRE tlAIlengthmark by tlRRRAI;
+  sub tlLLE tlAIlengthmark by tlLLAI;
+  sub tlLLLE tlAIlengthmark by tlLLLAI;
+
+  sub tlKSSE tlAIlengthmark by tlKSSAI;
+
+} blws;
+
+
+# Post-base Substitution
+# ----------------------
+
+lookup psts {
+
+  sub tlKA tlmAA by tlKAA;
+  sub tlKHA tlmAA by tlKHAA;
+  sub tlGA tlmAA by tlGAA;
+  sub tlGHA tlmAA by tlGHAA;
+  sub tlNGA tlmAA by tlNGAA;
+  sub tlCA tlmAA by tlCAA;
+  sub tlCHA tlmAA by tlCHAA;
+  sub tlJA tlmAA by tlJAA;
+  sub tlJHA tlmAA by tlJHAA;
+  sub tlNYA tlmAA by tlNYAA;
+  sub tlTTA tlmAA by tlTTAA;
+  sub tlTTHA tlmAA by tlTTHAA;
+  sub tlDDA tlmAA by tlDDAA;
+  sub tlDDHA tlmAA by tlDDHAA;
+  sub tlNNA tlmAA by tlNNAA;
+  sub tlTA tlmAA by tlTAA;
+  sub tlTHA tlmAA by tlTHAA;
+  sub tlDA tlmAA by tlDAA;
+  sub tlDHA tlmAA by tlDHAA;
+  sub tlNA tlmAA by tlNAA;
+  sub tlPA tlmAA by tlPAA;
+  sub tlPHA tlmAA by tlPHAA;
+  sub tlBA tlmAA by tlBAA;
+  sub tlBHA tlmAA by tlBHAA;
+  sub tlMA tlmAA by tlMAA;
+  sub tlYA tlmAA by tlYAA;
+  sub tlRA tlmAA by tlRAA;
+  sub tlLA tlmAA by tlLAA;
+  sub tlVA tlmAA by tlVAA;
+  sub tlSHA tlmAA by tlSHAA;
+  sub tlSSA tlmAA by tlSSAA;
+  sub tlSA tlmAA by tlSAA;
+  sub tlHA tlmAA by tlHAA;
+
+  sub tlRRA tlmAA by tlRRAA;
+  sub tlRRRA tlmAA by tlRRRAA;
+  sub tlLLA tlmAA by tlLLAA;
+  sub tlLLLA tlmAA by tlLLLAA;
+
+  sub tlKSSA tlmAA by tlKSSAA;
+
+  sub tlKA tlmU by tlKU;
+  sub tlKHA tlmU by tlKHU;
+  sub tlGA tlmU by tlGU;
+  sub tlGHA tlmU by tlGHU;
+  sub tlNGA tlmU by tlNGU;
+  sub tlCA tlmU by tlCU;
+  sub tlCHA tlmU by tlCHU;
+  sub tlJA tlmU by tlJU;
+  sub tlJHA tlmU by tlJHU;
+  sub tlNYA tlmU by tlNYU;
+  sub tlTTA tlmU by tlTTU;
+  sub tlTTHA tlmU by tlTTHU;
+  sub tlDDA tlmU by tlDDU;
+  sub tlDDHA tlmU by tlDDHU;
+  sub tlNNA tlmU by tlNNU;
+  sub tlTA tlmU by tlTU;
+  sub tlTHA tlmU by tlTHU;
+  sub tlDA tlmU by tlDU;
+  sub tlDHA tlmU by tlDHU;
+  sub tlNA tlmU by tlNU;
+  sub tlPA tlmU by tlPU;
+  sub tlPHA tlmU by tlPHU;
+  sub tlBA tlmU by tlBU;
+  sub tlBHA tlmU by tlBHU;
+  sub tlMA tlmU by tlMU;
+  sub tlYA tlmU by tlYU;
+  sub tlRA tlmU by tlRU;
+  sub tlLA tlmU by tlLU;
+  sub tlVA tlmU by tlVU;
+  sub tlSHA tlmU by tlSHU;
+  sub tlSSA tlmU by tlSSU;
+  sub tlSA tlmU by tlSU;
+  sub tlHA tlmU by tlHU;
+
+  sub tlRRA tlmU by tlRRU;
+  sub tlRRRA tlmU by tlRRRU;
+  sub tlLLA tlmU by tlLLU;
+  sub tlLLLA tlmU by tlLLLU;
+
+  sub tlKSSA tlmU by tlKSSU;
+
+  sub tlKA tlmUU by tlKUU;
+  sub tlKHA tlmUU by tlKHUU;
+  sub tlGA tlmUU by tlGUU;
+  sub tlGHA tlmUU by tlGHUU;
+  sub tlNGA tlmUU by tlNGUU;
+  sub tlCA tlmUU by tlCUU;
+  sub tlCHA tlmUU by tlCHUU;
+  sub tlJA tlmUU by tlJUU;
+  sub tlJHA tlmUU by tlJHUU;
+  sub tlNYA tlmUU by tlNYUU;
+  sub tlTTA tlmUU by tlTTUU;
+  sub tlTTHA tlmUU by tlTTHUU;
+  sub tlDDA tlmUU by tlDDUU;
+  sub tlDDHA tlmUU by tlDDHUU;
+  sub tlNNA tlmUU by tlNNUU;
+  sub tlTA tlmUU by tlTUU;
+  sub tlTHA tlmUU by tlTHUU;
+  sub tlDA tlmUU by tlDUU;
+  sub tlDHA tlmUU by tlDHUU;
+  sub tlNA tlmUU by tlNUU;
+  sub tlPA tlmUU by tlPUU;
+  sub tlPHA tlmUU by tlPHUU;
+  sub tlBA tlmUU by tlBUU;
+  sub tlBHA tlmUU by tlBHUU;
+  sub tlMA tlmUU by tlMUU;
+  sub tlYA tlmUU by tlYUU;
+  sub tlRA tlmUU by tlRUU;
+  sub tlLA tlmUU by tlLUU;
+  sub tlVA tlmUU by tlVUU;
+  sub tlSHA tlmUU by tlSHUU;
+  sub tlSSA tlmUU by tlSSUU;
+  sub tlSA tlmUU by tlSUU;
+  sub tlHA tlmUU by tlHUU;
+
+  sub tlRRA tlmUU by tlRRUU;
+  sub tlRRRA tlmUU by tlRRRUU;
+  sub tlLLA tlmUU by tlLLUU;
+  sub tlLLLA tlmUU by tlLLLUU;
+
+  sub tlKSSA tlmUU by tlKSSUU;
+
+} psts;
+
+
+# Halant Forms
+# ------------
+
+# lookup haln_traditional {
+#   sub tlNA tlVirama by tlN.traditional;
+# } haln_traditional;
+
+lookup haln {
+
+  lookupflag IgnoreMarks;
+  # lookupflag MarkAttachmentType @COMBINING_MARKS_SPECIAL;
+
+  sub tlKA tlVirama by tlK;
+  sub tlKHA tlVirama by tlKH;
+  sub tlGA tlVirama by tlG;
+  sub tlGHA tlVirama by tlGH;
+  sub tlNGA tlVirama by tlNG;
+  sub tlCA tlVirama by tlC;
+  sub tlCHA tlVirama by tlCH;
+  sub tlJA tlVirama by tlJ;
+  sub tlJHA tlVirama by tlJH;
+  sub tlNYA tlVirama by tlNY;
+  sub tlTTA tlVirama by tlTT;
+  sub tlTTHA tlVirama by tlTTH;
+  sub tlDDA tlVirama by tlDD;
+  sub tlDDHA tlVirama by tlDDH;
+  sub tlNNA tlVirama by tlNN;
+  sub tlTA tlVirama by tlT;
+  sub tlTHA tlVirama by tlTH;
+  sub tlDA tlVirama by tlD;
+  sub tlDHA tlVirama by tlDH;
+  sub tlNA tlVirama by tlN;
+  sub tlPA tlVirama by tlP;
+  sub tlPHA tlVirama by tlPH;
+  sub tlBA tlVirama by tlB;
+  sub tlBHA tlVirama by tlBH;
+  sub tlMA tlVirama by tlM;
+  sub tlYA tlVirama by tlY;
+  sub tlRA tlVirama by tlR;
+  sub tlLA tlVirama by tlL;
+  sub tlVA tlVirama by tlV;
+  sub tlSHA tlVirama by tlSH;
+  sub tlSSA tlVirama by tlSS;
+  sub tlSA tlVirama by tlS;
+  sub tlHA tlVirama by tlH;
+
+  sub tlRRA tlVirama by tlRR;
+  sub tlRRRA tlVirama by tlRRR;
+  sub tlLLA tlVirama by tlLL;
+  sub tlLLLA tlVirama by tlLLL;
+
+  sub tlKSSA tlVirama by tlKSS;
+
+  lookupflag 0;
+
+} haln;

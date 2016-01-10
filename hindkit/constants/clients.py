@@ -45,16 +45,6 @@ class Client(object):
                     (14, "http://scripts.sil.org/OFL"),
                 ]),
             },
-            'Samsung': {
-                'info': {
-                    'style_scheme': styles.DUAL,
-                },
-                'table_name': collections.OrderedDict([
-                    (0, "Copyright {} Samsung Electronics Co., Ltd. All Rights Reserved.".format(datetime.date.today().year)),
-                    (7, "{} is a trademark of Samsung Electronics Co., Ltd.".format(self.family.trademark)),
-                    (9, "Indian Type Foundry"),
-                ]),
-            },
         }
 
         DEFAULT = DATA['ITF']

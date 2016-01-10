@@ -116,15 +116,14 @@ mlDatemark mlDatemark uni0D79
 
 mlIIarchaic mlIIarchaic uni0D5F
 
-uni0964 uni0964
-uni0965 uni0965
+danda danda uni0964
+doubledanda doubledanda uni0965
 
-uni20B9 uni20B9
+indianrupee indianrupee uni20B9
 
-uni200B uni200B
-uni200C uni200C
-uni200D uni200D
-uni25CC uni25CC
+zerowidthnonjoiner zerowidthnonjoiner uni200C
+zerowidthjoiner zerowidthjoiner uni200D
+dottedcircle dottedcircle uni25CC
 
 mlYAc2 mlYAc2
 mlRAc2 mlRAc2
@@ -208,41 +207,3 @@ mlVA_LAc2 mlVA_LAc2
 mlSHA_LAc2 mlSHA_LAc2
 mlSA_LAc2 mlSA_LAc2
 mlHA_LAc2 mlHA_LAc2
-
-mlKA_Virama mlKA_Virama
-mlKHA_Virama mlKHA_Virama
-mlGA_Virama mlGA_Virama
-mlGHA_Virama mlGHA_Virama
-mlNGA_Virama mlNGA_Virama
-mlCA_Virama mlCA_Virama
-mlCHA_Virama mlCHA_Virama
-mlJA_Virama mlJA_Virama
-mlJHA_Virama mlJHA_Virama
-mlNYA_Virama mlNYA_Virama
-mlTTA_Virama mlTTA_Virama
-mlTTHA_Virama mlTTHA_Virama
-mlDDA_Virama mlDDA_Virama
-mlDDHA_Virama mlDDHA_Virama
-mlNNA_Virama mlNNA_Virama
-mlTA_Virama mlTA_Virama
-mlTHA_Virama mlTHA_Virama
-mlDA_Virama mlDA_Virama
-mlDHA_Virama mlDHA_Virama
-mlNA_Virama mlNA_Virama
-mlPA_Virama mlPA_Virama
-mlPHA_Virama mlPHA_Virama
-mlBA_Virama mlBA_Virama
-mlBHA_Virama mlBHA_Virama
-mlMA_Virama mlMA_Virama
-mlYA_Virama mlYA_Virama
-mlRA_Virama mlRA_Virama
-mlLA_Virama mlLA_Virama
-mlVA_Virama mlVA_Virama
-mlSHA_Virama mlSHA_Virama
-mlSSA_Virama mlSSA_Virama
-mlSA_Virama mlSA_Virama
-mlHA_Virama mlHA_Virama
-mlRRA_Virama mlRRA_Virama
-mlLLA_Virama mlLLA_Virama
-mlLLLA_Virama mlLLLA_Virama
-mlK_SSA_Virama mlK_SSA_Virama

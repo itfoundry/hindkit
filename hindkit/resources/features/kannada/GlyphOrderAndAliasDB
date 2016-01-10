@@ -1,0 +1,522 @@
+.notdef .notdef
+space space uni0020
+
+knA knA uni0C85
+knAA knAA uni0C86
+knI knI uni0C87
+knII knII uni0C88
+knU knU uni0C89
+knUU knUU uni0C8A
+knvR knvR uni0C8B
+knvRR knvRR uni0CE0
+knvL knvL uni0C8C
+knvLL knvLL uni0CE1
+knE knE uni0C8E
+knEE knEE uni0C8F
+knAI knAI uni0C90
+knO knO uni0C92
+knOO knOO uni0C93
+knAU knAU uni0C94
+
+knmAA knmAA uni0CBE
+knmI knmI uni0CBF
+knmII knmII uni0CC0
+knmU knmU uni0CC1
+knmUU knmUU uni0CC2
+knmvR knmvR uni0CC3
+knmvRR knmvRR uni0CC4
+knmvL knmvL uni0CE2
+knmvLL knmvLL uni0CE3
+knmE knmE uni0CC6
+knmEE knmEE uni0CC7
+knmAI knmAI uni0CC8
+knmO knmO uni0CCA
+knmOO knmOO uni0CCB
+knmAU knmAU uni0CCC
+
+knLengthmark knLengthmark uni0CD5
+knAIlengthmark knAIlengthmark uni0CD6
+
+knKA knKA uni0C95
+knKHA knKHA uni0C96
+knGA knGA uni0C97
+knGHA knGHA uni0C98
+knNGA knNGA uni0C99
+knCA knCA uni0C9A
+knCHA knCHA uni0C9B
+knJA knJA uni0C9C
+knJHA knJHA uni0C9D
+knNYA knNYA uni0C9E
+knTTA knTTA uni0C9F
+knTTHA knTTHA uni0CA0
+knDDA knDDA uni0CA1
+knDDHA knDDHA uni0CA2
+knNNA knNNA uni0CA3
+knTA knTA uni0CA4
+knTHA knTHA uni0CA5
+knDA knDA uni0CA6
+knDHA knDHA uni0CA7
+knNA knNA uni0CA8
+knPA knPA uni0CAA
+knPHA knPHA uni0CAB
+knBA knBA uni0CAC
+knBHA knBHA uni0CAD
+knMA knMA uni0CAE
+knYA knYA uni0CAF
+knRA knRA uni0CB0
+knLA knLA uni0CB2
+knVA knVA uni0CB5
+knSHA knSHA uni0CB6
+knSSA knSSA uni0CB7
+knSA knSA uni0CB8
+knHA knHA uni0CB9
+
+knRRA knRRA uni0CB1
+knLLA knLLA uni0CB3
+knLLLA knLLLA uni0CDE
+
+knAnusvara knAnusvara uni0C82
+knCandrabindu knCandrabindu uni0C81
+knVisarga knVisarga uni0C83
+knAvagraha knAvagraha uni0CBD
+knVirama knVirama uni0CCD
+knNukta knNukta uni0CBC
+
+knZero knZero uni0CE6
+knOne knOne uni0CE7
+knTwo knTwo uni0CE8
+knThree knThree uni0CE9
+knFour knFour uni0CEA
+knFive knFive uni0CEB
+knSix knSix uni0CEC
+knSeven knSeven uni0CED
+knEight knEight uni0CEE
+knNine knNine uni0CEF
+
+indianrupee indianrupee uni20B9
+
+dottedcircle dottedcircle uni25CC
+zerowidthnonjoiner zerowidthnonjoiner uni200C
+zerowidthjoiner zerowidthjoiner uni200D
+
+ITF ITF
+
+knReph knReph
+
+knKAc2 knKAc2
+knKHAc2 knKHAc2
+knGAc2 knGAc2
+knGHAc2 knGHAc2
+knNGAc2 knNGAc2
+knCAc2 knCAc2
+knCHAc2 knCHAc2
+knJAc2 knJAc2
+knJHAc2 knJHAc2
+knNYAc2 knNYAc2
+knTTAc2 knTTAc2
+knTTHAc2 knTTHAc2
+knDDAc2 knDDAc2
+knDDHAc2 knDDHAc2
+knNNAc2 knNNAc2
+knTAc2 knTAc2
+knTHAc2 knTHAc2
+knDAc2 knDAc2
+knDHAc2 knDHAc2
+knNAc2 knNAc2
+knPAc2 knPAc2
+knPHAc2 knPHAc2
+knBAc2 knBAc2
+knBHAc2 knBHAc2
+knMAc2 knMAc2
+knYAc2 knYAc2
+knRAc2 knRAc2
+knLAc2 knLAc2
+knVAc2 knVAc2
+knSHAc2 knSHAc2
+knSSAc2 knSSAc2
+knSAc2 knSAc2
+knHAc2 knHAc2
+
+knRRAc2 knRRAc2
+knLLAc2 knLLAc2
+knLLLAc2 knLLLAc2
+
+knmvR.small knmvR.small
+
+knRAc2.narrow knRAc2.narrow
+knRAc2.right knRAc2.right
+knRAc2.alt knRAc2.alt
+
+knKA_mvRc2 knKA_mvRc2
+knK_RAc2 knK_RAc2
+knK_SSAc2 knK_SSAc2
+
+knTT_RAc2 knTT_RAc2
+
+knTA_mvRc2 knTA_mvRc2
+knTA_AIlengthmarkc2 knTA_AIlengthmarkc2
+knT_YAc2 knT_YAc2
+knT_RAc2 knT_RAc2
+
+knNA_AIlengthmarkc2 knNA_AIlengthmarkc2
+
+knP_RAc2 knP_RAc2
+
+knBA_AIlengthmarkc2 knBA_AIlengthmarkc2
+
+knMA_mvRc2 knMA_mvRc2
+knMA_AIlengthmarkc2 knMA_AIlengthmarkc2
+knM_YAc2 knM_YAc2
+
+knRA_mvRc2 knRA_mvRc2
+knRA_mvRRc2 knRA_mvRRc2
+knRA_AIlengthmarkc2 knRA_AIlengthmarkc2
+
+knSS_NNAc2 knSS_NNAc2
+
+knS_DHAc2 knS_DHAc2
+knS_RAc2 knS_RAc2
+
+knKA_mAA knKA_mAA
+knKHA_mAA knKHA_mAA
+knGA_mAA knGA_mAA
+knGHA_mAA knGHA_mAA
+knNGA_mAA knNGA_mAA
+knCA_mAA knCA_mAA
+knCHA_mAA knCHA_mAA
+knJA_mAA knJA_mAA
+knJHA_mAA knJHA_mAA
+knNYA_mAA knNYA_mAA
+knTTA_mAA knTTA_mAA
+knTTHA_mAA knTTHA_mAA
+knDDA_mAA knDDA_mAA
+knDDHA_mAA knDDHA_mAA
+knNNA_mAA knNNA_mAA
+knTA_mAA knTA_mAA
+knTHA_mAA knTHA_mAA
+knDA_mAA knDA_mAA
+knDHA_mAA knDHA_mAA
+knNA_mAA knNA_mAA
+knPA_mAA knPA_mAA
+knPHA_mAA knPHA_mAA
+knBA_mAA knBA_mAA
+knBHA_mAA knBHA_mAA
+knMA_mAA knMA_mAA
+knYA_mAA knYA_mAA
+knRA_mAA knRA_mAA
+knLA_mAA knLA_mAA
+knVA_mAA knVA_mAA
+knSHA_mAA knSHA_mAA
+knSSA_mAA knSSA_mAA
+knSA_mAA knSA_mAA
+knHA_mAA knHA_mAA
+
+knRRA_mAA knRRA_mAA
+knLLA_mAA knLLA_mAA
+knLLLA_mAA knLLLA_mAA
+
+knKA_mI knKA_mI
+knKHA_mI knKHA_mI
+knGA_mI knGA_mI
+knGHA_mI knGHA_mI
+knNGA_mI knNGA_mI
+knCA_mI knCA_mI
+knCHA_mI knCHA_mI
+knJA_mI knJA_mI
+knJHA_mI knJHA_mI
+knNYA_mI knNYA_mI
+knTTA_mI knTTA_mI
+knTTHA_mI knTTHA_mI
+knDDA_mI knDDA_mI
+knDDHA_mI knDDHA_mI
+knNNA_mI knNNA_mI
+knTA_mI knTA_mI
+knTHA_mI knTHA_mI
+knDA_mI knDA_mI
+knDHA_mI knDHA_mI
+knNA_mI knNA_mI
+knPA_mI knPA_mI
+knPHA_mI knPHA_mI
+knBA_mI knBA_mI
+knBHA_mI knBHA_mI
+knMA_mI knMA_mI
+knYA_mI knYA_mI
+knRA_mI knRA_mI
+knLA_mI knLA_mI
+knVA_mI knVA_mI
+knSHA_mI knSHA_mI
+knSSA_mI knSSA_mI
+knSA_mI knSA_mI
+knHA_mI knHA_mI
+
+knRRA_mI knRRA_mI
+knLLA_mI knLLA_mI
+knLLLA_mI knLLLA_mI
+
+knKA_mU knKA_mU
+knKHA_mU knKHA_mU
+knGA_mU knGA_mU
+knGHA_mU knGHA_mU
+knNGA_mU knNGA_mU
+knCA_mU knCA_mU
+knCHA_mU knCHA_mU
+knJA_mU knJA_mU
+knJHA_mU knJHA_mU
+knNYA_mU knNYA_mU
+knTTA_mU knTTA_mU
+knTTHA_mU knTTHA_mU
+knDDA_mU knDDA_mU
+knDDHA_mU knDDHA_mU
+knNNA_mU knNNA_mU
+knTA_mU knTA_mU
+knTHA_mU knTHA_mU
+knDA_mU knDA_mU
+knDHA_mU knDHA_mU
+knNA_mU knNA_mU
+knPA_mU knPA_mU
+knPHA_mU knPHA_mU
+knBA_mU knBA_mU
+knBHA_mU knBHA_mU
+knMA_mU knMA_mU
+knYA_mU knYA_mU
+knRA_mU knRA_mU
+knLA_mU knLA_mU
+knVA_mU knVA_mU
+knSHA_mU knSHA_mU
+knSSA_mU knSSA_mU
+knSA_mU knSA_mU
+knHA_mU knHA_mU
+
+knRRA_mU knRRA_mU
+knLLA_mU knLLA_mU
+knLLLA_mU knLLLA_mU
+
+knKA_mUU knKA_mUU
+knKHA_mUU knKHA_mUU
+knGA_mUU knGA_mUU
+knGHA_mUU knGHA_mUU
+knNGA_mUU knNGA_mUU
+knCA_mUU knCA_mUU
+knCHA_mUU knCHA_mUU
+knJA_mUU knJA_mUU
+knJHA_mUU knJHA_mUU
+knNYA_mUU knNYA_mUU
+knTTA_mUU knTTA_mUU
+knTTHA_mUU knTTHA_mUU
+knDDA_mUU knDDA_mUU
+knDDHA_mUU knDDHA_mUU
+knNNA_mUU knNNA_mUU
+knTA_mUU knTA_mUU
+knTHA_mUU knTHA_mUU
+knDA_mUU knDA_mUU
+knDHA_mUU knDHA_mUU
+knNA_mUU knNA_mUU
+knPA_mUU knPA_mUU
+knPHA_mUU knPHA_mUU
+knBA_mUU knBA_mUU
+knBHA_mUU knBHA_mUU
+knMA_mUU knMA_mUU
+knYA_mUU knYA_mUU
+knRA_mUU knRA_mUU
+knLA_mUU knLA_mUU
+knVA_mUU knVA_mUU
+knSHA_mUU knSHA_mUU
+knSSA_mUU knSSA_mUU
+knSA_mUU knSA_mUU
+knHA_mUU knHA_mUU
+
+knRRA_mUU knRRA_mUU
+knLLA_mUU knLLA_mUU
+knLLLA_mUU knLLLA_mUU
+
+knKA_mE knKA_mE
+knKHA_mE knKHA_mE
+knGA_mE knGA_mE
+knGHA_mE knGHA_mE
+knNGA_mE knNGA_mE
+knCA_mE knCA_mE
+knCHA_mE knCHA_mE
+knJA_mE knJA_mE
+knJHA_mE knJHA_mE
+knNYA_mE knNYA_mE
+knTTA_mE knTTA_mE
+knTTHA_mE knTTHA_mE
+knDDA_mE knDDA_mE
+knDDHA_mE knDDHA_mE
+knNNA_mE knNNA_mE
+knTA_mE knTA_mE
+knTHA_mE knTHA_mE
+knDA_mE knDA_mE
+knDHA_mE knDHA_mE
+knNA_mE knNA_mE
+knPA_mE knPA_mE
+knPHA_mE knPHA_mE
+knBA_mE knBA_mE
+knBHA_mE knBHA_mE
+knMA_mE knMA_mE
+knYA_mE knYA_mE
+knRA_mE knRA_mE
+knLA_mE knLA_mE
+knVA_mE knVA_mE
+knSHA_mE knSHA_mE
+knSSA_mE knSSA_mE
+knSA_mE knSA_mE
+knHA_mE knHA_mE
+
+knRRA_mE knRRA_mE
+knLLA_mE knLLA_mE
+knLLLA_mE knLLLA_mE
+
+knKA_mO knKA_mO
+knKHA_mO knKHA_mO
+knGA_mO knGA_mO
+knGHA_mO knGHA_mO
+knNGA_mO knNGA_mO
+knCA_mO knCA_mO
+knCHA_mO knCHA_mO
+knJA_mO knJA_mO
+knJHA_mO knJHA_mO
+knNYA_mO knNYA_mO
+knTTA_mO knTTA_mO
+knTTHA_mO knTTHA_mO
+knDDA_mO knDDA_mO
+knDDHA_mO knDDHA_mO
+knNNA_mO knNNA_mO
+knTA_mO knTA_mO
+knTHA_mO knTHA_mO
+knDA_mO knDA_mO
+knDHA_mO knDHA_mO
+knNA_mO knNA_mO
+knPA_mO knPA_mO
+knPHA_mO knPHA_mO
+knBA_mO knBA_mO
+knBHA_mO knBHA_mO
+knMA_mO knMA_mO
+knYA_mO knYA_mO
+knRA_mO knRA_mO
+knLA_mO knLA_mO
+knVA_mO knVA_mO
+knSHA_mO knSHA_mO
+knSSA_mO knSSA_mO
+knSA_mO knSA_mO
+knHA_mO knHA_mO
+
+knRRA_mO knRRA_mO
+knLLA_mO knLLA_mO
+knLLLA_mO knLLLA_mO
+
+knKA_mAU knKA_mAU
+knKHA_mAU knKHA_mAU
+knGA_mAU knGA_mAU
+knGHA_mAU knGHA_mAU
+knNGA_mAU knNGA_mAU
+knCA_mAU knCA_mAU
+knCHA_mAU knCHA_mAU
+knJA_mAU knJA_mAU
+knJHA_mAU knJHA_mAU
+knNYA_mAU knNYA_mAU
+knTTA_mAU knTTA_mAU
+knTTHA_mAU knTTHA_mAU
+knDDA_mAU knDDA_mAU
+knDDHA_mAU knDDHA_mAU
+knNNA_mAU knNNA_mAU
+knTA_mAU knTA_mAU
+knTHA_mAU knTHA_mAU
+knDA_mAU knDA_mAU
+knDHA_mAU knDHA_mAU
+knNA_mAU knNA_mAU
+knPA_mAU knPA_mAU
+knPHA_mAU knPHA_mAU
+knBA_mAU knBA_mAU
+knBHA_mAU knBHA_mAU
+knMA_mAU knMA_mAU
+knYA_mAU knYA_mAU
+knRA_mAU knRA_mAU
+knLA_mAU knLA_mAU
+knVA_mAU knVA_mAU
+knSHA_mAU knSHA_mAU
+knSSA_mAU knSSA_mAU
+knSA_mAU knSA_mAU
+knHA_mAU knHA_mAU
+
+knRRA_mAU knRRA_mAU
+knLLA_mAU knLLA_mAU
+knLLLA_mAU knLLLA_mAU
+
+knSH_RA_mII knSH_RA_mII
+
+knKA_Virama knKA_Virama
+knKHA_Virama knKHA_Virama
+knGA_Virama knGA_Virama
+knGHA_Virama knGHA_Virama
+knNGA_Virama knNGA_Virama
+knCA_Virama knCA_Virama
+knCHA_Virama knCHA_Virama
+knJA_Virama knJA_Virama
+knJHA_Virama knJHA_Virama
+knNYA_Virama knNYA_Virama
+knTTA_Virama knTTA_Virama
+knTTHA_Virama knTTHA_Virama
+knDDA_Virama knDDA_Virama
+knDDHA_Virama knDDHA_Virama
+knNNA_Virama knNNA_Virama
+knTA_Virama knTA_Virama
+knTHA_Virama knTHA_Virama
+knDA_Virama knDA_Virama
+knDHA_Virama knDHA_Virama
+knNA_Virama knNA_Virama
+knPA_Virama knPA_Virama
+knPHA_Virama knPHA_Virama
+knBA_Virama knBA_Virama
+knBHA_Virama knBHA_Virama
+knMA_Virama knMA_Virama
+knYA_Virama knYA_Virama
+knRA_Virama knRA_Virama
+knLA_Virama knLA_Virama
+knVA_Virama knVA_Virama
+knSHA_Virama knSHA_Virama
+knSSA_Virama knSSA_Virama
+knSA_Virama knSA_Virama
+knHA_Virama knHA_Virama
+
+knRRA_Virama knRRA_Virama
+knLLA_Virama knLLA_Virama
+knLLLA_Virama knLLLA_Virama
+
+knKA.base knKA.base
+knKHA.base knKHA.base
+knGA.base knGA.base
+knGHA.base knGHA.base
+knNGA.base knNGA.base
+knCA.base knCA.base
+knCHA.base knCHA.base
+knJA.base knJA.base
+knJHA.base knJHA.base
+knNYA.base knNYA.base
+knTTA.base knTTA.base
+knTTHA.base knTTHA.base
+knDDA.base knDDA.base
+knDDHA.base knDDHA.base
+knNNA.base knNNA.base
+knTA.base knTA.base
+knTHA.base knTHA.base
+knDA.base knDA.base
+knDHA.base knDHA.base
+knNA.base knNA.base
+knPA.base knPA.base
+knPHA.base knPHA.base
+knBA.base knBA.base
+knBHA.base knBHA.base
+knMA.base knMA.base
+knYA.base knYA.base
+knRA.base knRA.base
+knLA.base knLA.base
+knVA.base knVA.base
+knSHA.base knSHA.base
+knSSA.base knSSA.base
+knSA.base knSA.base
+knHA.base knHA.base
+
+knRRA.base knRRA.base
+knLLA.base knLLA.base
+knLLLA.base knLLLA.base

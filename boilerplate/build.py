@@ -8,6 +8,7 @@ family = kit.Family(
     client = 'Google Fonts',
     trademark = 'Hind Siliguri',
     script = 'Bangla',
+    hide_script_name = True,
 )
 family.set_masters()
 family.set_styles()

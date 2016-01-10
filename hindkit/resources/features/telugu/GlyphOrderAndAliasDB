@@ -1,0 +1,693 @@
+.notdef .notdef
+space space uni0020
+tlA tlA uni0C05
+tlAA tlAA uni0C06
+tlI tlI uni0C07
+tlII tlII uni0C08
+tlU tlU uni0C09
+tlUU tlUU uni0C0A
+tlvR tlvR uni0C0B
+tlvRR tlvRR uni0C60
+tlvL tlvL uni0C0C
+tlvLL tlvLL uni0C61
+tlE tlE uni0C0E
+tlEE tlEE uni0C0F
+tlAI tlAI uni0C10
+tlO tlO uni0C12
+tlOO tlOO uni0C13
+tlAU tlAU uni0C14
+tlmAA tlmAA uni0C3E
+tlmI tlmI uni0C3F
+tlmII tlmII uni0C40
+tlmU tlmU uni0C41
+tlmUU tlmUU uni0C42
+tlmvR tlmvR uni0C43
+tlmvRR tlmvRR uni0C44
+tlmvL tlmvL uni0C62
+tlmvLL tlmvLL uni0C63
+tlmE tlmE uni0C46
+tlmEE tlmEE uni0C47
+tlmAI tlmAI uni0C48
+tlmO tlmO uni0C4A
+tlmOO tlmOO uni0C4B
+tlmAU tlmAU uni0C4C
+tlLengthmark tlLengthmark uni0C55
+tlAIlengthmark tlAIlengthmark uni0C56
+tlKA tlKA uni0C15
+tlKHA tlKHA uni0C16
+tlGA tlGA uni0C17
+tlGHA tlGHA uni0C18
+tlNGA tlNGA uni0C19
+tlCA tlCA uni0C1A
+tlCHA tlCHA uni0C1B
+tlJA tlJA uni0C1C
+tlJHA tlJHA uni0C1D
+tlNYA tlNYA uni0C1E
+tlTTA tlTTA uni0C1F
+tlTTHA tlTTHA uni0C20
+tlDDA tlDDA uni0C21
+tlDDHA tlDDHA uni0C22
+tlNNA tlNNA uni0C23
+tlTA tlTA uni0C24
+tlTHA tlTHA uni0C25
+tlDA tlDA uni0C26
+tlDHA tlDHA uni0C27
+tlNA tlNA uni0C28
+tlPA tlPA uni0C2A
+tlPHA tlPHA uni0C2B
+tlBA tlBA uni0C2C
+tlBHA tlBHA uni0C2D
+tlMA tlMA uni0C2E
+tlYA tlYA uni0C2F
+tlRA tlRA uni0C30
+tlLA tlLA uni0C32
+tlVA tlVA uni0C35
+tlSHA tlSHA uni0C36
+tlSSA tlSSA uni0C37
+tlSA tlSA uni0C38
+tlHA tlHA uni0C39
+tlRRA tlRRA uni0C31
+tlRRRA tlRRRA uni0C5A
+tlLLA tlLLA uni0C33
+tlLLLA tlLLLA uni0C34
+tlTSA tlTSA uni0C58
+tlDZA tlDZA uni0C59
+tlKSSA tlKSSA
+tlAnusvara tlAnusvara uni0C02
+tlArasunna tlArasunna uni0C01
+tlCandrabindu tlCandrabindu uni0C00
+tlVisarga tlVisarga uni0C03
+tlVirama tlVirama uni0C4D
+tlAvagraha tlAvagraha uni0C3D
+tlZero tlZero uni0C66
+tlOne tlOne uni0C67
+tlTwo tlTwo uni0C68
+tlThree tlThree uni0C69
+tlFour tlFour uni0C6A
+tlFive tlFive uni0C6B
+tlSix tlSix uni0C6C
+tlSeven tlSeven uni0C6D
+tlEight tlEight uni0C6E
+tlNine tlNine uni0C6F
+tlZeroforodd tlZeroforodd uni0C78
+tlOneforodd tlOneforodd uni0C79
+tlTwoforodd tlTwoforodd uni0C7A
+tlThreeforodd tlThreeforodd uni0C7B
+tlOneforeven tlOneforeven uni0C7C
+tlTwoforeven tlTwoforeven uni0C7D
+tlThreeforeven tlThreeforeven uni0C7E
+tlTuumu tlTuumu uni0C7F
+danda danda uni0964
+doubledanda doubledanda uni0965
+
+rupee rupee uni20A8
+indianrupee indianrupee uni20B9
+
+zerowidthnonjoiner zerowidthnonjoiner uni200C
+zerowidthjoiner zerowidthjoiner uni200D
+dottedcircle dottedcircle uni25CC
+
+ITF ITF
+
+tlTick tlTick
+tlTeardrop tlTeardrop
+
+tlTAc2.above tlTAc2.above
+
+tlKAc2 tlKAc2
+tlKHAc2 tlKHAc2
+tlGAc2 tlGAc2
+tlGHAc2 tlGHAc2
+tlNGAc2 tlNGAc2
+tlCAc2 tlCAc2
+tlCHAc2 tlCHAc2
+tlJAc2 tlJAc2
+tlJHAc2 tlJHAc2
+tlNYAc2 tlNYAc2
+tlTTAc2 tlTTAc2
+tlTTHAc2 tlTTHAc2
+tlDDAc2 tlDDAc2
+tlDDHAc2 tlDDHAc2
+tlNNAc2 tlNNAc2
+tlTAc2 tlTAc2
+tlTHAc2 tlTHAc2
+tlDAc2 tlDAc2
+tlDHAc2 tlDHAc2
+tlNAc2 tlNAc2
+tlPAc2 tlPAc2
+tlPHAc2 tlPHAc2
+tlBAc2 tlBAc2
+tlBHAc2 tlBHAc2
+tlMAc2 tlMAc2
+tlYAc2 tlYAc2
+tlRAc2 tlRAc2
+tlLAc2 tlLAc2
+tlVAc2 tlVAc2
+tlSHAc2 tlSHAc2
+tlSSAc2 tlSSAc2
+tlSAc2 tlSAc2
+tlHAc2 tlHAc2
+tlRRAc2 tlRRAc2
+tlRRRAc2 tlRRRAc2
+tlLLAc2 tlLLAc2
+tlLLLAc2 tlLLLAc2
+tlTSAc2 tlTSAc2
+tlDZAc2 tlDZAc2
+tlKSSAc2 tlKSSAc2
+tlTAc2_RAc2 tlTAc2_RAc2
+tlKAc2.spacing tlKAc2.spacing
+tlKHAc2.spacing tlKHAc2.spacing
+tlGAc2.spacing tlGAc2.spacing
+tlGHAc2.spacing tlGHAc2.spacing
+tlNGAc2.spacing tlNGAc2.spacing
+tlCAc2.spacing tlCAc2.spacing
+tlCHAc2.spacing tlCHAc2.spacing
+tlJAc2.spacing tlJAc2.spacing
+tlJHAc2.spacing tlJHAc2.spacing
+tlNYAc2.spacing tlNYAc2.spacing
+tlTTAc2.spacing tlTTAc2.spacing
+tlTTHAc2.spacing tlTTHAc2.spacing
+tlDDAc2.spacing tlDDAc2.spacing
+tlDDHAc2.spacing tlDDHAc2.spacing
+tlNNAc2.spacing tlNNAc2.spacing
+tlTAc2.spacing tlTAc2.spacing
+tlTHAc2.spacing tlTHAc2.spacing
+tlDAc2.spacing tlDAc2.spacing
+tlDHAc2.spacing tlDHAc2.spacing
+tlNAc2.spacing tlNAc2.spacing
+tlPAc2.spacing tlPAc2.spacing
+tlPHAc2.spacing tlPHAc2.spacing
+tlBAc2.spacing tlBAc2.spacing
+tlBHAc2.spacing tlBHAc2.spacing
+tlMAc2.spacing tlMAc2.spacing
+tlYAc2.spacing tlYAc2.spacing
+tlRAc2.spacing tlRAc2.spacing
+tlLAc2.spacing tlLAc2.spacing
+tlVAc2.spacing tlVAc2.spacing
+tlSHAc2.spacing tlSHAc2.spacing
+tlSSAc2.spacing tlSSAc2.spacing
+tlSAc2.spacing tlSAc2.spacing
+tlHAc2.spacing tlHAc2.spacing
+tlRRAc2.spacing tlRRAc2.spacing
+tlRRRAc2.spacing tlRRRAc2.spacing
+tlLLAc2.spacing tlLLAc2.spacing
+tlLLLAc2.spacing tlLLLAc2.spacing
+tlTSAc2.spacing tlTSAc2.spacing
+tlDZAc2.spacing tlDZAc2.spacing
+tlKSSAc2.spacing tlKSSAc2.spacing
+tlKAc2.alt tlKAc2.alt
+tlKHAc2.alt tlKHAc2.alt
+tlGAc2.alt tlGAc2.alt
+tlGHAc2.alt tlGHAc2.alt
+tlNGAc2.alt tlNGAc2.alt
+tlCAc2.alt tlCAc2.alt
+tlCHAc2.alt tlCHAc2.alt
+tlJAc2.alt tlJAc2.alt
+tlJHAc2.alt tlJHAc2.alt
+tlNYAc2.alt tlNYAc2.alt
+tlTTAc2.alt tlTTAc2.alt
+tlTTHAc2.alt tlTTHAc2.alt
+tlDDAc2.alt tlDDAc2.alt
+tlDDHAc2.alt tlDDHAc2.alt
+tlNNAc2.alt tlNNAc2.alt
+tlTAc2.alt tlTAc2.alt
+tlTHAc2.alt tlTHAc2.alt
+tlDAc2.alt tlDAc2.alt
+tlDHAc2.alt tlDHAc2.alt
+tlNAc2.alt tlNAc2.alt
+tlPAc2.alt tlPAc2.alt
+tlPHAc2.alt tlPHAc2.alt
+tlBAc2.alt tlBAc2.alt
+tlBHAc2.alt tlBHAc2.alt
+tlMAc2.alt tlMAc2.alt
+tlYAc2.alt tlYAc2.alt
+tlRAc2.alt tlRAc2.alt
+tlLAc2.alt tlLAc2.alt
+tlVAc2.alt tlVAc2.alt
+tlSHAc2.alt tlSHAc2.alt
+tlSSAc2.alt tlSSAc2.alt
+tlSAc2.alt tlSAc2.alt
+tlHAc2.alt tlHAc2.alt
+tlRRAc2.alt tlRRAc2.alt
+tlRRRAc2.alt tlRRRAc2.alt
+tlLLAc2.alt tlLLAc2.alt
+tlLLLAc2.alt tlLLLAc2.alt
+tlTSAc2.alt tlTSAc2.alt
+tlDZAc2.alt tlDZAc2.alt
+tlKSSAc2.alt tlKSSAc2.alt
+tlK tlK
+tlKH tlKH
+tlG tlG
+tlGH tlGH
+tlNG tlNG
+tlC tlC
+tlCH tlCH
+tlJ tlJ
+tlJH tlJH
+tlNY tlNY
+tlTT tlTT
+tlTTH tlTTH
+tlDD tlDD
+tlDDH tlDDH
+tlNN tlNN
+tlT tlT
+tlTH tlTH
+tlD tlD
+tlDH tlDH
+tlN tlN
+tlP tlP
+tlPH tlPH
+tlB tlB
+tlBH tlBH
+tlM tlM
+tlY tlY
+tlR tlR
+tlL tlL
+tlV tlV
+tlSH tlSH
+tlSS tlSS
+tlS tlS
+tlH tlH
+tlRR tlRR
+tlRRR tlRRR
+tlLL tlLL
+tlLLL tlLLL
+tlKSS tlKSS
+tlKAA tlKAA
+tlKHAA tlKHAA
+tlGAA tlGAA
+tlGHAA tlGHAA
+tlNGAA tlNGAA
+tlCAA tlCAA
+tlCHAA tlCHAA
+tlJAA tlJAA
+tlJHAA tlJHAA
+tlNYAA tlNYAA
+tlTTAA tlTTAA
+tlTTHAA tlTTHAA
+tlDDAA tlDDAA
+tlDDHAA tlDDHAA
+tlNNAA tlNNAA
+tlTAA tlTAA
+tlTHAA tlTHAA
+tlDAA tlDAA
+tlDHAA tlDHAA
+tlNAA tlNAA
+tlPAA tlPAA
+tlPHAA tlPHAA
+tlBAA tlBAA
+tlBHAA tlBHAA
+tlMAA tlMAA
+tlYAA tlYAA
+tlRAA tlRAA
+tlLAA tlLAA
+tlVAA tlVAA
+tlSHAA tlSHAA
+tlSSAA tlSSAA
+tlSAA tlSAA
+tlHAA tlHAA
+tlRRAA tlRRAA
+tlRRRAA tlRRRAA
+tlLLAA tlLLAA
+tlLLLAA tlLLLAA
+tlKSSAA tlKSSAA
+tlKI tlKI
+tlKHI tlKHI
+tlGI tlGI
+tlGHI tlGHI
+tlNGI tlNGI
+tlCI tlCI
+tlCHI tlCHI
+tlJI tlJI
+tlJHI tlJHI
+tlNYI tlNYI
+tlTTI tlTTI
+tlTTHI tlTTHI
+tlDDI tlDDI
+tlDDHI tlDDHI
+tlNNI tlNNI
+tlTI tlTI
+tlTHI tlTHI
+tlDI tlDI
+tlDHI tlDHI
+tlNI tlNI
+tlPI tlPI
+tlPHI tlPHI
+tlBI tlBI
+tlBHI tlBHI
+tlMI tlMI
+tlYI tlYI
+tlRI tlRI
+tlLI tlLI
+tlVI tlVI
+tlSHI tlSHI
+tlSSI tlSSI
+tlSI tlSI
+tlHI tlHI
+tlRRI tlRRI
+tlRRRI tlRRRI
+tlLLI tlLLI
+tlLLLI tlLLLI
+tlKSSI tlKSSI
+tlKII tlKII
+tlKHII tlKHII
+tlGII tlGII
+tlGHII tlGHII
+tlNGII tlNGII
+tlCII tlCII
+tlCHII tlCHII
+tlJII tlJII
+tlJHII tlJHII
+tlNYII tlNYII
+tlTTII tlTTII
+tlTTHII tlTTHII
+tlDDII tlDDII
+tlDDHII tlDDHII
+tlNNII tlNNII
+tlTII tlTII
+tlTHII tlTHII
+tlDII tlDII
+tlDHII tlDHII
+tlNII tlNII
+tlPII tlPII
+tlPHII tlPHII
+tlBII tlBII
+tlBHII tlBHII
+tlMII tlMII
+tlYII tlYII
+tlRII tlRII
+tlLII tlLII
+tlVII tlVII
+tlSHII tlSHII
+tlSSII tlSSII
+tlSII tlSII
+tlHII tlHII
+tlRRII tlRRII
+tlRRRII tlRRRII
+tlLLII tlLLII
+tlLLLII tlLLLII
+tlKSSII tlKSSII
+tlKU tlKU
+tlKHU tlKHU
+tlGU tlGU
+tlGHU tlGHU
+tlNGU tlNGU
+tlCU tlCU
+tlCHU tlCHU
+tlJU tlJU
+tlJHU tlJHU
+tlNYU tlNYU
+tlTTU tlTTU
+tlTTHU tlTTHU
+tlDDU tlDDU
+tlDDHU tlDDHU
+tlNNU tlNNU
+tlTU tlTU
+tlTHU tlTHU
+tlDU tlDU
+tlDHU tlDHU
+tlNU tlNU
+tlPU tlPU
+tlPHU tlPHU
+tlBU tlBU
+tlBHU tlBHU
+tlMU tlMU
+tlYU tlYU
+tlRU tlRU
+tlLU tlLU
+tlVU tlVU
+tlSHU tlSHU
+tlSSU tlSSU
+tlSU tlSU
+tlHU tlHU
+tlRRU tlRRU
+tlRRRU tlRRRU
+tlLLU tlLLU
+tlLLLU tlLLLU
+tlKSSU tlKSSU
+tlKUU tlKUU
+tlKHUU tlKHUU
+tlGUU tlGUU
+tlGHUU tlGHUU
+tlNGUU tlNGUU
+tlCUU tlCUU
+tlCHUU tlCHUU
+tlJUU tlJUU
+tlJHUU tlJHUU
+tlNYUU tlNYUU
+tlTTUU tlTTUU
+tlTTHUU tlTTHUU
+tlDDUU tlDDUU
+tlDDHUU tlDDHUU
+tlNNUU tlNNUU
+tlTUU tlTUU
+tlTHUU tlTHUU
+tlDUU tlDUU
+tlDHUU tlDHUU
+tlNUU tlNUU
+tlPUU tlPUU
+tlPHUU tlPHUU
+tlBUU tlBUU
+tlBHUU tlBHUU
+tlMUU tlMUU
+tlYUU tlYUU
+tlRUU tlRUU
+tlLUU tlLUU
+tlVUU tlVUU
+tlSHUU tlSHUU
+tlSSUU tlSSUU
+tlSUU tlSUU
+tlHUU tlHUU
+tlRRUU tlRRUU
+tlRRRUU tlRRRUU
+tlLLUU tlLLUU
+tlLLLUU tlLLLUU
+tlKSSUU tlKSSUU
+tlKE tlKE
+tlKHE tlKHE
+tlGE tlGE
+tlGHE tlGHE
+tlNGE tlNGE
+tlCE tlCE
+tlCHE tlCHE
+tlJE tlJE
+tlJHE tlJHE
+tlNYE tlNYE
+tlTTE tlTTE
+tlTTHE tlTTHE
+tlDDE tlDDE
+tlDDHE tlDDHE
+tlNNE tlNNE
+tlTE tlTE
+tlTHE tlTHE
+tlDE tlDE
+tlDHE tlDHE
+tlNE tlNE
+tlPE tlPE
+tlPHE tlPHE
+tlBE tlBE
+tlBHE tlBHE
+tlME tlME
+tlYE tlYE
+tlRE tlRE
+tlLE tlLE
+tlVE tlVE
+tlSHE tlSHE
+tlSSE tlSSE
+tlSE tlSE
+tlHE tlHE
+tlRRE tlRRE
+tlRRRE tlRRRE
+tlLLE tlLLE
+tlLLLE tlLLLE
+tlKSSE tlKSSE
+tlKEE tlKEE
+tlKHEE tlKHEE
+tlGEE tlGEE
+tlGHEE tlGHEE
+tlNGEE tlNGEE
+tlCEE tlCEE
+tlCHEE tlCHEE
+tlJEE tlJEE
+tlJHEE tlJHEE
+tlNYEE tlNYEE
+tlTTEE tlTTEE
+tlTTHEE tlTTHEE
+tlDDEE tlDDEE
+tlDDHEE tlDDHEE
+tlNNEE tlNNEE
+tlTEE tlTEE
+tlTHEE tlTHEE
+tlDEE tlDEE
+tlDHEE tlDHEE
+tlNEE tlNEE
+tlPEE tlPEE
+tlPHEE tlPHEE
+tlBEE tlBEE
+tlBHEE tlBHEE
+tlMEE tlMEE
+tlYEE tlYEE
+tlREE tlREE
+tlLEE tlLEE
+tlVEE tlVEE
+tlSHEE tlSHEE
+tlSSEE tlSSEE
+tlSEE tlSEE
+tlHEE tlHEE
+tlRREE tlRREE
+tlRRREE tlRRREE
+tlLLEE tlLLEE
+tlLLLEE tlLLLEE
+tlKSSEE tlKSSEE
+tlKAI tlKAI
+tlKHAI tlKHAI
+tlGAI tlGAI
+tlGHAI tlGHAI
+tlNGAI tlNGAI
+tlCAI tlCAI
+tlCHAI tlCHAI
+tlJAI tlJAI
+tlJHAI tlJHAI
+tlNYAI tlNYAI
+tlTTAI tlTTAI
+tlTTHAI tlTTHAI
+tlDDAI tlDDAI
+tlDDHAI tlDDHAI
+tlNNAI tlNNAI
+tlTAI tlTAI
+tlTHAI tlTHAI
+tlDAI tlDAI
+tlDHAI tlDHAI
+tlNAI tlNAI
+tlPAI tlPAI
+tlPHAI tlPHAI
+tlBAI tlBAI
+tlBHAI tlBHAI
+tlMAI tlMAI
+tlYAI tlYAI
+tlRAI tlRAI
+tlLAI tlLAI
+tlVAI tlVAI
+tlSHAI tlSHAI
+tlSSAI tlSSAI
+tlSAI tlSAI
+tlHAI tlHAI
+tlRRAI tlRRAI
+tlRRRAI tlRRRAI
+tlLLAI tlLLAI
+tlLLLAI tlLLLAI
+tlKSSAI tlKSSAI
+tlKO tlKO
+tlKHO tlKHO
+tlGO tlGO
+tlGHO tlGHO
+tlNGO tlNGO
+tlCO tlCO
+tlCHO tlCHO
+tlJO tlJO
+tlJHO tlJHO
+tlNYO tlNYO
+tlTTO tlTTO
+tlTTHO tlTTHO
+tlDDO tlDDO
+tlDDHO tlDDHO
+tlNNO tlNNO
+tlTO tlTO
+tlTHO tlTHO
+tlDO tlDO
+tlDHO tlDHO
+tlNO tlNO
+tlPO tlPO
+tlPHO tlPHO
+tlBO tlBO
+tlBHO tlBHO
+tlMO tlMO
+tlYO tlYO
+tlRO tlRO
+tlLO tlLO
+tlVO tlVO
+tlSHO tlSHO
+tlSSO tlSSO
+tlSO tlSO
+tlHO tlHO
+tlRRO tlRRO
+tlRRRO tlRRRO
+tlLLO tlLLO
+tlLLLO tlLLLO
+tlKSSO tlKSSO
+tlKOO tlKOO
+tlKHOO tlKHOO
+tlGOO tlGOO
+tlGHOO tlGHOO
+tlNGOO tlNGOO
+tlCOO tlCOO
+tlCHOO tlCHOO
+tlJOO tlJOO
+tlJHOO tlJHOO
+tlNYOO tlNYOO
+tlTTOO tlTTOO
+tlTTHOO tlTTHOO
+tlDDOO tlDDOO
+tlDDHOO tlDDHOO
+tlNNOO tlNNOO
+tlTOO tlTOO
+tlTHOO tlTHOO
+tlDOO tlDOO
+tlDHOO tlDHOO
+tlNOO tlNOO
+tlPOO tlPOO
+tlPHOO tlPHOO
+tlBOO tlBOO
+tlBHOO tlBHOO
+tlMOO tlMOO
+tlYOO tlYOO
+tlROO tlROO
+tlLOO tlLOO
+tlVOO tlVOO
+tlSHOO tlSHOO
+tlSSOO tlSSOO
+tlSOO tlSOO
+tlHOO tlHOO
+tlRROO tlRROO
+tlRRROO tlRRROO
+tlLLOO tlLLOO
+tlLLLOO tlLLLOO
+tlKSSOO tlKSSOO
+tlKAU tlKAU
+tlKHAU tlKHAU
+tlGAU tlGAU
+tlGHAU tlGHAU
+tlNGAU tlNGAU
+tlCAU tlCAU
+tlCHAU tlCHAU
+tlJAU tlJAU
+tlJHAU tlJHAU
+tlNYAU tlNYAU
+tlTTAU tlTTAU
+tlTTHAU tlTTHAU
+tlDDAU tlDDAU
+tlDDHAU tlDDHAU
+tlNNAU tlNNAU
+tlTAU tlTAU
+tlTHAU tlTHAU
+tlDAU tlDAU
+tlDHAU tlDHAU
+tlNAU tlNAU
+tlPAU tlPAU
+tlPHAU tlPHAU
+tlBAU tlBAU
+tlBHAU tlBHAU
+tlMAU tlMAU
+tlYAU tlYAU
+tlRAU tlRAU
+tlLAU tlLAU
+tlVAU tlVAU
+tlSHAU tlSHAU
+tlSSAU tlSSAU
+tlSAU tlSAU
+tlHAU tlHAU
+tlRRAU tlRRAU
+tlRRRAU tlRRRAU
+tlLLAU tlLLAU
+tlLLLAU tlLLLAU
+tlKSSAU tlKSSAU

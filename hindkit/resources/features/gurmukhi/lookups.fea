@@ -1,0 +1,96 @@
+lookup nukt {
+  sub grKHA grNukta by grKHxA;
+  sub grGA  grNukta by  grGxA;
+  sub grJA  grNukta by  grJxA;
+  sub grPHA grNukta by grPHxA;
+  sub grLA  grNukta by  grLxA;
+  sub grSA  grNukta by  grSxA;
+} nukt;
+
+
+lookup blwf_new {
+  sub grVirama grRA by grRAc2;
+  sub grVirama grVA by grVAc2;
+  sub grVirama grHA by grHAc2;
+} blwf_new;
+
+lookup blwf_old {
+  sub grRA grVirama by grRAc2;
+  sub grVA grVirama by grVAc2;
+  sub grHA grVirama by grHAc2;
+} blwf_old;
+
+
+lookup pstf_new {
+  sub grVirama grYA by grYAc2;
+} pstf_new;
+
+lookup pstf_old {
+  sub grYA grVirama by grYAc2;
+} pstf_old;
+
+
+lookup abvs_matra_bindi {
+  sub grmII grBindi by grmII_Bindi;
+  sub grmEE grBindi by grmEE_Bindi;
+  sub grmAI grBindi by grmAI_Bindi;
+  sub grmOO grBindi by grmOO_Bindi;
+  sub grmAU grBindi by grmAU_Bindi;
+} abvs_matra_bindi;
+
+lookup abvs_headline_insertion {
+
+  @bases_for_headline_insertion = [
+    grII grU grUU grEE grAI grOO grAU
+    grmII grmEE grmAI grmOO grmAU
+  ];
+
+  sub @bases_for_headline_insertion [grBindi grAddak]' by [grHeadline_Bindi grHeadline_Addak];
+
+} abvs_headline_insertion;
+
+
+lookup blws_matra_uu_alt {
+  sub grRAc2 grmUU' by grmUU.alt;
+} blws_matra_uu_alt;
+
+lookup blws_consonant_ra_c2 {
+  sub grKA   grRAc2 by   grKA_RAc2;
+  sub grKHA  grRAc2 by  grKHA_RAc2;
+  sub grGA   grRAc2 by   grGA_RAc2;
+  sub grGHA  grRAc2 by  grGHA_RAc2;
+  sub grNGA  grRAc2 by  grNGA_RAc2;
+  sub grCA   grRAc2 by   grCA_RAc2;
+  sub grCHA  grRAc2 by  grCHA_RAc2;
+  sub grJA   grRAc2 by   grJA_RAc2;
+  sub grJHA  grRAc2 by  grJHA_RAc2;
+  sub grNYA  grRAc2 by  grNYA_RAc2;
+  sub grTTA  grRAc2 by  grTTA_RAc2;
+  sub grTTHA grRAc2 by grTTHA_RAc2;
+  sub grDDA  grRAc2 by  grDDA_RAc2;
+  sub grDDHA grRAc2 by grDDHA_RAc2;
+  sub grNNA  grRAc2 by  grNNA_RAc2;
+  sub grTA   grRAc2 by   grTA_RAc2;
+  sub grTHA  grRAc2 by  grTHA_RAc2;
+  sub grDA   grRAc2 by   grDA_RAc2;
+  sub grDHA  grRAc2 by  grDHA_RAc2;
+  sub grNA   grRAc2 by   grNA_RAc2;
+  sub grPA   grRAc2 by   grPA_RAc2;
+  sub grPHA  grRAc2 by  grPHA_RAc2;
+  sub grBA   grRAc2 by   grBA_RAc2;
+  sub grBHA  grRAc2 by  grBHA_RAc2;
+  sub grMA   grRAc2 by   grMA_RAc2;
+  sub grYA   grRAc2 by   grYA_RAc2;
+  sub grRA   grRAc2 by   grRA_RAc2;
+  sub grLA   grRAc2 by   grLA_RAc2;
+  sub grVA   grRAc2 by   grVA_RAc2;
+  sub grSA   grRAc2 by   grSA_RAc2;
+  sub grHA   grRAc2 by   grHA_RAc2;
+  sub grRRA  grRAc2 by  grRRA_RAc2;
+  sub grKHxA grRAc2 by grKHxA_RAc2;
+  sub grGxA  grRAc2 by  grGxA_RAc2;
+  sub grJxA  grRAc2 by  grJxA_RAc2;
+  sub grPHxA grRAc2 by grPHxA_RAc2;
+  sub grLxA  grRAc2 by  grLxA_RAc2;
+  sub grSxA  grRAc2 by  grSxA_RAc2;
+} blws_consonant_ra_c2;

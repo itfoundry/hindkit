@@ -1,0 +1,136 @@
+.notdef .notdef
+space space uni0020
+grA grA uni0A05
+grAA grAA uni0A06
+grI grI uni0A07
+grII grII uni0A08
+grU grU uni0A09
+grUU grUU uni0A0A
+grEE grEE uni0A0F
+grAI grAI uni0A10
+grOO grOO uni0A13
+grAU grAU uni0A14
+grIri grIri uni0A72
+grUra grUra uni0A73
+grmAA grmAA uni0A3E
+grmI grmI uni0A3F
+grmII grmII uni0A40
+grmU grmU uni0A41
+grmUU grmUU uni0A42
+grmUU.alt grmUU.alt
+grmEE grmEE uni0A47
+grmAI grmAI uni0A48
+grmOO grmOO uni0A4B
+grmAU grmAU uni0A4C
+grKA grKA uni0A15
+grKHA grKHA uni0A16
+grGA grGA uni0A17
+grGHA grGHA uni0A18
+grNGA grNGA uni0A19
+grCA grCA uni0A1A
+grCHA grCHA uni0A1B
+grJA grJA uni0A1C
+grJHA grJHA uni0A1D
+grNYA grNYA uni0A1E
+grTTA grTTA uni0A1F
+grTTHA grTTHA uni0A20
+grDDA grDDA uni0A21
+grDDHA grDDHA uni0A22
+grNNA grNNA uni0A23
+grTA grTA uni0A24
+grTHA grTHA uni0A25
+grDA grDA uni0A26
+grDHA grDHA uni0A27
+grNA grNA uni0A28
+grPA grPA uni0A2A
+grPHA grPHA uni0A2B
+grBA grBA uni0A2C
+grBHA grBHA uni0A2D
+grMA grMA uni0A2E
+grYA grYA uni0A2F
+grRA grRA uni0A30
+grLA grLA uni0A32
+grVA grVA uni0A35
+grSA grSA uni0A38
+grHA grHA uni0A39
+grRRA grRRA uni0A5C
+grKHxA grKHxA uni0A59
+grGxA grGxA uni0A5A
+grJxA grJxA uni0A5B
+grPHxA grPHxA uni0A5E
+grLxA grLxA uni0A33
+grSxA grSxA uni0A36
+grBindi grBindi uni0A02
+grTippi grTippi uni0A70
+grVisarga grVisarga uni0A03
+grVirama grVirama uni0A4D
+grNukta grNukta uni0A3C
+grAddak grAddak uni0A71
+grAdakbindi grAdakbindi uni0A01
+grUdaat grUdaat uni0A51
+grYakash grYakash uni0A75
+grZero grZero uni0A66
+grOne grOne uni0A67
+grTwo grTwo uni0A68
+grThree grThree uni0A69
+grFour grFour uni0A6A
+grFive grFive uni0A6B
+grSix grSix uni0A6C
+grSeven grSeven uni0A6D
+grEight grEight uni0A6E
+grNine grNine uni0A6F
+grEkonkar grEkonkar uni0A74
+adishakti adishakti uni262C
+danda danda uni0964
+doubledanda doubledanda uni0965
+grRAc2 grRAc2
+grVAc2 grVAc2
+grHAc2 grHAc2
+grYAc2 grYAc2
+grKA_RAc2 grKA_RAc2
+grKHA_RAc2 grKHA_RAc2
+grGA_RAc2 grGA_RAc2
+grGHA_RAc2 grGHA_RAc2
+grNGA_RAc2 grNGA_RAc2
+grCA_RAc2 grCA_RAc2
+grCHA_RAc2 grCHA_RAc2
+grJA_RAc2 grJA_RAc2
+grJHA_RAc2 grJHA_RAc2
+grNYA_RAc2 grNYA_RAc2
+grTTA_RAc2 grTTA_RAc2
+grTTHA_RAc2 grTTHA_RAc2
+grDDA_RAc2 grDDA_RAc2
+grDDHA_RAc2 grDDHA_RAc2
+grNNA_RAc2 grNNA_RAc2
+grTA_RAc2 grTA_RAc2
+grTHA_RAc2 grTHA_RAc2
+grDA_RAc2 grDA_RAc2
+grDHA_RAc2 grDHA_RAc2
+grNA_RAc2 grNA_RAc2
+grPA_RAc2 grPA_RAc2
+grPHA_RAc2 grPHA_RAc2
+grBA_RAc2 grBA_RAc2
+grBHA_RAc2 grBHA_RAc2
+grMA_RAc2 grMA_RAc2
+grYA_RAc2 grYA_RAc2
+grRA_RAc2 grRA_RAc2
+grLA_RAc2 grLA_RAc2
+grVA_RAc2 grVA_RAc2
+grSA_RAc2 grSA_RAc2
+grHA_RAc2 grHA_RAc2
+grRRA_RAc2 grRRA_RAc2
+grKHxA_RAc2 grKHxA_RAc2
+grGxA_RAc2 grGxA_RAc2
+grJxA_RAc2 grJxA_RAc2
+grPHxA_RAc2 grPHxA_RAc2
+grLxA_RAc2 grLxA_RAc2
+grSxA_RAc2 grSxA_RAc2
+grmII_Bindi grmII_Bindi
+grmEE_Bindi grmEE_Bindi
+grmAI_Bindi grmAI_Bindi
+grmOO_Bindi grmOO_Bindi
+grmAU_Bindi grmAU_Bindi
+grHeadline grHeadline
+grHeadline_Bindi grHeadline_Bindi
+grHeadline_Visarga grHeadline_Visarga
+grHeadline_Addak grHeadline_Addak

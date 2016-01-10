@@ -1,0 +1,383 @@
+#!opentype
+
+# Nukta Forms
+# -----------
+
+lookup nukt {
+  sub odDDA  odNukta by odDDxA;
+  sub odDDHA odNukta by odDDHxA;
+} nukt;
+
+
+# Akhand Ligatures
+# ----------------
+
+lookup akhn {
+  sub odKA odVirama odSSA by odK_SSA;
+  sub odJA odVirama odNYA by odJ_NYA;
+} akhn;
+
+
+# Reph Forms
+# ----------
+
+lookup rphf {
+  sub odRA odVirama by odReph;
+} rphf;
+
+
+# Below-base Forms
+# ----------------
+
+lookup blwf_ory2 {
+
+  sub odVirama odRA by odRAphalaa;
+
+  sub odVirama odBA by odBA.blwf;
+  sub odVirama odVA by odBA.blwf;
+  sub odVirama odWA by odBA.blwf;
+
+  sub odVirama odKA   by odKA.blwf;
+  sub odVirama odKHA  by odKHA.blwf;
+  sub odVirama odGA   by odGA.blwf;
+  sub odVirama odGHA  by odGHA.blwf;
+  sub odVirama odNGA  by odNGA.blwf;
+  sub odVirama odCA   by odCA.blwf;
+  sub odVirama odCHA  by odCHA.blwf;
+  sub odVirama odJA   by odJA.blwf;
+  sub odVirama odJHA  by odJHA.blwf;
+  sub odVirama odNYA  by odNYA.blwf;
+  sub odVirama odTTA  by odTTA.blwf;
+  sub odVirama odTTHA by odTTHA.blwf;
+  sub odVirama odDDA  by odDDA.blwf;
+  sub odVirama odDDHA by odDDHA.blwf;
+  sub odVirama odNNA  by odNNA.blwf;
+  sub odVirama odTA   by odTA.blwf;
+  sub odVirama odTHA  by odTHA.blwf;
+  sub odVirama odDA   by odDA.blwf;
+  sub odVirama odDHA  by odDHA.blwf;
+  sub odVirama odNA   by odNA.blwf;
+  sub odVirama odPA   by odPA.blwf;
+  sub odVirama odPHA  by odPHA.blwf;
+  # sub odVirama odBA   by odBA.blwf;
+  sub odVirama odBHA  by odBHA.blwf;
+  sub odVirama odMA   by odMA.blwf;
+  # sub odVirama odYA   by odYA.blwf;
+  # sub odVirama odRA   by odRA.blwf;
+  sub odVirama odLA   by odLA.blwf;
+  # sub odVirama odVA   by odVA.blwf;
+  sub odVirama odSHA  by odSHA.blwf;
+  sub odVirama odSSA  by odSSA.blwf;
+  sub odVirama odSA   by odSA.blwf;
+  sub odVirama odHA   by odHA.blwf;
+
+  # sub odVirama odYYA  by odYYA.blwf;
+  sub odVirama odLLA  by odLLA.blwf;
+  # sub odVirama odWA   by odWA.blwf;
+
+  sub odVirama odK_SSA by odK_SSA.blwf;
+  sub odVirama odJ_NYA by odJ_NYA.blwf;
+
+  sub odVirama odDDxA  by odDDxA.blwf;
+  sub odVirama odDDHxA by odDDHxA.blwf;
+
+} blwf_ory2;
+
+lookup blwf_orya {
+
+  sub odRA odVirama by odRAphalaa;
+
+  sub odBA odVirama by odBA.blwf;
+  sub odVA odVirama by odBA.blwf;
+  sub odWA odVirama by odBA.blwf;
+
+  sub odKA   odVirama by odKA.blwf;
+  sub odKHA  odVirama by odKHA.blwf;
+  sub odGA   odVirama by odGA.blwf;
+  sub odGHA  odVirama by odGHA.blwf;
+  sub odNGA  odVirama by odNGA.blwf;
+  sub odCA   odVirama by odCA.blwf;
+  sub odCHA  odVirama by odCHA.blwf;
+  sub odJA   odVirama by odJA.blwf;
+  sub odJHA  odVirama by odJHA.blwf;
+  sub odNYA  odVirama by odNYA.blwf;
+  sub odTTA  odVirama by odTTA.blwf;
+  sub odTTHA odVirama by odTTHA.blwf;
+  sub odDDA  odVirama by odDDA.blwf;
+  sub odDDHA odVirama by odDDHA.blwf;
+  sub odNNA  odVirama by odNNA.blwf;
+  sub odTA   odVirama by odTA.blwf;
+  sub odTHA  odVirama by odTHA.blwf;
+  sub odDA   odVirama by odDA.blwf;
+  sub odDHA  odVirama by odDHA.blwf;
+  sub odNA   odVirama by odNA.blwf;
+  sub odPA   odVirama by odPA.blwf;
+  sub odPHA  odVirama by odPHA.blwf;
+  # sub odBA   odVirama by odBA.blwf;
+  sub odBHA  odVirama by odBHA.blwf;
+  sub odMA   odVirama by odMA.blwf;
+  # sub odYA   odVirama by odYA.blwf;
+  # sub odRA   odVirama by odRA.blwf;
+  sub odLA   odVirama by odLA.blwf;
+  # sub odVA   odVirama by odVA.blwf;
+  sub odSHA  odVirama by odSHA.blwf;
+  sub odSSA  odVirama by odSSA.blwf;
+  sub odSA   odVirama by odSA.blwf;
+  sub odHA   odVirama by odHA.blwf;
+
+  # sub odYYA  odVirama by odYYA.blwf;
+  sub odLLA  odVirama by odLLA.blwf;
+  # sub odWA   odVirama by odWA.blwf;
+
+  sub odK_SSA odVirama by odK_SSA.blwf;
+  sub odJ_NYA odVirama by odJ_NYA.blwf;
+
+  sub odDDxA  odVirama by odDDxA.blwf;
+  sub odDDHxA odVirama by odDDHxA.blwf;
+
+} blwf_orya;
+
+
+# Post-base Forms
+# ---------------
+
+lookup pstf_ory2 {
+  sub odVirama odYA  by odYAphalaa;
+  sub odVirama odYYA by odYAphalaa;
+} pstf_ory2;
+
+lookup pstf_orya {
+  sub odYA  odVirama by odYAphalaa;
+  sub odYYA odVirama by odYAphalaa;
+} pstf_orya;
+
+
+# Above-base Substitution
+# -----------------------
+
+lookup abvs {
+
+  sub odTHA odmI by odTHA_mI;
+
+  sub odmI odReph by odmI_Reph;
+  sub odAIlengthmark odReph by odAIlengthmark_Reph;
+  sub odReph odAUlengthmark by odAUlengthmark_Reph;
+
+  sub odmI odCandrabindu by odmI_Candrabindu;
+  sub odAIlengthmark odCandrabindu by odAIlengthmark_Candrabindu;
+  sub odCandrabindu odAUlengthmark by odAUlengthmark_Candrabindu;
+
+} abvs;
+
+
+# Below-base Substitution
+# -----------------------
+
+lookup blws {
+
+  sub odKA odRAphalaa by odK_RA;
+  sub odTA odRAphalaa by odT_RA;
+  sub odNGA odKA.blwf odTA.blwf odRAphalaa by odNG_K_T_RA;
+  sub odNA odTA.blwf odRAphalaa by odN_T_RA;
+  sub odSA odTA.blwf odRAphalaa by odS_T_RA;
+
+  sub odKA odKA.blwf by odK_KA;
+  sub odNGA odKA.blwf by odNG_KA;
+  sub odTA odKA.blwf by odT_KA;
+  sub odLA odKA.blwf by odL_KA;
+  sub odLLA odKA.blwf by odLL_KA;
+  sub odSSA odKA.blwf by odSS_KA;
+  sub odSA odKA.blwf by odS_KA;
+  sub odNGA odKHA.blwf by odNG_KHA;
+  sub odSA odKHA.blwf by odS_KHA;
+  sub odNGA odGA.blwf by odNG_GA;
+  sub odDDA odGA.blwf by odDD_GA;
+  sub odDA odGA.blwf by odD_GA;
+  sub odLA odGA.blwf by odL_GA;
+  sub odDA odGHA.blwf by odD_GHA;
+  sub odNGA odGHA.blwf by odNG_GHA;
+  sub odBA odGHA.blwf by odB_GHA;
+
+  sub odCA odCA.blwf by odC_CA;
+  sub odNYA odCA.blwf by odNY_CA;
+  sub odSHA odCA.blwf by odSH_CA;
+  sub odCA odCHA.blwf by odC_CHA;
+  sub odNYA odCHA.blwf by odNY_CHA;
+  sub odSHA odCHA.blwf by odSH_CHA;
+  sub odJA odJA.blwf by odJ_JA;
+  sub odNYA odJA.blwf by odNY_JA;
+  sub odBA odJA.blwf by odB_JA;
+  sub odJA odJHA.blwf by odJ_JHA;
+  sub odNYA odJHA.blwf by odNY_JHA;
+  sub odJA odNYA.blwf by odJ_NYA;
+
+  sub odKA odTTA.blwf by odK_TTA;
+  sub odNNA odTTA.blwf by odNN_TTA;
+  sub odTTA odTTA.blwf by odTT_TTA;
+  sub odPA odTTA.blwf by odP_TTA;
+  sub odPHA odTTA.blwf by odPH_TTA;
+  sub odSSA odTTA.blwf by odSS_TTA;
+  sub odSA odTTA.blwf by odS_TTA;
+  sub odKA odTTHA.blwf by odK_TTHA;
+  sub odNNA odTTHA.blwf by odNN_TTHA;
+  sub odSSA odTTHA.blwf by odSS_TTHA;
+  sub odDDA odDDA.blwf by odDD_DDA;
+  sub odNNA odDDA.blwf by odNN_DDA;
+  sub odLA odDDA.blwf by odL_DDA;
+  sub odNNA odDDHA.blwf by odNN_DDHA;
+  sub odNNA odNNA.blwf by odNN_NNA;
+  sub odSSA odNNA.blwf by odSS_NNA;
+  sub odHA odNNA.blwf by odH_NNA;
+  sub odK_SSA odNNA.blwf by odK_SS_NNA;
+
+  sub odKA odTA.blwf by odK_TA;
+  sub odTA odTA.blwf by odT_TA;
+  sub odNA odTA.blwf by odN_TA;
+  sub odPA odTA.blwf by odP_TA;
+  sub odSA odTA.blwf by odS_TA;
+  sub odTA odTHA.blwf by odT_THA;
+  sub odNA odTHA.blwf by odN_THA;
+  sub odSA odTHA.blwf by odS_THA;
+  sub odGA odDA.blwf by odG_DA;
+  sub odDA odDA.blwf by odD_DA;
+  sub odNA odDA.blwf by odN_DA;
+  sub odBA odDA.blwf by odB_DA;
+  sub odGA odDHA.blwf by odG_DHA;
+  sub odDA odDHA.blwf by odD_DHA;
+  sub odNA odDHA.blwf by odN_DHA;
+  sub odBA odDHA.blwf by odB_DHA;
+  sub odGA odNA.blwf by odG_NA;
+  sub odGHA odNA.blwf by odGH_NA;
+  sub odTA odNA.blwf by odT_NA;
+  sub odNA odNA.blwf by odN_NA;
+  sub odPA odNA.blwf by odP_NA;
+  sub odMA odNA.blwf by odM_NA;
+  sub odSHA odNA.blwf by odSH_NA;
+  sub odSA odNA.blwf by odS_NA;
+  sub odHA odNA.blwf by odH_NA;
+  sub odTA odSA.blwf odNA.blwf by odT_S_NA;
+
+  sub odTA odPA.blwf by odT_PA;
+  sub odPA odPA.blwf by odP_PA;
+  sub odMA odPA.blwf by odM_PA;
+  sub odLLA odPA.blwf by odLL_PA;
+  sub odLA odPA.blwf by odL_PA;
+  sub odSSA odPA.blwf by odSS_PA;
+  sub odSA odPA.blwf by odS_PA;
+  sub odMA odPHA.blwf by odM_PHA;
+  sub odLLA odPHA.blwf by odLL_PHA;
+  sub odSSA odPHA.blwf by odSS_PHA;
+  sub odSA odPHA.blwf by odS_PHA;
+  sub odKA odBA.blwf by odK_BA;
+  sub odNNA odBA.blwf by odNN_BA;
+  sub odTA odBA.blwf by odT_BA;
+  sub odDA odBA.blwf by odD_BA;
+  sub odDHA odBA.blwf by odDH_BA;
+  sub odNA odBA.blwf by odN_BA;
+  sub odBA odBA.blwf by odB_BA;
+  sub odMA odBA.blwf by odM_BA;
+  sub odSHA odBA.blwf by odSH_BA;
+  sub odSA odBA.blwf by odS_BA;
+  sub odHA odBA.blwf by odH_BA;
+  sub odJA odJA.blwf odBA.blwf by odJ_J_BA;
+  sub odTA odTA.blwf odBA.blwf by odT_T_BA;
+  sub odNA odTA.blwf odBA.blwf by odN_T_BA;
+  sub odNA odDA.blwf odBA.blwf by odN_D_BA;
+  sub odNA odDHA.blwf odBA.blwf by odN_DH_BA;
+  sub odDA odBHA.blwf by odD_BHA;
+  sub odMA odBHA.blwf by odM_BHA;
+  sub odLLA odBHA.blwf by odLL_BHA;
+  sub odTA odMA.blwf by odT_MA;
+  sub odDA odMA.blwf by odD_MA;
+  sub odNA odMA.blwf by odN_MA;
+  sub odMA odMA.blwf by odM_MA;
+  sub odLA odMA.blwf by odL_MA;
+  sub odSSA odMA.blwf by odSS_MA;
+  sub odSA odMA.blwf by odS_MA;
+  sub odHA odMA.blwf by odH_MA;
+  sub odK_SSA odMA.blwf by odK_SS_MA;
+
+  sub odLA odLA.blwf by odL_LA;
+  sub odHA odLA.blwf by odH_LA;
+
+  sub odKA odSHA.blwf by odK_SHA;
+  sub odKA odSSA.blwf by odK_SSA;
+  sub odNGA odK_SSA.blwf by odNG_K_SSA;
+  sub odKA odSA.blwf by odK_SA;
+  sub odTA odSA.blwf by odT_SA;
+  sub odNA odSA.blwf by odN_SA;
+  sub odPA odSA.blwf by odP_SA;
+  sub odSA odSA.blwf by odS_SA;
+
+  sub odKA odLLA.blwf by odK_LLA;
+  sub odGA odLLA.blwf by odG_LLA;
+  sub odPA odLLA.blwf by odP_LLA;
+  sub odSHA odLLA.blwf by odSH_LLA;
+
+} blws;
+
+lookup blws_RAphalaa_matra {
+  sub odRAphalaa odmU  by odRAphalaa_mU;
+  sub odRAphalaa odmUU by odRAphalaa_mUU;
+  sub odRAphalaa odmvR by odRAphalaa_mvR;
+} blws_RAphalaa_matra;
+
+
+# Post-base Substitution
+# ----------------------
+
+lookup psts {
+  sub odDHA odYAphalaa by odDH_YA;
+} psts;
+
+
+# Halant Forms
+# ------------
+
+# lookup haln {
+#
+#     sub odKA   odVirama by odKA_Virama;
+#     sub odKHA  odVirama by odKHA_Virama;
+#     sub odGA   odVirama by odGA_Virama;
+#     sub odGHA  odVirama by odGHA_Virama;
+#     sub odNGA  odVirama by odNGA_Virama;
+#     sub odCA   odVirama by odCA_Virama;
+#     sub odCHA  odVirama by odCHA_Virama;
+#     sub odJA   odVirama by odJA_Virama;
+#     sub odJHA  odVirama by odJHA_Virama;
+#     sub odNYA  odVirama by odNYA_Virama;
+#     sub odTTA  odVirama by odTTA_Virama;
+#     sub odTTHA odVirama by odTTHA_Virama;
+#     sub odDDA  odVirama by odDDA_Virama;
+#     sub odDDHA odVirama by odDDHA_Virama;
+#     sub odNNA  odVirama by odNNA_Virama;
+#     sub odTA   odVirama by odTA_Virama;
+#     sub odTHA  odVirama by odTHA_Virama;
+#     sub odDA   odVirama by odDA_Virama;
+#     sub odDHA  odVirama by odDHA_Virama;
+#     sub odNA   odVirama by odNA_Virama;
+#     sub odPA   odVirama by odPA_Virama;
+#     sub odPHA  odVirama by odPHA_Virama;
+#     sub odBA   odVirama by odBA_Virama;
+#     sub odBHA  odVirama by odBHA_Virama;
+#     sub odMA   odVirama by odMA_Virama;
+#     sub odYA   odVirama by odYA_Virama;
+#     sub odRA   odVirama by odRA_Virama;
+#     sub odLA   odVirama by odLA_Virama;
+#     sub odVA   odVirama by odVA_Virama;
+#     sub odSHA  odVirama by odSHA_Virama;
+#     sub odSSA  odVirama by odSSA_Virama;
+#     sub odSA   odVirama by odSA_Virama;
+#     sub odHA   odVirama by odHA_Virama;
+#
+#     sub odYYA  odVirama by odYYA_Virama;
+#     sub odLLA  odVirama by odLLA_Virama;
+#     sub odWA   odVirama by odWA_Virama;
+#
+#     # sub odK_SSA odVirama by odK_SSA_Virama;
+#     # sub odJ_NYA odVirama by odJ_NYA_Virama;
+#
+#     sub odDDxA  odVirama by odDDxA_Virama;
+#     sub odDDHxA odVirama by odDDHxA_Virama;
+#
+# } haln;

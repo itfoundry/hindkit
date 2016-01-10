@@ -1,0 +1,98 @@
+languagesystem DFLT dflt;
+
+languagesystem latn dflt;
+
+  languagesystem latn ROM; # Romanian
+  languagesystem latn MOL; # Moldavian
+
+  # languagesystem latn TRK; # Turkish
+  # languagesystem latn AZE; # Azeri
+  # languagesystem latn CRT; # Crimean Tatar
+
+
+include (../../features/tables.fea);
+
+
+# Localized Forms
+# ---------------
+
+feature locl {
+
+  script latn;
+
+    language ROM exclude_dflt;
+      lookup locl_ROM {
+        sub [Scedilla     scedilla     Tcedilla     tcedilla]
+        by  [Scommaaccent scommaaccent Tcommaaccent tcommaaccent];
+      } locl_ROM;
+
+    language MOL exclude_dflt;
+      lookup locl_ROM;
+
+    # language TRK exclude_dflt;
+    #   lookup locl_TRK {
+    #     sub i by i.loclTRK;
+    #   } locl_TRK;
+    #
+    # language AZE exclude_dflt;
+    #   lookup locl_TRK;
+    #
+    # language CRT exclude_dflt;
+    #   lookup locl_TRK;
+
+} locl;
+
+
+# Superscript
+# -----------
+
+feature sups {
+  sub [zero          one          two          three          four]
+  by  [zero.superior one.superior two.superior three.superior four.superior];
+} sups;
+
+
+# Ordinals
+# --------
+
+feature ordn {
+  sub [a           o]
+  by  [ordfeminine ordmasculine];
+} ordn;
+
+
+# All Caps Forms
+# --------------
+# Values need to be specified for every weight respectively.
+# Otherwise better be without this feature.
+# Glyph variants would be a better method.
+
+# @case_punctuations = [parenleft parenright bracketleft bracketright braceleft braceright bar brokenbar guillemotright guillemotleft hyphen endash emdash guilsinglleft guilsinglright periodcentered bullet];
+
+# feature case {
+#   pos @case_punctuations <0 50 0 0>;
+#   pos [exclamdown questiondown] <0 250 0 0>;
+# } case;
+
+
+# Standard Ligatures
+# ------------------
+
+# feature liga {
+#
+#   sub f i by fi;
+#   sub f l by fl;
+#
+#   sub f f by f_f;
+#   sub f f i by f_f_i;
+#   sub f f l by f_f_l;
+#
+# } liga;
+
+
+# Kerning
+# -------
+
+feature kern {
+  include (kern.fea);
+} kern;

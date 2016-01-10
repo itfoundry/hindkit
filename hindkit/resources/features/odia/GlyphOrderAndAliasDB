@@ -1,0 +1,130 @@
+.notdef .notdef
+space space uni0020
+
+# Vowel letters
+
+odA odA uni0B05
+odAA odAA uni0B06
+odI odI uni0B07
+odII odII uni0B08
+odU odU uni0B09
+odUU odUU uni0B0A
+odvR odvR uni0B0B
+odvRR odvRR uni0B60
+odvL odvL uni0B0C
+odvLL odvLL uni0B61
+odE odE uni0B0F
+odAI odAI uni0B10
+odO odO uni0B13
+odAU odAU uni0B14
+
+# Matras
+
+odmAA odmAA uni0B3E
+odmI odmI uni0B3F
+odmII odmII uni0B40
+odmU odmU uni0B41
+odmUU odmUU uni0B42
+odmvR odmvR uni0B43
+odmvRR odmvRR uni0B44
+odmvL odmvL uni0B62
+odmvLL odmvLL uni0B63
+odmE odmE uni0B47
+odmAI odmAI uni0B48
+odmO odmO uni0B4B
+odmAU odmAU uni0B4C
+
+odAIlengthmark odAIlengthmark uni0B56
+odAUlengthmark odAUlengthmark uni0B57
+
+# Consonant letters: basic
+
+odKA odKA uni0B15
+odKHA odKHA uni0B16
+odGA odGA uni0B17
+odGHA odGHA uni0B18
+odNGA odNGA uni0B19
+odCA odCA uni0B1A
+odCHA odCHA uni0B1B
+odJA odJA uni0B1C
+odJHA odJHA uni0B1D
+odNYA odNYA uni0B1E
+odTTA odTTA uni0B1F
+odTTHA odTTHA uni0B20
+odDDA odDDA uni0B21
+odDDHA odDDHA uni0B22
+odNNA odNNA uni0B23
+odTA odTA uni0B24
+odTHA odTHA uni0B25
+odDA odDA uni0B26
+odDHA odDHA uni0B27
+odNA odNA uni0B28
+odPA odPA uni0B2A
+odPHA odPHA uni0B2B
+odBA odBA uni0B2C
+odVA odVA uni0B35
+odBHA odBHA uni0B2D
+odMA odMA uni0B2E
+odYA odYA uni0B2F
+odYYA odYYA uni0B5F
+odRA odRA uni0B30
+odLLA odLLA uni0B33
+odLA odLA uni0B32
+odSHA odSHA uni0B36
+odSSA odSSA uni0B37
+odSA odSA uni0B38
+odHA odHA uni0B39
+odWA odWA uni0B71
+
+# Consonant letters: nukta
+
+odDDxA odDDxA uni0B5C
+odDDHxA odDDHxA uni0B5D
+
+# Phonological marks
+
+odAnusvara odAnusvara uni0B02
+odCandrabindu odCandrabindu uni0B01
+odVisarga odVisarga uni0B03
+odAvagraha odAvagraha uni0B3D
+odVirama odVirama uni0B4D
+odNukta odNukta uni0B3C
+
+# Digits
+
+odZero odZero uni0B66
+odOne odOne uni0B67
+odTwo odTwo uni0B68
+odThree odThree uni0B69
+odFour odFour uni0B6A
+odFive odFive uni0B6B
+odSix odSix uni0B6C
+odSeven odSeven uni0B6D
+odEight odEight uni0B6E
+odNine odNine uni0B6F
+
+# Additional signs
+
+odIsshar odIsshar uni0B70
+
+odOnequarter odOnequarter uni0B72
+odOnehalf odOnehalf uni0B73
+odThreequarters odThreequarters uni0B74
+odOnesixteenth odOnesixteenth uni0B75
+odOneeighth odOneeighth uni0B76
+odThreesixteenths odThreesixteenths uni0B77
+
+
+# Miscellaneous
+
+danda danda uni0964
+doubledanda doubledanda uni0965
+
+rupee rupee uni20A8
+indianrupee indianrupee uni20B9
+apostrophemod apostrophemod uni02BC
+
+zerowidthspace zerowidthspace uni200B
+zerowidthnonjoiner zerowidthnonjoiner uni200C
+zerowidthjoiner zerowidthjoiner uni200D
+dottedcircle dottedcircle uni25CC
