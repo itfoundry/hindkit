@@ -88,11 +88,3 @@ feature ordn {
 #   sub f f l by f_f_l;
 #
 # } liga;
-
-
-# Kerning
-# -------
-
-feature kern {
-  include (kern.fea);
-} kern;

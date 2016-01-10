@@ -32,13 +32,13 @@ feature rphf {
 feature blwf {
 
   script DFLT;
-    lookup blwf_ory2;
+    lookup blwf_new;
 
   script ory2;
-    lookup blwf_ory2;
+    lookup blwf_new;
 
   script orya;
-    lookup blwf_orya;
+    lookup blwf_old;
 
 } blwf;
 
@@ -49,13 +49,13 @@ feature blwf {
 feature pstf {
 
   script DFLT;
-    lookup pstf_ory2;
+    lookup pstf_new;
 
   script ory2;
-    lookup pstf_ory2;
+    lookup pstf_new;
 
   script orya;
-    lookup pstf_orya;
+    lookup pstf_old;
 
 } pstf;
 
@@ -90,7 +90,7 @@ feature abvs {
 
 feature blws {
   lookup blws;
-  lookup blws_RAphalaa_matra;
+  lookup blws_RAc2_matra;
 } blws;
 
 
@@ -126,48 +126,3 @@ feature psts {
 # ---------------------
 # feature calt {
 # } calt;
-
-
-
-# -----------
-# POSITIONING
-# -----------
-
-# Kerning
-# -------
-# feature kern {
-#   include (kern.fea);
-# } kern;
-
-
-# Distances
-# ---------
-# feature dist {
-# } dist;
-
-
-# Above- and Below-base Mark Positioning
-# --------------------------------------
-
-include (markclasses.fea);
-
-feature abvm {
-  include (abvm.fea);
-} abvm;
-
-feature blwm {
-  include (blwm.fea);
-} blwm;
-
-
-
-# ----
-# ELSE
-# ----
-
-# Standard Ligatures
-# ------------------
-# feature liga {
-#   sub f i by fi;
-#   sub f l by fl;
-# } liga;

@@ -64,21 +64,3 @@ feature blws {
   lookup blws_matra_uu_alt;
   lookup blws_consonant_ra_c2;
 } blws;
-
-
-# -----------
-# POSITIONING
-# -----------
-
-# Above- and Below-base Mark Positioning
-# --------------------------------------
-
-include (markclasses.fea);
-
-feature abvm {
-  include (abvm.fea);
-} abvm;
-
-feature blwm {
-  include (blwm.fea);
-} blwm;

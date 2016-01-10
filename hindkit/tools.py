@@ -361,12 +361,17 @@ class Builder(object):
 
     def _prep_features_GSUB(self):
 
+        # if overriding_exists(
+        #     os.path.join(constants.paths.FEATURES, 'GSUB.fea')
+        # ) and overriding_exists(
+        #     os.path.join(constants.paths.FEATURES, 'GSUB_lookups.fea')
+        # ) and overriding_exists(
+        #     os.path.join(constants.paths.FEATURES, 'GSUB_extension.fea')
+        # ):
         if overriding_exists(
             os.path.join(constants.paths.FEATURES, 'GSUB.fea')
         ) and overriding_exists(
             os.path.join(constants.paths.FEATURES, 'GSUB_lookups.fea')
-        ) and overriding_exists(
-            os.path.join(constants.paths.FEATURES, 'GSUB_extension.fea')
         ):
             return
 

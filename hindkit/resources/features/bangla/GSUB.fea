@@ -205,36 +205,3 @@ feature pres {
 
 # feature calt {
 # } calt;
-
-
-# -----------
-# POSITIONING
-# -----------
-
-# Kerning
-# -------
-
-feature kern {
-  include (kern.fea);
-} kern;
-
-
-# Distances
-# ---------
-
-# feature dist {
-# } dist;
-
-
-# Above- and Below-base Mark Positioning
-# --------------------------------------
-
-include (markclasses.fea);
-
-feature abvm {
-  include (abvm.fea);
-} abvm;
-
-feature blwm {
-  include (blwm.fea);
-} blwm;
