@@ -1,0 +1,288 @@
+# ---------------
+# LOCALIZED FORMS
+# ---------------
+
+# Localization Forms
+# ------------------
+
+# feature locl {
+# } locl;
+
+
+# -------------------
+# BASIC SHAPING FORMS
+# -------------------
+
+# Character Composition/Decomposition Substitution
+# ------------------------------------------------
+
+# feature ccmp {
+# } ccmp;
+
+
+# Akhand Ligatures
+# ----------------
+
+feature akhn {
+
+  lookup akhn_touch {
+    sub zerowidthjoiner snVirama by snTouch;
+  } akhn_touch;
+
+  lookup akhn_conjuncts {
+    sub snKA  snVirama zerowidthjoiner snVA   by snK_VA;
+    sub snKA  snVirama zerowidthjoiner snSSA  by snK_SSA;
+    sub snGA  snVirama zerowidthjoiner snDHA  by snG_DHA;
+    sub snNYA snVirama zerowidthjoiner snCA   by snNY_CA;
+    sub snTTA snVirama zerowidthjoiner snTTHA by snTT_TTHA;
+    sub snTA  snVirama zerowidthjoiner snTHA  by snT_THA;
+    sub snTA  snVirama zerowidthjoiner snVA   by snT_VA;
+    sub snDA  snVirama zerowidthjoiner snDHA  by snD_DHA;
+    sub snDA  snVirama zerowidthjoiner snVA   by snD_VA;
+    sub snNA  snVirama zerowidthjoiner snTHA  by snN_THA;
+    sub snNA  snVirama zerowidthjoiner snDA   by snN_DA;
+    sub snNA  snVirama zerowidthjoiner snDHA  by snN_DHA;
+    sub snNA  snVirama zerowidthjoiner snVA   by snN_VA;
+  } akhn_conjuncts;
+
+} akhn;
+
+
+# Reph Forms
+# ----------
+
+feature rphf {
+  sub snRA snVirama zerowidthjoiner by snReph;
+} rphf;
+
+
+# Vattu Variants
+# --------------
+
+feature vatu {
+
+  lookup vatu_c2 {
+    sub snVirama zerowidthjoiner snYA by snYAc2;
+    sub snVirama zerowidthjoiner snRA by snRAc2;
+  } vatu_c2;
+
+  lookup vatu_ligating {
+    sub snNYA  snRAc2 by snNY_RA;
+    sub snJNYA snRAc2 by snJNY_RA;
+    sub snDA   snRAc2 by snD_RA;
+    sub snNDA  snRAc2 by snND_RA;
+    sub snLLA  snRAc2 by snLL_RA;
+    sub snN_DA snRAc2 by snN_D_RA;
+  } vatu_ligating;
+
+} vatu;
+
+
+# Post-base forms
+# --------------
+
+# feature pstf {
+# } pstf;
+
+
+# ----------------------------
+# MANDATORY PRESENTATION FORMS
+# ----------------------------
+
+# Pre-, Above-, Below-, and Post-base Substitution
+# ------------------------------------------------
+
+# feature pres {
+# } pres;
+
+feature abvs {
+
+  sub snKHA snVirama by snKHA_Virama;
+  sub snNGA snVirama by snNGA_Virama;
+  sub snCA snVirama by snCA_Virama;
+  sub snJHA snVirama by snJHA_Virama;
+  sub snTTA snVirama by snTTA_Virama;
+  sub snDDA snVirama by snDDA_Virama;
+  sub snNNDDA snVirama by snNNDDA_Virama;
+  sub snDHA snVirama by snDHA_Virama;
+  sub snBA snVirama by snBA_Virama;
+  sub snMA snVirama by snMA_Virama;
+  sub snMBA snVirama by snMBA_Virama;
+  sub snVA snVirama by snVA_Virama;
+  sub snK_VA snVirama by snK_VA_Virama;
+  sub snG_DHA snVirama by snG_DHA_Virama;
+  sub snNY_CA snVirama by snNY_CA_Virama;
+  sub snT_VA snVirama by snT_VA_Virama;
+  sub snD_DHA snVirama by snD_DHA_Virama;
+  sub snD_VA snVirama by snD_VA_Virama;
+  sub snN_DHA snVirama by snN_DHA_Virama;
+  sub snN_VA snVirama by snN_VA_Virama;
+
+  sub snKHA snmI by snKHA_mI;
+  sub snNGA snmI by snNGA_mI;
+  sub snCA snmI by snCA_mI;
+  sub snJHA snmI by snJHA_mI;
+  sub snTTA snmI by snTTA_mI;
+  sub snDDA snmI by snDDA_mI;
+  sub snNNDDA snmI by snNNDDA_mI;
+  sub snDHA snmI by snDHA_mI;
+  sub snBA snmI by snBA_mI;
+  sub snMA snmI by snMA_mI;
+  sub snMBA snmI by snMBA_mI;
+  sub snVA snmI by snVA_mI;
+  sub snK_VA snmI by snK_VA_mI;
+  sub snG_DHA snmI by snG_DHA_mI;
+  sub snNY_CA snmI by snNY_CA_mI;
+  sub snT_VA snmI by snT_VA_mI;
+  sub snD_DHA snmI by snD_DHA_mI;
+  sub snD_VA snmI by snD_VA_mI;
+  sub snN_DHA snmI by snN_DHA_mI;
+  sub snN_VA snmI by snN_VA_mI;
+
+  sub snKHA snmII by snKHA_mII;
+  sub snNGA snmII by snNGA_mII;
+  sub snCA snmII by snCA_mII;
+  sub snJHA snmII by snJHA_mII;
+  sub snTTA snmII by snTTA_mII;
+  sub snDDA snmII by snDDA_mII;
+  sub snNNDDA snmII by snNNDDA_mII;
+  sub snDHA snmII by snDHA_mII;
+  sub snBA snmII by snBA_mII;
+  sub snMA snmII by snMA_mII;
+  sub snMBA snmII by snMBA_mII;
+  sub snVA snmII by snVA_mII;
+  sub snK_VA snmII by snK_VA_mII;
+  sub snG_DHA snmII by snG_DHA_mII;
+  sub snNY_CA snmII by snNY_CA_mII;
+  sub snT_VA snmII by snT_VA_mII;
+  sub snD_DHA snmII by snD_DHA_mII;
+  sub snD_VA snmII by snD_VA_mII;
+  sub snN_DHA snmII by snN_DHA_mII;
+  sub snN_VA snmII by snN_VA_mII;
+
+  sub snCHA snVirama by snCHA_Virama;
+  sub snJA snVirama by snJA_Virama;
+  sub snNYJA snVirama by snNYJA_Virama;
+  sub snTTHA snVirama by snTTHA_Virama;
+  sub snDDHA snVirama by snDDHA_Virama;
+  sub snTHA snVirama by snTHA_Virama;
+  sub snPHA snVirama by snPHA_Virama;
+  sub snRA snVirama by snRA_Virama;
+  sub snTT_TTHA snVirama by snTT_TTHA_Virama;
+  sub snT_THA snVirama by snT_THA_Virama;
+  sub snN_THA snVirama by snN_THA_Virama;
+
+  sub snCHA snmI by snCHA_mI;
+  sub snJA snmI by snJA_mI;
+  sub snNYJA snmI by snNYJA_mI;
+  sub snTTHA snmI by snTTHA_mI;
+  sub snDDHA snmI by snDDHA_mI;
+  sub snNNA snmI by snNNA_mI;
+  sub snTHA snmI by snTHA_mI;
+  sub snDA snmI by snDA_mI;
+  sub snPHA snmI by snPHA_mI;
+  sub snRA snmI by snRA_mI;
+  sub snTT_TTHA snmI by snTT_TTHA_mI;
+  sub snT_THA snmI by snT_THA_mI;
+  sub snN_THA snmI by snN_THA_mI;
+
+  sub snCHA snmII by snCHA_mII;
+  sub snJA snmII by snJA_mII;
+  sub snNYJA snmII by snNYJA_mII;
+  sub snTTHA snmII by snTTHA_mII;
+  sub snDDHA snmII by snDDHA_mII;
+  sub snNNA snmII by snNNA_mII;
+  sub snTHA snmII by snTHA_mII;
+  sub snDA snmII by snDA_mII;
+  sub snPHA snmII by snPHA_mII;
+  sub snRA snmII by snRA_mII;
+  sub snTT_TTHA snmII by snTT_TTHA_mII;
+  sub snT_THA snmII by snT_THA_mII;
+  sub snN_THA snmII by snN_THA_mII;
+
+} abvs;
+
+feature blws {
+
+  sub snKA snmU by snKA_mU;
+  sub snGA snmU by snGA_mU;
+  sub snNNGA snmU by snNNGA_mU;
+  sub snNYA snmU by snNYA_mU;
+  sub snJNYA snmU by snJNYA_mU;
+  sub snTA snmU by snTA_mU;
+  sub snDA snmU by snDA_mU;
+  sub snNDA snmU by snNDA_mU;
+  sub snBHA snmU by snBHA_mU;
+  sub snRA snmU by snRA_mU;
+  sub snSHA snmU by snSHA_mU;
+  sub snLLA snmU by snLLA_mU;
+  sub snN_DA snmU by snN_DA_mU;
+
+  sub snKA snmUU by snKA_mUU;
+  sub snGA snmUU by snGA_mUU;
+  sub snNNGA snmUU by snNNGA_mUU;
+  sub snNYA snmUU by snNYA_mUU;
+  sub snJNYA snmUU by snJNYA_mUU;
+  sub snTA snmUU by snTA_mUU;
+  sub snDA snmUU by snDA_mUU;
+  sub snNDA snmUU by snNDA_mUU;
+  sub snBHA snmUU by snBHA_mUU;
+  sub snRA snmUU by snRA_mUU;
+  sub snSHA snmUU by snSHA_mUU;
+  sub snLLA snmUU by snLLA_mUU;
+  sub snN_DA snmUU by snN_DA_mUU;
+
+  sub snNA snmU by snNA_mU;
+  sub snLA snmU by snLA_mU;
+  sub snHA snmU by snHA_mU;
+
+  sub snNA snmUU by snNA_mUU;
+  sub snLA snmUU by snLA_mUU;
+  sub snHA snmUU by snHA_mUU;
+
+  sub [snCA snTTA snTTHA snTHA snDHA snTHA snVA] snRAc2' by snRAc2.09;
+
+  sub [snCA snTTA snTTHA snTHA snDHA snTHA snVA snFA] [snmU snmUU]' by [snmU.01 snmUU.01];
+  sub snYA [snmU snmUU]' by [snmU.02 snmUU.02];
+  sub [snMA snMBA] [snmU snmUU]' by [snmU.03 snmUU.03];
+
+} blws;
+
+feature psts {
+  sub snRA snmAE  by snRA_mAE;
+  sub snRA snmAAE by snRA_mAAE;
+} psts;
+
+
+# -----------
+# POSITIONING
+# -----------
+
+# Kerning
+# -------
+
+# feature kern {
+#   include (kern.fea);
+# } kern;
+
+
+# Distances
+# ---------
+
+feature dist {
+  pos snTouch <0 0 -200 0>;
+} dist;
+
+
+# Above- and Below-base Mark Positioning
+# --------------------------------------
+
+# include (markclasses.fea);
+
+# feature abvm {
+#   include (abvm.fea);
+# } abvm;
+
+# feature blwm {
+#   include (blwm.fea);
+# } blwm;

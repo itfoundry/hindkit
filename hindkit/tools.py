@@ -189,7 +189,7 @@ class Builder(object):
 
                 lines = ['table head { FontRevision 1.000; } head;']
 
-                for file_name in ['classes', 'tables', 'languagesystems', 'lookups', 'GSUB']:
+                for file_name in ['classes', 'tables', 'languagesystems', 'GSUB_extension', 'GSUB_lookups', 'GSUB']:
                     abstract_path = os.path.join(constants.paths.FEATURES, file_name + '.fea')
                     if os.path.exists(temp(abstract_path)):
                         lines.append('include (../../{});'.format(abstract_path))
@@ -364,7 +364,9 @@ class Builder(object):
         if overriding_exists(
             os.path.join(constants.paths.FEATURES, 'GSUB.fea')
         ) and overriding_exists(
-            os.path.join(constants.paths.FEATURES, 'lookups.fea')
+            os.path.join(constants.paths.FEATURES, 'GSUB_lookups.fea')
+        ) and overriding_exists(
+            os.path.join(constants.paths.FEATURES, 'GSUB_extension.fea')
         ):
             return
 
@@ -372,7 +374,7 @@ class Builder(object):
             os.path.join('resources/features', self.family.script.lower())
         )
 
-        for file_name in ['GSUB.fea', 'lookups.fea']:
+        for file_name in ['GSUB.fea', 'GSUB_lookups.fea', 'GSUB_extension.fea']:
             file_path = os.path.join(premade_feature_dir, file_name)
             if os.path.exists(file_path):
                 subprocess.call(['cp', '-fr', file_path, temp(os.path.join(constants.paths.FEATURES, file_name))])

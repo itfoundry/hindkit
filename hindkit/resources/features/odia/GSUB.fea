@@ -1,22 +1,3 @@
-#!opentype
-
-languagesystem DFLT dflt;
-languagesystem ory2 dflt;
-languagesystem orya dflt;
-
-table head {
-  FontRevision 0.203;
-} head;
-
-include (../../family_classes.fea);
-
-include (../../family_metrics.fea);
-include (../../family_name.fea);
-include (../../family_GDEF.fea);
-
-include (../../family_lookups.fea);
-
-
 # -------------------
 # BASIC SHAPING FORMS
 # -------------------
