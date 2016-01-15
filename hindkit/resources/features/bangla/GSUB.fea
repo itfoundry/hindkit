@@ -128,7 +128,7 @@ feature pres {
 
   # Small Candrabindu
 
-  lookup pres_Candrabindu_smaller_A;
+  # lookup pres_Candrabindu_smaller_A;
 
   # Conjuncts
 
@@ -144,13 +144,13 @@ feature pres {
 
   # Reorder B
 
-  lookup pres_reorder_B1;
-  lookup pres_reorder_B2;
+  # lookup pres_reorder_B1;
+  # lookup pres_reorder_B2;
 
   # Candrabindu
 
-  lookup pres_Candrabindu_smaller_B;
-  lookup pres_Reph_Candrabindu;
+  # lookup pres_Candrabindu_smaller_B;
+  # lookup pres_Reph_Candrabindu;
 
   # Matra I
 

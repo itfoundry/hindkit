@@ -264,17 +264,17 @@ lookup pres_ra_c2 {
 
 # Small Candrabindu
 
-lookup pres_Candrabindu_smaller_A {
-  sub
-    [
-      bnmII bnAUlengthmark
-      bnI bnII bnU bnUU bnvR bnvRR bnAI bnAU
-      bnTTA bnTT_RA bnTT_BA bnTTHA bnTTH_RA
-    ]
-    bnCandrabindu'
-    by
-    bnCandrabindu.smaller;
-} pres_Candrabindu_smaller_A;
+# lookup pres_Candrabindu_smaller_A {
+#   sub
+#     [
+#       bnmII bnAUlengthmark
+#       bnI bnII bnU bnUU bnvR bnvRR bnAI bnAU
+#       bnTTA bnTT_RA bnTT_BA bnTTHA bnTTH_RA
+#     ]
+#     bnCandrabindu'
+#     by
+#     bnCandrabindu.smaller;
+# } pres_Candrabindu_smaller_A;
 
 # Conjuncts
 
@@ -628,79 +628,89 @@ lookup pres_matra {
 
 lookup pres_matra_alt {
 
-  sub @BASES_for_MATRAII_TALLER bnmII' by bnmII.taller;
+  # sub @BASES_for_MATRAII_TALLER bnmII' by bnmII.taller;
 
-  sub @BASES_for_MATRAU_RA [bnmU bnmUU]' by [bnmU.ra bnmUU.ra];
+  # sub @BASES_for_MATRAU_RA [bnmU bnmUU]' by [bnmU.ra bnmUU.ra];
 
-  sub
-    [@BASES_ANGULAR_for_MATRAU @BASES_ANGULAR_SPECIAL_for_MATRAU @BASES_OTHER_for_MATRAU]
-    [bnmU bnmUU bnmvR]'
-    by
-    [bnmU.detached bnmUU.detached bnmvR.detached];
+  # sub
+  #   [@BASES_ANGULAR_for_MATRAU @BASES_ANGULAR_SPECIAL_for_MATRAU @BASES_OTHER_for_MATRAU]
+  #   [bnmU bnmUU bnmvR]'
+  #   by
+  #   [bnmU.detached bnmUU.detached bnmvR.detached];
 
-  sub [bnmE bnmE.init bnmAI bnmAI.init] bnTT_TTA' by bnTT_TTA.matrae;
+  # sub [bnmE bnmE.init bnmAI bnmAI.init] bnTT_TTA' by bnTT_TTA.matrae;
 
   sub @BASES_for_AULENGTHMARK_TALLER   bnAUlengthmark' by bnAUlengthmark.taller;
-  sub @BASES_for_AULENGTHMARK_NARROWER bnAUlengthmark' by bnAUlengthmark.narrower;
+  # sub @BASES_for_AULENGTHMARK_NARROWER bnAUlengthmark' by bnAUlengthmark.narrower;
 
-  sub
-    [bnDDxA bnDDHxA]'
-    [bnVirama bnmU bnmUU bnmvR bnmvRR bnmvL bnmvLL]
-    by
-    [bnDDxA.matrau bnDDHxA.matrau];
+  # sub
+  #   [bnDDxA bnDDHxA]'
+  #   [bnVirama bnmU bnmUU bnmvR bnmvRR bnmvL bnmvLL]
+  #   by
+  #   [bnDDxA.matrau bnDDHxA.matrau];
 
 } pres_matra_alt;
 
 # Reorder B
 
-lookup pres_reorder_B1 {
-  sub
-    bnmU.ra'  lookup swap_mU_ra_Reph
-    bnReph'   lookup swap_mU_ra_Reph;
-  sub
-    bnmUU.ra' lookup swap_mUU_ra_Reph
-    bnReph'   lookup swap_mUU_ra_Reph;
-} pres_reorder_B1;
+# lookup pres_reorder_B1 {
+#   sub
+#     bnmU.ra'  lookup swap_mU_ra_Reph
+#     bnReph'   lookup swap_mU_ra_Reph;
+#   sub
+#     bnmUU.ra' lookup swap_mUU_ra_Reph
+#     bnReph'   lookup swap_mUU_ra_Reph;
+# } pres_reorder_B1;
 
-lookup pres_reorder_B2 {
-  sub
-    bnmU.ra'       lookup swap_mU_ra_Candrabindu
-    bnCandrabindu' lookup swap_mU_ra_Candrabindu;
-  sub
-    bnmUU.ra'      lookup swap_mUU_ra_Candrabindu
-    bnCandrabindu' lookup swap_mUU_ra_Candrabindu;
-} pres_reorder_B2;
+# lookup pres_reorder_B2 {
+#   sub
+#     bnmU.ra'       lookup swap_mU_ra_Candrabindu
+#     bnCandrabindu' lookup swap_mU_ra_Candrabindu;
+#   sub
+#     bnmUU.ra'      lookup swap_mUU_ra_Candrabindu
+#     bnCandrabindu' lookup swap_mUU_ra_Candrabindu;
+# } pres_reorder_B2;
 
 # Candrabindu
 
-lookup pres_Candrabindu_smaller_B {
-  sub @BASES_for_CANDRABINDU_SMALLER bnCandrabindu' by bnCandrabindu.smaller;
-} pres_Candrabindu_smaller_B;
+# lookup pres_Candrabindu_smaller_B {
+#   sub @BASES_for_CANDRABINDU_SMALLER bnCandrabindu' by bnCandrabindu.smaller;
+# } pres_Candrabindu_smaller_B;
 
-lookup pres_Reph_Candrabindu {
-  sub bnReph bnCandrabindu by bnReph_Candrabindu;
-} pres_Reph_Candrabindu;
+# lookup pres_Reph_Candrabindu {
+#   sub bnReph bnCandrabindu by bnReph_Candrabindu;
+# } pres_Reph_Candrabindu;
 
 # Matra I
 
 lookup pres_matrai_step_A {
   sub bnmI' @BASES_for_MATRAI bnReph             by bnmI_Reph;
   sub bnmI' @BASES_for_MATRAI bnCandrabindu      by bnmI_Candrabindu;
-  sub bnmI' @BASES_for_MATRAI bnReph_Candrabindu by bnmI_Reph_Candrabindu;
+  # sub bnmI' @BASES_for_MATRAI bnReph_Candrabindu by bnmI_Reph_Candrabindu;
   sub bnmI' @BASES_for_MATRAI @MARKS_BELOW bnReph             by bnmI_Reph;
   sub bnmI' @BASES_for_MATRAI @MARKS_BELOW bnCandrabindu      by bnmI_Candrabindu;
-  sub bnmI' @BASES_for_MATRAI @MARKS_BELOW bnReph_Candrabindu by bnmI_Reph_Candrabindu;
+  # sub bnmI' @BASES_for_MATRAI @MARKS_BELOW bnReph_Candrabindu by bnmI_Reph_Candrabindu;
 } pres_matrai_step_A;
 
 lookup pres_matrai_step_B {
+  # sub
+  #   [bnmI_Reph bnmI_Candrabindu bnmI_Reph_Candrabindu] @BASES_for_MATRAI
+  #   [bnReph bnCandrabindu bnReph_Candrabindu]'
+  #   by
+  #   bnNull;
+  # sub
+  #   [bnmI_Reph bnmI_Candrabindu bnmI_Reph_Candrabindu] @BASES_for_MATRAI @MARKS_BELOW
+  #   [bnReph bnCandrabindu bnReph_Candrabindu]'
+  #   by
+  #   bnNull;
   sub
-    [bnmI_Reph bnmI_Candrabindu bnmI_Reph_Candrabindu] @BASES_for_MATRAI
-    [bnReph bnCandrabindu bnReph_Candrabindu]'
+    [bnmI_Reph bnmI_Candrabindu] @BASES_for_MATRAI
+    [bnReph bnCandrabindu]'
     by
-    bnNull;
+    \NULL;
   sub
-    [bnmI_Reph bnmI_Candrabindu bnmI_Reph_Candrabindu] @BASES_for_MATRAI @MARKS_BELOW
-    [bnReph bnCandrabindu bnReph_Candrabindu]'
+    [bnmI_Reph bnmI_Candrabindu] @BASES_for_MATRAI @MARKS_BELOW
+    [bnReph bnCandrabindu]'
     by
-    bnNull;
+    \NULL;
 } pres_matrai_step_B;

@@ -30,18 +30,18 @@ feature blwf {
 # Post-base Forms
 # ----------
 
-feature psts {
+feature pstf {
 
   script DFLT;
-    lookup psts_new;
+    lookup pstf_new;
 
   script gur2;
-    lookup psts_new;
+    lookup pstf_new;
 
   script guru;
-    lookup psts_old;
+    lookup pstf_old;
 
-} psts;
+} pstf;
 
 
 # ----------------------------

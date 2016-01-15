@@ -1,9 +1,13 @@
-@MARKS_BELOW = [bnRAphalaa bnBAphalaa];
+@MARKS_BELOW = [bnRAc2 bnBAc2];
 
-# @BASES_STEM_for_MATRAU    = [bnGA bnJA bnNYA bnNNA bnDA bnNA bnPA bnMA bnLA bnSHA bnSA bnG_GA bnNG_GA bnDD_GA bnD_GA bnDDx_GA bnL_GA bnNY_JA bnJ_JA bnN_JA bnB_JA bnC_NYA bnNN_NNA bnH_NNA bnK_SS_NNA bnG_DA bnD_DA bnN_DA bnB_DA bnM_DA bnL_DA bnK_NA bnG_NA bnGH_NA bnC_NA bnD_NA bnDH_NA bnT_NA bnN_NA bnP_NA bnM_NA bnSH_NA bnS_NA bnK_SS_NA bnM_PA bnL_PA bnSS_PA bnS_PA bnP_PA bnK_MA bnG_MA bnNG_MA bnTT_MA bnDD_MA bnNN_MA bnT_MA bnD_MA bnDH_MA bnN_MA bnP_MA bnM_MA bnL_MA bnSH_MA bnS_MA bnSS_MA bnH_MA bnK_SS_MA bnK_LA bnG_LA bnT_LA bnP_LA bnPH_LA bnB_LA bnBH_LA bnM_LA bnL_LA bnSH_LA bnS_LA bnH_LA bnS_K_LA bnM_P_LA bnS_P_LA bnK_SSA bnNG_K_SSA bnK_SA bnN_SA bnP_SA bnK_RA bnKH_RA bnG_RA bnGH_RA bnC_RA bnCH_RA bnJ_RA bnJH_RA bnTT_RA bnTTH_RA bnDD_RA bnDDH_RA bnT_RA bnTH_RA bnD_RA bnDH_RA bnN_RA bnP_RA bnPH_RA bnB_RA bnBH_RA bnM_RA bnSH_RA bnS_RA bnSS_RA bnH_RA bnY_RA bnNG_K_RA bnSS_K_RA bnS_K_RA bnNG_GH_RA bnC_CH_RA bnK_TT_RA bnNN_TT_RA bnTT_TT_RA bnN_TT_RA bnL_TT_RA bnSS_TT_RA bnS_TT_RA bnNN_TTH_RA bnNN_DD_RA bnN_DD_RA bnL_DD_RA bnNN_DDH_RA bnK_T_RA bnN_T_RA bnP_T_RA bnS_T_RA bnT_TH_RA bnN_TH_RA bnG_D_RA bnD_D_RA bnN_D_RA bnB_D_RA bnM_D_RA bnL_D_RA bnN_DH_RA bnM_P_RA bnSS_P_RA bnS_P_RA bnL_PH_RA bnS_PH_RA bnM_PH_RA bnM_B_RA bnD_BH_RA bnB_BH_RA bnM_BH_RA bnK_SS_RA bnRAphalaa];
-@BASES_ANGULAR_for_MATRAU         = [bnKA bnKHA bnGHA bnJHA bnTHA bnDHA bnPHA bnBA bnYA bnSSA asRA bnK_KA bnNG_KA bnL_KA bnSS_KA bnS_KA bnNG_KHA bnS_KHA bnNG_GHA bnD_GHA bnL_GHA bnNY_CA bnNY_JHA bnJ_JHA bnSS_NNA bnT_THA bnG_DHA bnN_DHA bnD_DHA bnB_DHA bnL_DHA bnM_PHA bnS_PHA bnL_PHA bnSS_PHA bnK_BA bnKH_BA bnG_BA bnC_BA bnCH_BA bnJ_BA bnTT_BA bnNN_BA bnDD_BA bnT_BA bnTH_BA bnD_BA bnDH_BA bnN_BA bnP_BA bnB_BA bnM_BA bnL_BA bnSH_BA bnSS_BA bnS_BA bnH_BA bnK_SS_BA bnC_CH_BA bnJ_J_BA bnT_T_BA bnS_T_BA bnD_D_BA bnD_DH_BA bnN_DH_BA bnN_T_BA bnN_D_BA bnBAphalaa];
+# @BASES_STEM_for_MATRAU    = [bnGA bnJA bnNYA bnNNA bnDA bnNA bnPA bnMA bnLA bnSHA bnSA bnG_GA bnNG_GA bnDD_GA bnD_GA bnDDx_GA bnL_GA bnNY_JA bnJ_JA bnN_JA bnB_JA bnC_NYA bnNN_NNA bnH_NNA bnK_SS_NNA bnG_DA bnD_DA bnN_DA bnB_DA bnM_DA bnL_DA bnK_NA bnG_NA bnGH_NA bnC_NA bnD_NA bnDH_NA bnT_NA bnN_NA bnP_NA bnM_NA bnSH_NA bnS_NA bnK_SS_NA bnM_PA bnL_PA bnSS_PA bnS_PA bnP_PA bnK_MA bnG_MA bnNG_MA bnTT_MA bnDD_MA bnNN_MA bnT_MA bnD_MA bnDH_MA bnN_MA bnP_MA bnM_MA bnL_MA bnSH_MA bnS_MA bnSS_MA bnH_MA bnK_SS_MA bnK_LA bnG_LA bnT_LA bnP_LA bnPH_LA bnB_LA bnBH_LA bnM_LA bnL_LA bnSH_LA bnS_LA bnH_LA bnS_K_LA bnM_P_LA bnS_P_LA bnK_SSA bnNG_K_SSA bnK_SA bnN_SA bnP_SA bnK_RA bnKH_RA bnG_RA bnGH_RA bnC_RA bnCH_RA bnJ_RA bnJH_RA bnTT_RA bnTTH_RA bnDD_RA bnDDH_RA bnT_RA bnTH_RA bnD_RA bnDH_RA bnN_RA bnP_RA bnPH_RA bnB_RA bnBH_RA bnM_RA bnSH_RA bnS_RA bnSS_RA bnH_RA bnY_RA bnNG_K_RA bnSS_K_RA bnS_K_RA bnNG_GH_RA bnC_CH_RA bnK_TT_RA bnNN_TT_RA bnTT_TT_RA bnN_TT_RA bnL_TT_RA bnSS_TT_RA bnS_TT_RA bnNN_TTH_RA bnNN_DD_RA bnN_DD_RA bnL_DD_RA bnNN_DDH_RA bnK_T_RA bnN_T_RA bnP_T_RA bnS_T_RA bnT_TH_RA bnN_TH_RA bnG_D_RA bnD_D_RA bnN_D_RA bnB_D_RA bnM_D_RA bnL_D_RA bnN_DH_RA bnM_P_RA bnSS_P_RA bnS_P_RA bnL_PH_RA bnS_PH_RA bnM_PH_RA bnM_B_RA bnD_BH_RA bnB_BH_RA bnM_BH_RA bnK_SS_RA bnRAc2];
+@BASES_ANGULAR_for_MATRAU         = [bnKA bnKHA bnGHA bnJHA bnTHA bnDHA bnPHA bnBA bnYA bnSSA asRA bnK_KA bnNG_KA bnL_KA bnSS_KA bnS_KA bnNG_KHA bnS_KHA bnNG_GHA bnD_GHA bnL_GHA bnNY_CA bnNY_JHA bnJ_JHA bnSS_NNA bnT_THA bnG_DHA bnN_DHA bnD_DHA bnB_DHA bnL_DHA bnM_PHA bnS_PHA bnL_PHA bnSS_PHA bnK_BA bnKH_BA bnG_BA bnC_BA bnCH_BA bnJ_BA bnTT_BA bnNN_BA bnDD_BA bnT_BA bnTH_BA bnD_BA bnDH_BA bnN_BA bnP_BA bnB_BA bnM_BA bnL_BA bnSH_BA bnSS_BA bnS_BA bnH_BA bnK_SS_BA bnC_CH_BA bnJ_J_BA bnT_T_BA bnS_T_BA bnD_D_BA bnD_DH_BA bnN_DH_BA bnN_T_BA bnN_D_BA bnBAc2];
 @BASES_ANGULAR_SPECIAL_for_MATRAU = [bnRA asWA bnYxA];
-@BASES_OTHER_for_MATRAU           = [bnNGA bnCA bnCHA bnTTA bnTTHA bnDDA bnDDHA bnTA bnBHA bnHA bnDDxA bnDDHxA bnC_CA bnSH_CA bnC_CHA bnNY_CHA bnSH_CHA bnJ_NYA bnK_TTA bnTT_TTA bnNN_TTA bnN_TTA bnL_TTA bnSS_TTA bnP_TTA bnPH_TTA bnS_TTA bnNN_TTHA bnN_TTHA bnSS_TTHA bnDD_DDA bnNN_DDA bnN_DDA bnB_DDA bnL_DDA bnNN_DDHA bnN_DDHA bnB_DDHA bnK_TA bnT_TA bnN_TA bnP_TA bnM_TA bnL_TA bnSH_TA bnS_TA bnN_THA bnM_THA bnS_THA bnH_NA bnD_BHA bnM_BHA bnB_BHA bnL_BHA bnDDxA.matrau bnDDHxA.matrau dottedcircle];
+@BASES_OTHER_for_MATRAU           = [
+  bnNGA bnCA bnCHA bnTTA bnTTHA bnDDA bnDDHA bnTA bnBHA bnHA bnDDxA bnDDHxA bnC_CA bnSH_CA bnC_CHA bnNY_CHA bnSH_CHA bnJ_NYA bnK_TTA bnTT_TTA bnNN_TTA bnN_TTA bnL_TTA bnSS_TTA bnP_TTA bnPH_TTA bnS_TTA bnNN_TTHA bnN_TTHA bnSS_TTHA bnDD_DDA bnNN_DDA bnN_DDA bnB_DDA bnL_DDA bnNN_DDHA bnN_DDHA bnB_DDHA bnK_TA bnT_TA bnN_TA bnP_TA bnM_TA bnL_TA bnSH_TA bnS_TA bnN_THA bnM_THA bnS_THA bnH_NA bnD_BHA bnM_BHA bnB_BHA bnL_BHA
+  # bnDDxA.matrau bnDDHxA.matrau
+  dottedcircle
+];
 
 @BASES_for_MATRAU_RA             = [bnRA asRA asWA bnKH_RA bnG_RA bnG_LA bnGH_RA bnT_RA bnTH_RA bnDH_RA bnP_RA bnM_P_RA bnSS_P_RA bnS_P_RA bnP_LA bnS_P_LA bnB_RA bnB_LA bnSH_RA bnSH_LA];
 
@@ -37,17 +41,17 @@ lookup swap_Reph_mII {
   sub bnmII  by bnReph.matraii;
 } swap_Reph_mII;
 
-# C Reph YAphalaa mAA <<Candrabindu' -> C Reph Candrabindu' YAphalaa mAA
+# C Reph YAc2 mAA <<Candrabindu' -> C Reph Candrabindu' YAc2 mAA
 
 lookup swap_mAA_Candrabindu {
   sub bnmAA         by bnCandrabindu;
   sub bnCandrabindu by bnmAA;
 } swap_mAA_Candrabindu;
 
-lookup swap_YAphalaa_Candrabindu {
-  sub bnYAphalaa    by bnCandrabindu;
-  sub bnCandrabindu by bnYAphalaa;
-} swap_YAphalaa_Candrabindu;
+lookup swap_YAc2_Candrabindu {
+  sub bnYAc2    by bnCandrabindu;
+  sub bnCandrabindu by bnYAc2;
+} swap_YAc2_Candrabindu;
 
 # C Reph <AUlenghthmark' Candrabindu -> C AUlenghthmark' Reph Candrabindu
 # Core Text: C Reph Candrabindu <<AUlenghthmark' -> C AUlenghthmark' Reph Candrabindu
@@ -64,22 +68,22 @@ lookup swap_Reph_AUlengthmark {
 
 # C mU.ra'>> Reph Candrabindu -> C Reph Candrabindu mU.ra'
 
-lookup swap_mU_ra_Reph {
-  sub bnmU.ra by bnReph;
-  sub bnReph  by bnmU.ra;
-} swap_mU_ra_Reph;
-
-lookup swap_mUU_ra_Reph {
-  sub bnmUU.ra by bnReph;
-  sub bnReph   by bnmUU.ra;
-} swap_mUU_ra_Reph;
-
-lookup swap_mU_ra_Candrabindu {
-  sub bnmU.ra       by bnCandrabindu;
-  sub bnCandrabindu by bnmU.ra;
-} swap_mU_ra_Candrabindu;
-
-lookup swap_mUU_ra_Candrabindu {
-  sub bnmUU.ra      by bnCandrabindu;
-  sub bnCandrabindu by bnmUU.ra;
-} swap_mUU_ra_Candrabindu;
+# lookup swap_mU_ra_Reph {
+#   sub bnmU.ra by bnReph;
+#   sub bnReph  by bnmU.ra;
+# } swap_mU_ra_Reph;
+#
+# lookup swap_mUU_ra_Reph {
+#   sub bnmUU.ra by bnReph;
+#   sub bnReph   by bnmUU.ra;
+# } swap_mUU_ra_Reph;
+#
+# lookup swap_mU_ra_Candrabindu {
+#   sub bnmU.ra       by bnCandrabindu;
+#   sub bnCandrabindu by bnmU.ra;
+# } swap_mU_ra_Candrabindu;
+#
+# lookup swap_mUU_ra_Candrabindu {
+#   sub bnmUU.ra      by bnCandrabindu;
+#   sub bnCandrabindu by bnmUU.ra;
+# } swap_mUU_ra_Candrabindu;

@@ -13,9 +13,8 @@ feature nukt {
 # Akhand Ligatures
 # ----------------
 
-feature akhn {
-  lookup akhn;
-} akhn;
+# feature akhn {
+# } akhn;
 
 
 # Reph Forms
@@ -89,7 +88,7 @@ feature abvs {
 # -----------------------
 
 feature blws {
-  lookup blws;
+  lookup blws_conjuncts;
   lookup blws_RAc2_matra;
 } blws;
 
@@ -97,17 +96,16 @@ feature blws {
 # Post-base Substitution
 # ----------------------
 
-feature psts {
-  lookup psts;
-} psts;
+# feature psts {
+# } psts;
 
 
 # Halant Forms
 # ------------
 
-# feature haln {
-#   lookup haln;
-# } haln;
+feature haln {
+  lookup haln;
+} haln;
 
 
 # Required Contextual Alternates
