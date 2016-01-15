@@ -98,6 +98,10 @@ SCRIPTS = {
         'tag': 'arab',
         'sample text': '',
     },
+
+    'ol chiki': {
+        'tag': 'olck',
+    },
 }
 
 def memoize(f):
