@@ -7,6 +7,39 @@ import mutatorMath.ufo.document, WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit, hindkit.devanagari, hindkit.patches
 import hindkit.constants as constants
 
+class Resource(object):
+
+    def __init__(
+        self,
+        builder,
+        output = None,
+        generator = None,
+    ):
+        self.builder = builder
+        self.output = output
+        self.generator = generator
+
+        temp_prefix = constants.paths.TEMP
+        premade_prefix = hindkit._unwrap_path_relative_to_package_dir(
+            os.path.join(
+                'resources',
+                'premade',
+                self.builder.family.script.lower(),
+            )
+        )
+        self.temp = os.path.join(temp_prefix, self.output)
+        self.premade = os.path.join(premade_prefix, self.output)
+
+    def prepare(self, *args, **kwargs):
+        if os.path.exists(self.output):
+            subprocess.call(['cp', '-fr', self.output, self.temp])
+        elif generator:
+            self.generator(self.temp, *args, **kwargs)
+        elif os.path.exists(self.premade):
+            subprocess.call(['cp', '-fr', self.premade, self.temp])
+        else:
+            raise SystemExit("Can't prepare.")
+
 class Builder(object):
 
     def __init__(
@@ -57,10 +90,51 @@ class Builder(object):
 
         self.options.update(options)
 
-    def _prep_designspace(self):
+        self.designspace = Resource(
+            self,
+            constants.paths.DESIGNSPACE,
+            self._prep_designspace,
+        )
+        self.features_tables = Resource(
+            self,
+            os.path.join(constants.paths.FEATURES, 'tables.fea'),
+            self._prep_features_tables,
+        )
+        self.features_languagesystems = Resource(
+            self,
+            os.path.join(constants.paths.FEATURES, 'languagesystems.fea'),
+            self._prep_features_languagesystems,
+        )
+        self.features_GPOS = Resource(
+            self,
+            os.path.join(constants.paths.FEATURES, 'GPOS.fea'),
+            self._prep_features_GPOS,
+        )
+        self.fmndb = Resource(
+            self,
+            constants.paths.FMNDB,
+            self._prep_fmndb,
+        )
+        self.goadb = Resource(
+            self,
+            constants.paths.GOADB,
+            self._prep_goadb,
+        )
+
+    def _check_inputs(self, inputs):
+        results = collections.OrderedDict(
+            (path, os.path.exists(path))
+            for path in inputs
+        )
+        if not all(results.values()):
+            raise SystemExit(
+                '\n'.join('{}: {}'.format(k, v) for k, v in results.items())
+            )
+
+    def _prep_designspace(self, output):
 
         doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
-            hindkit._unwrap_path_relative_to_cwd(temp(OUTPUT))
+            hindkit._unwrap_path_relative_to_cwd(output)
         )
 
         for i, master in enumerate(self.family.masters):
@@ -125,8 +199,7 @@ class Builder(object):
 
         if self.options['run_makeinstances']:
 
-            manager = Manager(output_abstract_path=constants.paths.DESIGNSPACE)
-            manager.run(self._prep_designspace)
+            self.designspace.prepare()
 
             arguments = ['-d', temp(constants.paths.DESIGNSPACE)]
             if not self.options['run_checkoutlines']:
@@ -143,10 +216,10 @@ class Builder(object):
                 font.info.postscriptFontName = style.output_full_name_postscript
                 font.save()
             for style in self.styles_to_be_built:
-                manager = Manager(input_abstract_paths=[temp(style.path)])
-                manager.run(self._simulate_makeInstancesUFO_postprocess, style)
+                self._simulate_makeInstancesUFO_postprocess
 
     def _simulate_makeInstancesUFO_postprocess(self, style):
+        self._check_inputs([temp(style.path)])
         if self.options['run_checkoutlines'] or self.options['run_autohint']:
             options = {
                 'doOverlapRemoval': self.options['run_checkoutlines'],
@@ -161,21 +234,14 @@ class Builder(object):
 
         self._prep_features_classes()
 
-        manager = Manager(output_abstract_path=os.path.join(constants.paths.FEATURES, 'tables.fea'))
-        manager.run(self._prep_features_tables)
-
-        manager = Manager(output_abstract_path=os.path.join(constants.paths.FEATURES, 'languagesystems.fea'))
-        manager.run(self._prep_features_languagesystems)
+        self.features_tables.prepare()
+        self.features_languagesystems.prepare()
 
         self._prep_features_GSUB()
 
         for style in self.styles_to_be_built:
 
-            manager = Manager(
-                input_abstract_paths = [temp(style.path)],
-                output_abstract_path = os.path.join(constants.paths.FEATURES, 'GPOS.fea'),
-            )
-            manager.run(self._prep_features_GPOS, style)
+            self.features_GPOS.prepare(style)
 
             directory = temp(style.directory)
 
@@ -269,7 +335,7 @@ class Builder(object):
             with open(temp(OUTPUT), 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-    def _prep_features_tables(self):
+    def _prep_features_tables(self, output):
 
         lines = []
         tables = collections.OrderedDict([
@@ -338,10 +404,10 @@ class Builder(object):
                 lines.append('}} {};'.format(name))
 
         if lines:
-            with open(temp(OUTPUT), 'w') as f:
+            with open(output, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-    def _prep_features_languagesystems(self):
+    def _prep_features_languagesystems(self, output):
 
         lines = ['languagesystem DFLT dflt;']
         tag = constants.misc.SCRIPTS[self.family.script.lower()]['tag']
@@ -352,7 +418,7 @@ class Builder(object):
             lines.append('languagesystem {} dflt;'.format(tag))
 
         if lines:
-            with open(temp(OUTPUT), 'w') as f:
+            with open(output, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
     def _prep_features_GSUB(self):
@@ -376,6 +442,7 @@ class Builder(object):
                 subprocess.call(['cp', '-fr', file_path, temp(os.path.join(constants.paths.FEATURES, file_name))])
 
     def _prep_features_GPOS(self, style):
+        self.check_inputs([temp(style.path)])
         if self.options['prep_kerning']:
             WriteFeaturesKernFDK.KernDataClass(
                 font = style.open_font(is_temp=True),
@@ -396,7 +463,7 @@ class Builder(object):
             if self.options['prep_mI_variants']:
                 hindkit.devanagari.prep_features_devanagari(self, style) # NOTE: not pure GPOS
 
-    def _prep_fmndb(self):
+    def _prep_fmndb(self, output):
 
         f_name = self.family.output_name
         lines = []
@@ -427,7 +494,7 @@ class Builder(object):
 
             lines.extend(comment_lines)
 
-        with open(temp(OUTPUT), 'w') as f:
+        with open(output, 'w') as f:
             f.write(constants.templates.FMNDB_HEAD)
             f.writelines(i + '\n' for i in lines)
 
@@ -440,6 +507,8 @@ class Builder(object):
             subprocess.call(['cp', '-fr', file_path, temp(constants.paths.GOADB)])
 
     def _compile(self, style):
+
+        self.check_inputs([temp(style.path), self.fmndb.temp, self.goadb.temp])
 
         if style.file_name.endswith('.ufo'):
             font = style.open_font(is_temp=True)
@@ -478,8 +547,9 @@ class Builder(object):
 
         subprocess.call(['makeotf'] + arguments)
 
-        if os.path.exists(otf_path) and os.path.isdir(constants.paths.OUTPUT):
-            subprocess.call(['cp', '-f', otf_path, constants.paths.OUTPUT])
+        destination = constants.paths.ADOBE_FONTS
+        if os.path.exists(otf_path) and os.path.isdir(destination):
+            subprocess.call(['cp', '-f', otf_path, destination])
 
     def _finalize_options(self):
 
@@ -531,102 +601,12 @@ class Builder(object):
             make_dir(temp(constants.paths.FEATURES))
             self.prep_features()
         if self.options['run_stage_compile']:
-            manager = Manager(output_abstract_path=constants.paths.FMNDB)
-            manager.run(self._prep_fmndb)
-            manager = Manager(output_abstract_path=constants.paths.GOADB)
-            manager.run(self._prep_goadb)
+            self.fmndb.prepare()
+            self.goadb.prepare()
             for style in self.styles_to_be_built:
-                manager = Manager(
-                    input_abstract_paths = [
-                        temp(style.path),
-                        temp(constants.paths.FMNDB),
-                        temp(constants.paths.GOADB),
-                    ],
-                    output_abstract_path = os.path.join(constants.paths.BUILD, style.otf_name),
-                )
-                manager.run(self._compile, style)
+                self._compile(style)
 
 # ---
-
-def decorator(function, *args, **kwargs):
-    function(*args, **kwargs)
-
-class Preparer(object):
-
-    def __init__(
-        self,
-        family,
-        path = None,
-        generator = None,
-    ):
-
-        self.family = family
-
-        self.path = path
-        self.overriding_path = overriding(self.path)
-        self.temp_path = temp(self.path)
-        self.premade_path = hindkit._unwrap_path_relative_to_package_dir(
-            os.path.join(
-                'resources/premade',
-                self.family.script.lower(),
-                self.path,
-            )
-        )
-
-        self.generator = generator
-
-    def prepare(self):
-        if is_overridden:
-            copy_overriding()
-        elif self.generator:
-            self.generator()
-        elif has_premade:
-            copy_premade()
-        else:
-            raise SystemExit("Can't prepare.")
-
-class Manager(object):
-
-    def __init__(
-        self,
-        input_abstract_paths = None,
-        output_abstract_path = None,
-    ):
-        self.input_abstract_paths = input_abstract_paths
-        self.output_abstract_path = output_abstract_path
-
-    def _check_overriding(self):
-        if self.output_abstract_path:
-            overriding_path = overriding(self.output_abstract_path)
-            temp_path = temp(self.output_abstract_path)
-            if os.path.exists(overriding_path):
-                subprocess.call(['cp', '-fr', overriding_path, temp_path])
-                is_overridden = True
-            else:
-                is_overridden = False
-        else:
-            is_overridden = False
-        return is_overridden
-
-    def _check_input(self):
-        results = collections.OrderedDict(
-            (abstract_path, os.path.exists(abstract_path))
-            for abstract_path in self.input_abstract_paths
-        )
-        return results
-
-    def run(self, function, *args, **kwargs):
-
-        if self.output_abstract_path:
-            is_overridden = self._check_overriding()
-        if self.input_abstract_paths and not is_overridden:
-            results = self._check_input()
-        if all(results.values()):
-            function(*args, **kwargs)
-        else:
-            raise SystemExit(
-                '\n'.join('{}: {}'.format(k, v) for k, v in results.items())
-            )
 
 def sort_glyphs(glyph_order, glyph_names):
     sorted_glyphs = (
@@ -666,7 +646,7 @@ def make_dir(path):
 # ---
 
 def overriding(abstract_path):
-    return os.path.join(constants.paths.OVERRIDING, abstract_path)
+    return abstract_path
 
 def temp(abstract_path):
     return os.path.join(constants.paths.TEMP, abstract_path)
