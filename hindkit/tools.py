@@ -57,18 +57,7 @@ class Builder(object):
 
         self.options.update(options)
 
-    def _prep_masters(self): # TODO
-        OUTPUT = constants.paths.MASTERS
-        if overriding_exists(OUTPUT):
-            return
-        else:
-            raise SystemExit('[WARNING] Not able to prep masters yet.')
-
     def _prep_designspace(self):
-
-        OUTPUT = constants.paths.DESIGNSPACE
-        if overriding_exists(OUTPUT):
-            return
 
         doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
             hindkit._unwrap_path_relative_to_cwd(temp(OUTPUT))
@@ -128,7 +117,6 @@ class Builder(object):
                 for i in self.family.styles
             ])
         DEPENDENCIES = [i.path for i in self.family.masters]
-        # self._prep_masters()
         if not input_exists(DEPENDENCIES):
             raise SystemExit()
 
@@ -137,7 +125,8 @@ class Builder(object):
 
         if self.options['run_makeinstances']:
 
-            self._prep_designspace()
+            manager = Manager(output_abstract_path=constants.paths.DESIGNSPACE)
+            manager.run(self._prep_designspace)
 
             arguments = ['-d', temp(constants.paths.DESIGNSPACE)]
             if not self.options['run_checkoutlines']:
@@ -153,35 +142,40 @@ class Builder(object):
                 font = style.open_font(is_temp=True)
                 font.info.postscriptFontName = style.output_full_name_postscript
                 font.save()
-            self._simulate_makeInstancesUFO_postprocess(self.styles_to_be_built)
+            for style in self.styles_to_be_built:
+                manager = Manager(input_abstract_paths=[temp(style.path)])
+                manager.run(self._simulate_makeInstancesUFO_postprocess, style)
 
-    def _simulate_makeInstancesUFO_postprocess(self, styles):
-
-        DEPENDENCIES = [temp(i.path) for i in self.styles_to_be_built]
-        if not input_exists(DEPENDENCIES):
-            return
-
-        newInstancesList = [temp(i.path) for i in styles]
+    def _simulate_makeInstancesUFO_postprocess(self, style):
         if self.options['run_checkoutlines'] or self.options['run_autohint']:
             options = {
                 'doOverlapRemoval': self.options['run_checkoutlines'],
                 'doAutoHint': self.options['run_autohint'],
                 'allowDecimalCoords': False,
             }
-            for instancePath in newInstancesList:
-                hindkit.patches.updateInstance(options, instancePath)
+            hindkit.patches.updateInstance(options, temp(style.path))
 
     def prep_features(self):
 
         make_dir(temp(constants.paths.FEATURES))
 
         self._prep_features_classes()
-        self._prep_features_tables()
-        self._prep_features_languagesystems()
+
+        manager = Manager(output_abstract_path=os.path.join(constants.paths.FEATURES, 'tables.fea'))
+        manager.run(self._prep_features_tables)
+
+        manager = Manager(output_abstract_path=os.path.join(constants.paths.FEATURES, 'languagesystems.fea'))
+        manager.run(self._prep_features_languagesystems)
+
         self._prep_features_GSUB()
-        self._prep_features_GPOS()
 
         for style in self.styles_to_be_built:
+
+            manager = Manager(
+                input_abstract_paths = [temp(style.path)],
+                output_abstract_path = os.path.join(constants.paths.FEATURES, 'GPOS.fea'),
+            )
+            manager.run(self._prep_features_GPOS, style)
 
             directory = temp(style.directory)
 
@@ -189,7 +183,15 @@ class Builder(object):
 
                 lines = ['table head { FontRevision 1.000; } head;']
 
-                for file_name in ['classes', 'tables', 'languagesystems', 'GSUB_extension', 'GSUB_lookups', 'GSUB']:
+                for file_name in [
+                    'classes',
+                    'classes_extended',
+                    'tables',
+                    'languagesystems',
+                    'GSUB_extension',
+                    'GSUB_lookups',
+                    'GSUB',
+                ]:
                     abstract_path = os.path.join(constants.paths.FEATURES, file_name + '.fea')
                     if os.path.exists(temp(abstract_path)):
                         lines.append('include (../../{});'.format(abstract_path))
@@ -216,7 +218,7 @@ class Builder(object):
     def _prep_features_classes(self):
 
         OUTPUT = os.path.join(constants.paths.FEATURES, 'classes.fea')
-        if overriding_exists(OUTPUT):
+        if overriding_exists(os.path.join(constants.paths.FEATURES, 'classes_extended.fea')) and overriding_exists(OUTPUT):
             return
         DEPENDENCIES = [temp(i.path) for i in self.styles_to_be_built]
         if not input_exists(DEPENDENCIES):
@@ -269,10 +271,6 @@ class Builder(object):
 
     def _prep_features_tables(self):
 
-        OUTPUT = os.path.join(constants.paths.FEATURES, 'tables.fea')
-        if overriding_exists(OUTPUT):
-            return
-
         lines = []
         tables = collections.OrderedDict([
             ('hhea', []),
@@ -318,6 +316,8 @@ class Builder(object):
             }
             if self.options['prep_mark_positioning'] or os.path.exists(temp(os.path.join(constants.paths.FEATURES, 'classes.fea'))):
                 GDEF_records['marks'] = '@{}'.format(WriteFeaturesMarkFDK.kCombMarksClassName)
+            if os.path.exists(temp(os.path.join(constants.paths.FEATURES, 'classes_extended.fea'))):
+                GDEF_records['marks'] = '@{}'.format('COMBINING_MARKS_GDEF')
             tables['GDEF'].extend([
                 'GlyphClassDef {bases}, {ligatures}, {marks}, {components};'.format(**GDEF_records)
             ])
@@ -343,10 +343,6 @@ class Builder(object):
 
     def _prep_features_languagesystems(self):
 
-        OUTPUT = os.path.join(constants.paths.FEATURES, 'languagesystems.fea')
-        if overriding_exists(OUTPUT):
-            return
-
         lines = ['languagesystem DFLT dflt;']
         tag = constants.misc.SCRIPTS[self.family.script.lower()]['tag']
         if isinstance(tag, tuple):
@@ -361,17 +357,12 @@ class Builder(object):
 
     def _prep_features_GSUB(self):
 
-        # if overriding_exists(
-        #     os.path.join(constants.paths.FEATURES, 'GSUB.fea')
-        # ) and overriding_exists(
-        #     os.path.join(constants.paths.FEATURES, 'GSUB_lookups.fea')
-        # ) and overriding_exists(
-        #     os.path.join(constants.paths.FEATURES, 'GSUB_extension.fea')
-        # ):
         if overriding_exists(
             os.path.join(constants.paths.FEATURES, 'GSUB.fea')
         ) and overriding_exists(
             os.path.join(constants.paths.FEATURES, 'GSUB_lookups.fea')
+        ) and overriding_exists(
+            os.path.join(constants.paths.FEATURES, 'GSUB_extension.fea')
         ):
             return
 
@@ -384,44 +375,28 @@ class Builder(object):
             if os.path.exists(file_path):
                 subprocess.call(['cp', '-fr', file_path, temp(os.path.join(constants.paths.FEATURES, file_name))])
 
-    def _prep_features_GPOS(self):
-
-        OUTPUT = os.path.join(constants.paths.FEATURES, 'GPOS.fea')
-        if overriding_exists(OUTPUT):
-            return
-        DEPENDENCIES = [temp(i.path) for i in self.styles_to_be_built]
-        if not input_exists(DEPENDENCIES):
-            raise SystemExit()
-
+    def _prep_features_GPOS(self, style):
         if self.options['prep_kerning']:
-
-            for style in self.styles_to_be_built:
-                WriteFeaturesKernFDK.KernDataClass(
-                    font = style.open_font(is_temp=True),
-                    folderPath = temp(style.directory),
-                )
-
+            WriteFeaturesKernFDK.KernDataClass(
+                font = style.open_font(is_temp=True),
+                folderPath = temp(style.directory),
+            )
         if self.options['prep_mark_positioning']:
-            for style in self.styles_to_be_built:
-                WriteFeaturesMarkFDK.MarkDataClass(
-                    font = style.open_font(is_temp=True),
-                    folderPath = temp(style.directory),
-                    trimCasingTags = False,
-                    genMkmkFeature = self.options['prep_mark_to_mark_positioning'],
-                    writeClassesFile = True,
-                    indianScriptsFormat = (
-                        True if self.family.script.lower() in constants.misc.SCRIPTS
-                        else False
-                    ),
-                )
-                if self.options['prep_mI_variants']:
-                    hindkit.devanagari.prep_features_devanagari(self, style) # NOTE: not pure GPOS
+            WriteFeaturesMarkFDK.MarkDataClass(
+                font = style.open_font(is_temp=True),
+                folderPath = temp(style.directory),
+                trimCasingTags = False,
+                genMkmkFeature = self.options['prep_mark_to_mark_positioning'],
+                writeClassesFile = True,
+                indianScriptsFormat = (
+                    True if self.family.script.lower() in constants.misc.SCRIPTS
+                    else False
+                ),
+            )
+            if self.options['prep_mI_variants']:
+                hindkit.devanagari.prep_features_devanagari(self, style) # NOTE: not pure GPOS
 
     def _prep_fmndb(self):
-
-        OUTPUT = constants.paths.FMNDB
-        if overriding_exists(OUTPUT):
-            return
 
         f_name = self.family.output_name
         lines = []
@@ -457,74 +432,56 @@ class Builder(object):
             f.writelines(i + '\n' for i in lines)
 
     def _prep_goadb(self):
-
-        OUTPUT = constants.paths.GOADB
-        if overriding_exists(OUTPUT):
-            return
-
         premade_feature_dir = hindkit._unwrap_path_relative_to_package_dir(
             os.path.join('resources/features', self.family.script.lower())
         )
-
-        file_path = os.path.join(premade_feature_dir, OUTPUT)
+        file_path = os.path.join(premade_feature_dir, constants.paths.GOADB)
         if os.path.exists(file_path):
-            subprocess.call(['cp', '-fr', file_path, temp(OUTPUT)])
+            subprocess.call(['cp', '-fr', file_path, temp(constants.paths.GOADB)])
 
-    def compile(self):
+    def _compile(self, style):
 
-        self._prep_fmndb()
-        self._prep_goadb()
+        if style.file_name.endswith('.ufo'):
+            font = style.open_font(is_temp=True)
+            if font.info.postscriptFontName != style.output_full_name_postscript:
+                font.info.postscriptFontName = style.output_full_name_postscript
+                font.save()
 
-        OUTPUT = constants.paths.BUILD
-        remove_files(OUTPUT)
-        make_dir(OUTPUT)
-        DEPENDENCIES = [temp(i.path) for i in self.styles_to_be_built]
-        if not input_exists(DEPENDENCIES):
-            raise SystemExit()
+        otf_path = os.path.join(constants.paths.BUILD, style.otf_name)
 
-        for style in self.styles_to_be_built:
+        arguments = [
+            '-f', temp(style.path),
+            '-o', otf_path,
+            '-mf', temp(constants.paths.FMNDB),
+            '-gf', temp(constants.paths.GOADB),
+            '-r',
+            '-shw',
+            '-rev', self.fontrevision,
+            '-omitMacNames',
+        ]
+        if self.options['do_style_linking']:
+            if style.is_bold:
+                arguments.append('-b')
+            if style.is_italic:
+                arguments.append('-i')
+        if self.options['use_os_2_version_4']:
+            for digit, boolean in [
+                ('7', self.options['prefer_typo_metrics']),
+                ('8', self.options['is_width_weight_slope_only']),
+                ('9', style.is_oblique),
+            ]:
+                arguments.append('-osbOn' if boolean else '-osbOff')
+                arguments.append(digit)
 
-            if style.file_name.endswith('.ufo'):
-                font = style.open_font(is_temp=True)
-                if font.info.postscriptFontName != style.output_full_name_postscript:
-                    font.info.postscriptFontName = style.output_full_name_postscript
-                    font.save()
+        if not os.path.isdir(constants.paths.BUILD):
+            os.makedirs(constants.paths.BUILD)
 
-            otf_path = os.path.join(constants.paths.BUILD, style.otf_name)
+        subprocess.call(['makeotf'] + arguments)
 
-            arguments = [
-                '-f', temp(style.path),
-                '-o', otf_path,
-                '-mf', temp(constants.paths.FMNDB),
-                '-gf', temp(constants.paths.GOADB),
-                '-r',
-                '-shw',
-                '-rev', self.fontrevision,
-                '-omitMacNames',
-            ]
-            if self.options['do_style_linking']:
-                if style.is_bold:
-                    arguments.append('-b')
-                if style.is_italic:
-                    arguments.append('-i')
-            if self.options['use_os_2_version_4']:
-                for digit, boolean in [
-                    ('7', self.options['prefer_typo_metrics']),
-                    ('8', self.options['is_width_weight_slope_only']),
-                    ('9', style.is_oblique),
-                ]:
-                    arguments.append('-osbOn' if boolean else '-osbOff')
-                    arguments.append(digit)
+        if os.path.exists(otf_path) and os.path.isdir(constants.paths.OUTPUT):
+            subprocess.call(['cp', '-f', otf_path, constants.paths.OUTPUT])
 
-            subprocess.call(['makeotf'] + arguments)
-
-            project_file_path = os.path.join(temp(style.directory), 'current.fpr')
-            remove_files(project_file_path)
-
-            if os.path.exists(otf_path) and os.path.exists(constants.paths.OUTPUT):
-                subprocess.call(['cp', '-f', otf_path, constants.paths.OUTPUT])
-
-    def _derive_options(self):
+    def _finalize_options(self):
 
         parser = argparse.ArgumentParser(
             description = 'execute `AFDKOPython build.py` to run stages as specified in build.py, or append arguments to override.'
@@ -563,20 +520,113 @@ class Builder(object):
             self.styles_to_be_built = self.family.get_styles_that_are_directly_derived_from_masters()
 
     def build(self):
-        self._derive_options()
+        self._finalize_options()
         make_dir(constants.paths.TEMP)
         if self.options['run_stage_prep_styles']:
             remove_files(temp(constants.paths.STYLES))
-            remove_files(temp(constants.paths.STYLES))
+            make_dir(temp(constants.paths.STYLES))
             self.prep_styles()
         if self.options['run_stage_prep_features']:
             remove_files(temp(constants.paths.FEATURES))
             make_dir(temp(constants.paths.FEATURES))
             self.prep_features()
         if self.options['run_stage_compile']:
-            self.compile()
+            manager = Manager(output_abstract_path=constants.paths.FMNDB)
+            manager.run(self._prep_fmndb)
+            manager = Manager(output_abstract_path=constants.paths.GOADB)
+            manager.run(self._prep_goadb)
+            for style in self.styles_to_be_built:
+                manager = Manager(
+                    input_abstract_paths = [
+                        temp(style.path),
+                        temp(constants.paths.FMNDB),
+                        temp(constants.paths.GOADB),
+                    ],
+                    output_abstract_path = os.path.join(constants.paths.BUILD, style.otf_name),
+                )
+                manager.run(self._compile, style)
 
 # ---
+
+def decorator(function, *args, **kwargs):
+    function(*args, **kwargs)
+
+class Preparer(object):
+
+    def __init__(
+        self,
+        family,
+        path = None,
+        generator = None,
+    ):
+
+        self.family = family
+
+        self.path = path
+        self.overriding_path = overriding(self.path)
+        self.temp_path = temp(self.path)
+        self.premade_path = hindkit._unwrap_path_relative_to_package_dir(
+            os.path.join(
+                'resources/premade',
+                self.family.script.lower(),
+                self.path,
+            )
+        )
+
+        self.generator = generator
+
+    def prepare(self):
+        if is_overridden:
+            copy_overriding()
+        elif self.generator:
+            self.generator()
+        elif has_premade:
+            copy_premade()
+        else:
+            raise SystemExit("Can't prepare.")
+
+class Manager(object):
+
+    def __init__(
+        self,
+        input_abstract_paths = None,
+        output_abstract_path = None,
+    ):
+        self.input_abstract_paths = input_abstract_paths
+        self.output_abstract_path = output_abstract_path
+
+    def _check_overriding(self):
+        if self.output_abstract_path:
+            overriding_path = overriding(self.output_abstract_path)
+            temp_path = temp(self.output_abstract_path)
+            if os.path.exists(overriding_path):
+                subprocess.call(['cp', '-fr', overriding_path, temp_path])
+                is_overridden = True
+            else:
+                is_overridden = False
+        else:
+            is_overridden = False
+        return is_overridden
+
+    def _check_input(self):
+        results = collections.OrderedDict(
+            (abstract_path, os.path.exists(abstract_path))
+            for abstract_path in self.input_abstract_paths
+        )
+        return results
+
+    def run(self, function, *args, **kwargs):
+
+        if self.output_abstract_path:
+            is_overridden = self._check_overriding()
+        if self.input_abstract_paths and not is_overridden:
+            results = self._check_input()
+        if all(results.values()):
+            function(*args, **kwargs)
+        else:
+            raise SystemExit(
+                '\n'.join('{}: {}'.format(k, v) for k, v in results.items())
+            )
 
 def sort_glyphs(glyph_order, glyph_names):
     sorted_glyphs = (
@@ -599,9 +649,10 @@ def compose_glyph_class_def_lines(class_name, glyph_names):
 def glyph_filter_marks(family, glyph):
     has_mark_anchor = False
     for anchor in glyph.anchors:
-        if anchor.name.startswith('_'):
-            has_mark_anchor = True
-            break
+        if anchor.name:
+            if anchor.name.startswith('_'):
+                has_mark_anchor = True
+                break
     return has_mark_anchor
 
 # ---
@@ -619,28 +670,6 @@ def overriding(abstract_path):
 
 def temp(abstract_path):
     return os.path.join(constants.paths.TEMP, abstract_path)
-
-def overriding_exists(overriding_path):
-    overriding_path = overriding(overriding_path)
-    if os.path.exists(overriding_path):
-        subprocess.call(['cp', '-fr', overriding_path, temp(overriding_path)])
-        exists = True
-    else:
-        exists = False
-    return exists
-
-def input_exists(paths):
-    exists = True
-    message_lines = ['[WARNING] Files missing:']
-    for path in paths:
-        if not os.path.exists(path):
-            exists = False
-            message_lines.append('\t' + path)
-    if not exists:
-        message_lines.extend(['', '[Note] Exit.', ''])
-        for line in message_lines:
-            print(line)
-    return exists
 
 # ---
 
