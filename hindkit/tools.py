@@ -12,33 +12,48 @@ class Resource(object):
     def __init__(
         self,
         builder,
-        output = None,
-        generator = None,
+        output,
+        generator,
+        extensions = None,
     ):
         self.builder = builder
         self.output = output
         self.generator = generator
 
-        temp_prefix = constants.paths.TEMP
-        premade_prefix = hindkit._unwrap_path_relative_to_package_dir(
-            os.path.join(
-                'resources',
-                'premade',
-                self.builder.family.script.lower(),
+        self.extensions = []
+        if extensions:
+            self.extensions.extend(extensions)
+
+    def _temp(self, output):
+        temp = None
+        if output:
+            temp = os.path.join(constants.paths.TEMP, output)
+        return temp
+
+    def _premade(self, output):
+        premade = None
+        if output:
+            premade_prefix = hindkit._unwrap_path_relative_to_package_dir(
+                os.path.join(
+                    'resources',
+                    'premade',
+                    self.builder.family.script.lower(),
+                )
             )
-        )
-        self.temp = os.path.join(temp_prefix, self.output)
-        self.premade = os.path.join(premade_prefix, self.output)
+            premade = os.path.join(premade_prefix, output)
+        return premade
 
     def prepare(self, *args, **kwargs):
-        if os.path.exists(self.output):
-            subprocess.call(['cp', '-fr', self.output, self.temp])
-        elif generator:
-            self.generator(self.temp, *args, **kwargs)
-        elif os.path.exists(self.premade):
-            subprocess.call(['cp', '-fr', self.premade, self.temp])
+        if self.output and os.path.exists(self.output):
+            for output in [self.output] + self.extensions:
+                subprocess.call(['cp', '-fr', output, self._temp(output)])
+        elif self.output and self.generator:
+            self.generator(self._temp(self.output), *args, **kwargs)
+        elif self.output and os.path.exists(self._premade(self.output)):
+            for output in [self.output] + self.extensions:
+                subprocess.call(['cp', '-fr', self._premade(output), self._temp(output)])
         else:
-            raise SystemExit("Can't prepare.")
+            raise SystemExit("Can't prepare {}.".format(self._temp(self.output)))
 
 class Builder(object):
 
@@ -65,13 +80,13 @@ class Builder(object):
 
         self.options = {
 
-            'prep_kerning':          self.family._has_kerning(),
-            'prep_mark_positioning': self.family._has_mark_positioning(),
-            'prep_mark_to_mark_positioning': self.family._has_mark_positioning(),
-            'prep_mI_variants':      self.family._has_mI_variants(),
+            'prepare_kerning':          self.family._has_kerning(),
+            'prepare_mark_positioning': self.family._has_mark_positioning(),
+            'prepare_mark_to_mark_positioning': self.family._has_mark_positioning(),
+            'prepare_mI_variants':      self.family._has_mI_variants(),
 
-            'run_stage_prep_styles':   True,
-            'run_stage_prep_features': True,
+            'run_stage_prepare_styles':   True,
+            'run_stage_prepare_features': True,
             'run_stage_compile':       True,
 
             'run_makeinstances': bool(self.family.masters),
@@ -93,32 +108,65 @@ class Builder(object):
         self.designspace = Resource(
             self,
             constants.paths.DESIGNSPACE,
-            self._prep_designspace,
+            self._generate_designspace,
+        )
+        self.styles = Resource(
+            self,
+            constants.paths.STYLES,
+            self.prepare_styles,
+        )
+        self.features_classes = Resource(
+            self,
+            os.path.join(constants.paths.FEATURES, 'classes.fea'), #!
+            self._generate_features_classes,
+            extensions = [
+                os.path.join(constants.paths.FEATURES, 'classes_{}.fea'.format(i))
+                for i in ['extension']
+            ],
         )
         self.features_tables = Resource(
             self,
             os.path.join(constants.paths.FEATURES, 'tables.fea'),
-            self._prep_features_tables,
+            self._generate_features_tables,
         )
         self.features_languagesystems = Resource(
             self,
             os.path.join(constants.paths.FEATURES, 'languagesystems.fea'),
-            self._prep_features_languagesystems,
+            self._generate_features_languagesystems,
+        )
+        self.features_GSUB = Resource(
+            self,
+            os.path.join(constants.paths.FEATURES, 'GSUB.fea'), #!
+            None,
+            extensions = [
+                os.path.join(constants.paths.FEATURES, 'GSUB_{}.fea'.format(i))
+                for i in ['lookups', 'extension']
+            ],
         )
         self.features_GPOS = Resource(
             self,
             os.path.join(constants.paths.FEATURES, 'GPOS.fea'),
-            self._prep_features_GPOS,
+            self._generate_features_GPOS,
         )
+        # self.features_weight_class = Resource(
+        #     self,
+        #     None,
+        #     self._generate_features_weight_class,
+        # )
+        # self.features_references = Resource(
+        #     self,
+        #     None,
+        #     self._generate_features_references,
+        # )
         self.fmndb = Resource(
             self,
             constants.paths.FMNDB,
-            self._prep_fmndb,
+            self._generate_fmndb,
         )
         self.goadb = Resource(
             self,
             constants.paths.GOADB,
-            self._prep_goadb,
+            None,
         )
 
     def _check_inputs(self, inputs):
@@ -131,7 +179,7 @@ class Builder(object):
                 '\n'.join('{}: {}'.format(k, v) for k, v in results.items())
             )
 
-    def _prep_designspace(self, output):
+    def _generate_designspace(self, output):
 
         doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
             hindkit._unwrap_path_relative_to_cwd(output)
@@ -172,27 +220,21 @@ class Builder(object):
 
             doc.writeInfo()
 
-            if self.options['prep_kerning']:
+            if self.options['prepare_kerning']:
                 doc.writeKerning()
 
             doc.endInstance()
 
         doc.save()
 
-    def prep_styles(self): # STAGE I
-
-        OUTPUT = constants.paths.STYLES
-        if overriding_exists(OUTPUT):
-            return
+    def prepare_styles(self, output): # STAGE I
 
         if not bool(self.family.masters):
             self.family.set_masters([
                 hindkit.Master(self.family, i.name, i.interpolation_value)
                 for i in self.family.styles
             ])
-        DEPENDENCIES = [i.path for i in self.family.masters]
-        if not input_exists(DEPENDENCIES):
-            raise SystemExit()
+        self._check_inputs([i.path for i in self.family.masters])
 
         for style in self.styles_to_be_built:
             make_dir(temp(style.directory))
@@ -228,76 +270,18 @@ class Builder(object):
             }
             hindkit.patches.updateInstance(options, temp(style.path))
 
-    def prep_features(self):
+    def _generate_features_classes(self, output):
 
-        make_dir(temp(constants.paths.FEATURES))
-
-        self._prep_features_classes()
-
-        self.features_tables.prepare()
-        self.features_languagesystems.prepare()
-
-        self._prep_features_GSUB()
-
-        for style in self.styles_to_be_built:
-
-            self.features_GPOS.prepare(style)
-
-            directory = temp(style.directory)
-
-            with open(os.path.join(directory, 'features'), 'w') as f:
-
-                lines = ['table head { FontRevision 1.000; } head;']
-
-                for file_name in [
-                    'classes',
-                    'classes_extended',
-                    'tables',
-                    'languagesystems',
-                    'GSUB_extension',
-                    'GSUB_lookups',
-                    'GSUB',
-                ]:
-                    abstract_path = os.path.join(constants.paths.FEATURES, file_name + '.fea')
-                    if os.path.exists(temp(abstract_path)):
-                        lines.append('include (../../{});'.format(abstract_path))
-
-                if os.path.exists(os.path.join(directory, WriteFeaturesKernFDK.kKernFeatureFileName)):
-                    lines.append('feature kern { include ({}); } kern;'.format(WriteFeaturesKernFDK.kKernFeatureFileName))
-
-                if os.path.exists(os.path.join(directory, WriteFeaturesMarkFDK.kMarkClassesFileName)):
-                    lines.append('include ({});'.format(WriteFeaturesMarkFDK.kMarkClassesFileName))
-                for feature_name, file_name in [
-                    ('mark', WriteFeaturesMarkFDK.kMarkFeatureFileName),
-                    ('mkmk', WriteFeaturesMarkFDK.kMkmkFeatureFileName),
-                    ('abvm', WriteFeaturesMarkFDK.kAbvmFeatureFileName),
-                    ('blwm', WriteFeaturesMarkFDK.kBlwmFeatureFileName),
-                ]:
-                    if os.path.exists(os.path.join(directory, file_name)):
-                        lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, file_name))
-
-                f.writelines(i + '\n' for i in lines)
-
-            with open(os.path.join(directory, 'WeightClass.fea'), 'w') as f:
-                f.write('WeightClass {};\n'.format(str(style.weight_class)))
-
-    def _prep_features_classes(self):
-
-        OUTPUT = os.path.join(constants.paths.FEATURES, 'classes.fea')
-        if overriding_exists(os.path.join(constants.paths.FEATURES, 'classes_extended.fea')) and overriding_exists(OUTPUT):
-            return
-        DEPENDENCIES = [temp(i.path) for i in self.styles_to_be_built]
-        if not input_exists(DEPENDENCIES):
-            raise SystemExit()
+        self._check_inputs([temp(i.path) for i in self.styles_to_be_built])
 
         lines = []
 
-        if self.options['prep_mark_positioning']:
+        if self.options['prepare_mark_positioning']:
 
             glyph_classes = []
             glyph_classes.extend([(WriteFeaturesMarkFDK.kCombMarksClassName, glyph_filter_marks)])
 
-            if self.options['prep_mI_variants']:
+            if self.options['prepare_mI_variants']:
                 glyph_classes.extend([
                     ('MATRA_I_ALTS', hindkit.devanagari.glyph_filter_matra_i_alts),
                     ('BASES_ALIVE', hindkit.devanagari.glyph_filter_bases_alive),
@@ -332,10 +316,10 @@ class Builder(object):
                 font.save()
 
         if lines:
-            with open(temp(OUTPUT), 'w') as f:
+            with open(output, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-    def _prep_features_tables(self, output):
+    def _generate_features_tables(self, output):
 
         lines = []
         tables = collections.OrderedDict([
@@ -380,7 +364,7 @@ class Builder(object):
                 'marks': '',
                 'components': '',
             }
-            if self.options['prep_mark_positioning'] or os.path.exists(temp(os.path.join(constants.paths.FEATURES, 'classes.fea'))):
+            if self.options['prepare_mark_positioning'] or os.path.exists(temp(os.path.join(constants.paths.FEATURES, 'classes.fea'))):
                 GDEF_records['marks'] = '@{}'.format(WriteFeaturesMarkFDK.kCombMarksClassName)
             if os.path.exists(temp(os.path.join(constants.paths.FEATURES, 'classes_extended.fea'))):
                 GDEF_records['marks'] = '@{}'.format('COMBINING_MARKS_GDEF')
@@ -407,7 +391,7 @@ class Builder(object):
             with open(output, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-    def _prep_features_languagesystems(self, output):
+    def _generate_features_languagesystems(self, output):
 
         lines = ['languagesystem DFLT dflt;']
         tag = constants.misc.SCRIPTS[self.family.script.lower()]['tag']
@@ -421,49 +405,68 @@ class Builder(object):
             with open(output, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-    def _prep_features_GSUB(self):
+    def _generate_features_GSUB(self, output):
+        pass
 
-        if overriding_exists(
-            os.path.join(constants.paths.FEATURES, 'GSUB.fea')
-        ) and overriding_exists(
-            os.path.join(constants.paths.FEATURES, 'GSUB_lookups.fea')
-        ) and overriding_exists(
-            os.path.join(constants.paths.FEATURES, 'GSUB_extension.fea')
-        ):
-            return
-
-        premade_feature_dir = hindkit._unwrap_path_relative_to_package_dir(
-            os.path.join('resources/features', self.family.script.lower())
-        )
-
-        for file_name in ['GSUB.fea', 'GSUB_lookups.fea', 'GSUB_extension.fea']:
-            file_path = os.path.join(premade_feature_dir, file_name)
-            if os.path.exists(file_path):
-                subprocess.call(['cp', '-fr', file_path, temp(os.path.join(constants.paths.FEATURES, file_name))])
-
-    def _prep_features_GPOS(self, style):
-        self.check_inputs([temp(style.path)])
-        if self.options['prep_kerning']:
+    def _generate_features_GPOS(self, output, style):
+        self._check_inputs([temp(style.path)])
+        directory = temp(style.directory)
+        if self.options['prepare_kerning']:
             WriteFeaturesKernFDK.KernDataClass(
                 font = style.open_font(is_temp=True),
-                folderPath = temp(style.directory),
+                folderPath = directory,
             )
-        if self.options['prep_mark_positioning']:
+        if self.options['prepare_mark_positioning']:
             WriteFeaturesMarkFDK.MarkDataClass(
                 font = style.open_font(is_temp=True),
-                folderPath = temp(style.directory),
+                folderPath = directory,
                 trimCasingTags = False,
-                genMkmkFeature = self.options['prep_mark_to_mark_positioning'],
+                genMkmkFeature = self.options['prepare_mark_to_mark_positioning'],
                 writeClassesFile = True,
                 indianScriptsFormat = (
                     True if self.family.script.lower() in constants.misc.SCRIPTS
                     else False
                 ),
             )
-            if self.options['prep_mI_variants']:
-                hindkit.devanagari.prep_features_devanagari(self, style) # NOTE: not pure GPOS
+            if self.options['prepare_mI_variants']:
+                hindkit.devanagari.prepare_features_devanagari(self, style) # NOTE: not pure GPOS
 
-    def _prep_fmndb(self, output):
+    def _generate_features_weight_class(self, style):
+        directory = temp(style.directory)
+        with open(os.path.join(directory, 'WeightClass.fea'), 'w') as f:
+            f.write('WeightClass {};\n'.format(str(style.weight_class)))
+
+    def _generate_features_references(self, style):
+        directory = temp(style.directory)
+        with open(os.path.join(directory, 'features'), 'w') as f:
+            lines = ['table head { FontRevision 1.000; } head;']
+            for file_name in [
+                'classes',
+                'classes_extended',
+                'tables',
+                'languagesystems',
+                'GSUB_extension',
+                'GSUB_lookups',
+                'GSUB',
+            ]:
+                abstract_path = os.path.join(constants.paths.FEATURES, file_name + '.fea')
+                if os.path.exists(temp(abstract_path)):
+                    lines.append('include (../../{});'.format(abstract_path))
+            if os.path.exists(os.path.join(directory, WriteFeaturesKernFDK.kKernFeatureFileName)):
+                lines.append('feature kern { include ({}); } kern;'.format(WriteFeaturesKernFDK.kKernFeatureFileName))
+            if os.path.exists(os.path.join(directory, WriteFeaturesMarkFDK.kMarkClassesFileName)):
+                lines.append('include ({});'.format(WriteFeaturesMarkFDK.kMarkClassesFileName))
+            for feature_name, file_name in [
+                ('mark', WriteFeaturesMarkFDK.kMarkFeatureFileName),
+                ('mkmk', WriteFeaturesMarkFDK.kMkmkFeatureFileName),
+                ('abvm', WriteFeaturesMarkFDK.kAbvmFeatureFileName),
+                ('blwm', WriteFeaturesMarkFDK.kBlwmFeatureFileName),
+            ]:
+                if os.path.exists(os.path.join(directory, file_name)):
+                    lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, file_name))
+            f.writelines(i + '\n' for i in lines)
+
+    def _generate_fmndb(self, output):
 
         f_name = self.family.output_name
         lines = []
@@ -498,17 +501,12 @@ class Builder(object):
             f.write(constants.templates.FMNDB_HEAD)
             f.writelines(i + '\n' for i in lines)
 
-    def _prep_goadb(self):
-        premade_feature_dir = hindkit._unwrap_path_relative_to_package_dir(
-            os.path.join('resources/features', self.family.script.lower())
-        )
-        file_path = os.path.join(premade_feature_dir, constants.paths.GOADB)
-        if os.path.exists(file_path):
-            subprocess.call(['cp', '-fr', file_path, temp(constants.paths.GOADB)])
+    def _generate_goadb(self, output):
+        pass
 
     def _compile(self, style):
 
-        self.check_inputs([temp(style.path), self.fmndb.temp, self.goadb.temp])
+        self._check_inputs([temp(style.path), temp(self.fmndb.output), temp(self.goadb.output)])
 
         if style.file_name.endswith('.ufo'):
             font = style.open_font(is_temp=True)
@@ -562,7 +560,7 @@ class Builder(object):
         )
         parser.add_argument(
             '-s', '--stages', action = 'store',
-            help = '"1" for "prep_styles", "2" for "prep_features", and "3" for "compile".',
+            help = '"1" for "prepare_styles", "2" for "prepare_features", and "3" for "compile".',
         )
         parser.add_argument(
             '-o', '--options', action = 'store',
@@ -572,8 +570,8 @@ class Builder(object):
 
         if args.stages:
             stages = str(args.stages)
-            self.options['run_stage_prep_styles'] = True if '1' in stages else False
-            self.options['run_stage_prep_features'] = True if '2' in stages else False
+            self.options['run_stage_prepare_styles'] = True if '1' in stages else False
+            self.options['run_stage_prepare_features'] = True if '2' in stages else False
             self.options['run_stage_compile'] = True if '3' in stages else False
         if args.options:
             options = str(args.options)
@@ -592,14 +590,21 @@ class Builder(object):
     def build(self):
         self._finalize_options()
         make_dir(constants.paths.TEMP)
-        if self.options['run_stage_prep_styles']:
+        if self.options['run_stage_prepare_styles']:
             remove_files(temp(constants.paths.STYLES))
             make_dir(temp(constants.paths.STYLES))
-            self.prep_styles()
-        if self.options['run_stage_prep_features']:
+            self.styles.prepare()
+        if self.options['run_stage_prepare_features']:
             remove_files(temp(constants.paths.FEATURES))
             make_dir(temp(constants.paths.FEATURES))
-            self.prep_features()
+            self.features_classes.prepare()
+            self.features_tables.prepare()
+            self.features_languagesystems.prepare()
+            self.features_GSUB.prepare()
+            for style in self.styles_to_be_built:
+                self.features_GPOS.prepare(style)
+                self._generate_features_weight_class(style)
+                self._generate_features_references(style)
         if self.options['run_stage_compile']:
             self.fmndb.prepare()
             self.goadb.prepare()
@@ -679,8 +684,6 @@ def import_glyphs(
         for new_name in new_names:
             to_master.newGlyph(new_name)
             to_master[new_name].copyDataFromGlyph(from_master[new_name])
-        else:
-            pass
 
         for new_name in deriving_names:
             source_name = constants.misc.DERIVING_MAP[new_name]
