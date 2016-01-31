@@ -120,7 +120,7 @@ class _BaseStyle(object):
     def __init__(
         self,
         _family,
-        name = '',
+        name = 'Regular',
         interpolation_value = 0,
         _file_name = None,
     ):
@@ -168,7 +168,7 @@ class Style(_BaseStyle):
     def __init__(
         self,
         _family,
-        name = '',
+        name = 'Regular',
         interpolation_value = 0,
         weight_class = 400,
         is_bold = None,
