@@ -15,7 +15,7 @@ class Family(object):
         client = None,
         trademark = '',
         script = '',
-        hide_script_name = False,
+        append_script_name = False,
         designers = '',
         designer_url = '',
         description = '',
@@ -28,10 +28,10 @@ class Family(object):
 
         self.trademark = trademark
         self.script = script
-        self.hide_script_name = hide_script_name
+        self.append_script_name = append_script_name
 
         self.name = self.trademark
-        if self.script and not self.hide_script_name:
+        if self.script and self.append_script_name:
             self.name += ' ' + self.script
         self.name_postscript = self.name.replace(' ', '')
 
