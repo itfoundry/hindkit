@@ -662,34 +662,42 @@ import defcon
 defcon.Glyph.insertAnchor = hindkit.patches.insertAnchor
 
 def import_glyphs(
-    self,
-    from_masters,
-    to_masters,
-    save_to_masters,
-    excluding_names=[],
-    deriving_names=[],
+    source_paths,
+    target_paths,
+    save_as_paths = None,
+    excluding_names = None,
+    deriving_names = None,
 ):
 
-    for from_path, to_path, save_to_path in zip(from_masters, to_masters, save_to_masters):
+    if not save_as_paths:
+        save_as_paths = target_paths
 
-        from_master = defcon.Font(from_path)
-        to_master = defcon.Font(to_path)
+    for source_path, target_path, save_as_path in zip(source_paths, target_paths, save_as_paths):
 
-        new_names = set(from_master.keys())
-        existing_names = set(to_master.keys())
+        source = defcon.Font(source_path)
+        target = defcon.Font(target_path)
+
+        new_names = set(source.keys())
+        existing_names = set(target.keys())
         new_names.difference_update(existing_names)
         new_names.difference_update(set(excluding_names))
-        new_names = sort_glyphs(from_master.glyphOrder, new_names)
+        new_names = sort_glyphs(source.glyphOrder, new_names)
 
+        print('Imported glyphs:')
         for new_name in new_names:
-            to_master.newGlyph(new_name)
-            to_master[new_name].copyDataFromGlyph(from_master[new_name])
+            target.newGlyph(new_name)
+            target[new_name].copyDataFromGlyph(source[new_name])
+            print(new_name, end=', ')
+        print()
 
-        for new_name in deriving_names:
-            source_name = constants.misc.DERIVING_MAP[new_name]
-            to_master.newGlyph(new_name)
+        print('Derived glyphs:')
+        for deriving_name in deriving_names:
+            source_name = constants.misc.DERIVING_MAP[deriving_name]
+            target.newGlyph(deriving_name)
             if source_name:
-                to_master[new_name].width = to_master[source_name].width
+                target[deriving_name].width = target[source_name].width
+            print(deriving_name, end=', ')
+        print()
 
-        remove_files(save_to_path)
-        to_master.save(save_to_path)
+        remove_files(save_as_path)
+        target.save(save_as_path)
