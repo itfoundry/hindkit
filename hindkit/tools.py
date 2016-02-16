@@ -82,25 +82,26 @@ class Builder(object):
 
         self.options = {
 
-            'prepare_kerning':          self.family._has_kerning(),
+            'prepare_kerning': self.family._has_kerning(),
+            'postprocess_kerning': False,
             'prepare_mark_positioning': self.family._has_mark_positioning(),
             'prepare_mark_to_mark_positioning': self.family._has_mark_positioning(),
-            'prepare_mI_variants':      self.family._has_mI_variants(),
+            'prepare_mI_variants': self.family._has_mI_variants(),
 
-            'run_stage_prepare_styles':   True,
+            'run_stage_prepare_styles': True,
             'run_stage_prepare_features': True,
-            'run_stage_compile':       True,
+            'run_stage_compile': True,
 
             'run_makeinstances': bool(self.family.masters),
             'run_checkoutlines': True,
-            'run_autohint':      False,
+            'run_autohint': False,
 
             'override_GDEF': False,
 
             'do_style_linking': False,
 
-            'use_os_2_version_4':         True,
-            'prefer_typo_metrics':        True,
+            'use_os_2_version_4': True,
+            'prefer_typo_metrics': True,
             'is_width_weight_slope_only': True,
 
         }
@@ -432,10 +433,7 @@ class Builder(object):
                 trimCasingTags = False,
                 genMkmkFeature = self.options['prepare_mark_to_mark_positioning'],
                 writeClassesFile = True,
-                indianScriptsFormat = (
-                    True if self.family.script.lower() in constants.misc.SCRIPTS
-                    else False
-                ),
+                indianScriptsFormat = self.family.script.lower() in constants.misc.SCRIPTS,
             )
             if self.options['prepare_mI_variants']:
                 hindkit.devanagari.prepare_features_devanagari(self, style) # NOTE: not pure GPOS
