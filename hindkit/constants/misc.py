@@ -115,7 +115,7 @@ def memoize(f):
 @memoize
 def get_unicode_scalar_to_unicode_name_map():
     scalar_to_name_map = {}
-    with open(hindkit._unwrap_path_relative_to_package_dir('resources/UnicodeData.txt')) as f:
+    with open(hindkit._unwrap_path_relative_to_package_dir('data/UnicodeData.txt')) as f:
         for line in f:
             scalar, name, rest = line.split(';', 2)
             scalar_to_name_map[scalar] = name
@@ -124,7 +124,7 @@ def get_unicode_scalar_to_unicode_name_map():
 @memoize
 def get_aglfn():
     aglfn = collections.OrderedDict()
-    with open(hindkit._unwrap_path_relative_to_package_dir('resources/aglfn.txt')) as f:
+    with open(hindkit._unwrap_path_relative_to_package_dir('data/aglfn.txt')) as f:
         for line in f.read().splitlines():
             if not line.startswith('#'):
                 unicode_scalar, glyph_name, unicode_name = line.split(';')

@@ -35,8 +35,7 @@ class Resource(object):
         if output:
             premade_prefix = hindkit._unwrap_path_relative_to_package_dir(
                 os.path.join(
-                    'resources',
-                    'premade',
+                    'data/premade',
                     self.builder.family.script.lower(),
                 )
             )
