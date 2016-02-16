@@ -71,12 +71,12 @@ class Builder(object):
         self.fontrevision = fontrevision
 
         self.vertical_metrics = vertical_metrics
-        if self.vertical_metrics:
-            self.vertical_metrics['TypoAscender'] = self.vertical_metrics['Ascender']
-            self.vertical_metrics['TypoDescender'] = self.vertical_metrics['Descender']
-            self.vertical_metrics['TypoLineGap'] = self.vertical_metrics['LineGap']
-            self.vertical_metrics['winAscent'] = self.vertical_metrics['TypoAscender'] + int(round(self.vertical_metrics['LineGap'] / 2))
-            self.vertical_metrics['winDescent'] = abs(self.vertical_metrics['TypoDescender']) + int(round(self.vertical_metrics['LineGap'] / 2))
+        # if self.vertical_metrics:
+        #     self.vertical_metrics['TypoAscender'] = self.vertical_metrics['Ascender']
+        #     self.vertical_metrics['TypoDescender'] = self.vertical_metrics['Descender']
+        #     self.vertical_metrics['TypoLineGap'] = self.vertical_metrics['LineGap']
+        #     self.vertical_metrics['winAscent'] = self.vertical_metrics['TypoAscender'] + int(round(self.vertical_metrics['LineGap'] / 2))
+        #     self.vertical_metrics['winDescent'] = abs(self.vertical_metrics['TypoDescender']) + int(round(self.vertical_metrics['LineGap'] / 2))
 
         self.devanagari_offset_matrix = ((0, 0), (0, 0))
 
@@ -351,8 +351,8 @@ class Builder(object):
                     'TypoAscender {TypoAscender};',
                     'TypoDescender {TypoDescender};',
                     'TypoLineGap {TypoLineGap};',
-                    # 'winAscent {winAscent}',
-                    # 'winDescent {winDescent}',
+                    'winAscent {winAscent};',
+                    'winDescent {winDescent};',
                 ]
             )
 
