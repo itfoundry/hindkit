@@ -418,6 +418,13 @@ class Builder(object):
                 font = style.open_font(is_temp=True),
                 folderPath = directory,
             )
+            kern_path = os.path.join(directory, WriteFeaturesKernFDK.kKernFeatureFileName)
+            if self.options['postprocess_kerning'] and os.path.exists(kern_path):
+                with open(kern_path) as f:
+                    original = f.read()
+                postprocessed = self.postprocess_kerning(original)
+                with open(kern_path, 'w') as f:
+                    f.write(postprocessed)
         if self.options['prepare_mark_positioning']:
             WriteFeaturesMarkFDK.MarkDataClass(
                 font = style.open_font(is_temp=True),
@@ -432,6 +439,10 @@ class Builder(object):
             )
             if self.options['prepare_mI_variants']:
                 hindkit.devanagari.prepare_features_devanagari(self, style) # NOTE: not pure GPOS
+
+    def postprocess_kerning(self, original):
+        postprocessed = original
+        return postprocessed
 
     def _generate_features_weight_class(self, style):
         directory = temp(style.directory)
