@@ -195,9 +195,9 @@ class Builder(object):
                 name = 'master-' + master.name,
                 location = {'weight': master.interpolation_value},
 
-                copyLib    = True if i == 0 else False,
-                copyGroups = True if i == 0 else False,
-                copyInfo   = True if i == 0 else False,
+                copyLib    = i == 0,
+                copyGroups = i == 0,
+                copyInfo   = i == 0,
 
                 # muteInfo = False,
                 # muteKerning = False,
@@ -572,14 +572,14 @@ class Builder(object):
 
         if args.stages:
             stages = str(args.stages)
-            self.options['run_stage_prepare_styles'] = True if '1' in stages else False
-            self.options['run_stage_prepare_features'] = True if '2' in stages else False
-            self.options['run_stage_compile'] = True if '3' in stages else False
+            self.options['run_stage_prepare_styles'] = '1' in stages
+            self.options['run_stage_prepare_features'] = '2' in stages
+            self.options['run_stage_compile'] = '3' in stages
         if args.options:
             options = str(args.options)
-            self.options['run_makeinstances'] = True if '1' in options else False
-            self.options['run_checkoutlines'] = True if '2' in options else False
-            self.options['run_autohint'] = True if '3' in options else False
+            self.options['run_makeinstances'] = '1' in options
+            self.options['run_checkoutlines'] = '2' in options
+            self.options['run_autohint'] = '3' in options
         if args.test:
             self.options['run_makeinstances'] = False
             self.options['run_checkoutlines'] = False
