@@ -455,7 +455,16 @@ class Builder(object):
                 if os.path.exists(temp(abstract_path)):
                     lines.append('include (../../{});'.format(abstract_path))
             if os.path.exists(os.path.join(directory, WriteFeaturesKernFDK.kKernFeatureFileName)):
-                lines.append('feature kern { include ({}); } kern;'.format(WriteFeaturesKernFDK.kKernFeatureFileName))
+                if self.family.script.lower() in constants.misc.SCRIPTS:
+                    kerning_feature_name = 'dist'
+                else:
+                    kerning_feature_name = 'kern'
+                lines.append(
+                    'feature {0} {{ include ({1}); }} {0};'.format(
+                        kerning_feature_name,
+                        WriteFeaturesKernFDK.kKernFeatureFileName,
+                    )
+                )
             if os.path.exists(os.path.join(directory, WriteFeaturesMarkFDK.kMarkClassesFileName)):
                 lines.append('include ({});'.format(WriteFeaturesMarkFDK.kMarkClassesFileName))
             for feature_name, file_name in [
