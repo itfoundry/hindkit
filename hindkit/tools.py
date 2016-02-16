@@ -49,6 +49,8 @@ class Resource(object):
                 subprocess.call(['cp', '-fr', output, self._temp(output)])
         elif self.output and self.generator:
             self.generator(self._temp(self.output), *args, **kwargs)
+            for output in [self.output] + self.extensions:
+                subprocess.call(['cp', '-fr', output, self._temp(output)])
         elif self.output and os.path.exists(self._premade(self.output)):
             for output in [self.output] + self.extensions:
                 subprocess.call(['cp', '-fr', self._premade(output), self._temp(output)])
@@ -121,7 +123,7 @@ class Builder(object):
             self._generate_features_classes,
             extensions = [
                 os.path.join(constants.paths.FEATURES, 'classes_{}.fea'.format(i))
-                for i in ['extension']
+                for i in ['suffixing']
             ],
         )
         self.features_tables = Resource(
@@ -140,7 +142,7 @@ class Builder(object):
             None,
             extensions = [
                 os.path.join(constants.paths.FEATURES, 'GSUB_{}.fea'.format(i))
-                for i in ['lookups', 'extension']
+                for i in ['lookups', 'prefixing']
             ],
         )
         self.features_GPOS = Resource(
@@ -366,7 +368,7 @@ class Builder(object):
             }
             if self.options['prepare_mark_positioning'] or os.path.exists(temp(os.path.join(constants.paths.FEATURES, 'classes.fea'))):
                 GDEF_records['marks'] = '@{}'.format(WriteFeaturesMarkFDK.kCombMarksClassName)
-            if os.path.exists(temp(os.path.join(constants.paths.FEATURES, 'classes_extended.fea'))):
+            if os.path.exists(temp(os.path.join(constants.paths.FEATURES, 'classes_suffixing.fea'))):
                 GDEF_records['marks'] = '@{}'.format('COMBINING_MARKS_GDEF')
             tables['GDEF'].extend([
                 'GlyphClassDef {bases}, {ligatures}, {marks}, {components};'.format(**GDEF_records)
@@ -442,10 +444,10 @@ class Builder(object):
             lines = ['table head { FontRevision 1.000; } head;']
             for file_name in [
                 'classes',
-                'classes_extended',
+                'classes_suffixing',
                 'tables',
                 'languagesystems',
-                'GSUB_extension',
+                'GSUB_prefixing',
                 'GSUB_lookups',
                 'GSUB',
             ]:
