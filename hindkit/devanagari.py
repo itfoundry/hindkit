@@ -5,7 +5,7 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import re, collections
 import hindkit.constants
 
-def prep_features_devanagari(builder, style):
+def prepare_features_devanagari(builder, style):
 
     light, bold = builder.devanagari_offset_matrix
     light_min, light_max = light
