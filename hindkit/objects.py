@@ -16,9 +16,6 @@ class Family(object):
         trademark = '',
         script = '',
         append_script_name = False,
-        designers = '',
-        designer_url = '',
-        description = '',
     ):
 
         if client:
@@ -37,12 +34,11 @@ class Family(object):
 
         self.output_name_affix = '{}'
 
-        self.designers = designers
-        self.designer_url = designer_url
-        self.description = description
-
         self.masters = []
         self.styles = []
+
+        info_host = defcon.Font()
+        self.info = info_host.info
 
     @property
     def output_name(self):
