@@ -69,13 +69,15 @@ class Builder(object):
         self.family = family
         self.fontrevision = fontrevision
 
-        self.vertical_metrics = vertical_metrics
-        # if self.vertical_metrics:
-        #     self.vertical_metrics['TypoAscender'] = self.vertical_metrics['Ascender']
-        #     self.vertical_metrics['TypoDescender'] = self.vertical_metrics['Descender']
-        #     self.vertical_metrics['TypoLineGap'] = self.vertical_metrics['LineGap']
-        #     self.vertical_metrics['winAscent'] = self.vertical_metrics['TypoAscender'] + int(round(self.vertical_metrics['LineGap'] / 2))
-        #     self.vertical_metrics['winDescent'] = abs(self.vertical_metrics['TypoDescender']) + int(round(self.vertical_metrics['LineGap'] / 2))
+        self.vertical_metrics = {}
+        self.vertical_metrics['Ascender'] = vertical_metrics.get('Ascender', 800)
+        self.vertical_metrics['Descender'] = vertical_metrics.get('Descender', -200)
+        self.vertical_metrics['LineGap'] = vertical_metrics.get('LineGap', 0)
+        self.vertical_metrics['TypoAscender'] = vertical_metrics.get('TypoAscender', self.vertical_metrics['Ascender'])
+        self.vertical_metrics['TypoDescender'] = vertical_metrics.get('TypoDescender', self.vertical_metrics['Descender'])
+        self.vertical_metrics['TypoLineGap'] = vertical_metrics.get('TypoLineGap', self.vertical_metrics['LineGap'])
+        self.vertical_metrics['winAscent'] = vertical_metrics.get('winAscent', self.vertical_metrics['Ascender'])
+        self.vertical_metrics['winDescent'] = vertical_metrics.get('winDescent', abs(self.vertical_metrics['Descender']))
 
         self.devanagari_offset_matrix = ((0, 0), (0, 0))
 
