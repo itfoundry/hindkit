@@ -699,9 +699,9 @@ import defcon
 defcon.Glyph.insertAnchor = hindkit.patches.insertAnchor
 
 def import_glyphs(
-    source_paths,
-    target_paths,
-    save_as_paths,
+    source_path,
+    target_path,
+    save_as_path,
     importing_names = None,
     excluding_names = None,
     deriving_names = None,
@@ -714,35 +714,35 @@ def import_glyphs(
     if deriving_names is None:
         deriving_names = []
 
-    for source_path, target_path, save_as_path in zip(source_paths, target_paths, save_as_paths):
+    source = defcon.Font(source_path)
+    target = defcon.Font(target_path)
 
-        source = defcon.Font(source_path)
-        target = defcon.Font(target_path)
+    if importing_names:
+        new_names = set(importing_names)
+    else:
+        new_names = set(source.keys())
+    existing_names = set(target.keys())
+    new_names.difference_update(existing_names)
+    new_names.difference_update(set(excluding_names))
+    new_names = sort_glyphs(source.glyphOrder, new_names)
 
-        if importing_names:
-            new_names = set(importing_names)
-        else:
-            new_names = set(source.keys())
-        existing_names = set(target.keys())
-        new_names.difference_update(existing_names)
-        new_names.difference_update(set(excluding_names))
-        new_names = sort_glyphs(source.glyphOrder, new_names)
-
-        print('Imported glyphs:')
+    if new_names:
+        print('\n[NOTE] Importing glyphs from `{}` to `{}`:'.format(source_path, target_path))
         for new_name in new_names:
             target.newGlyph(new_name)
             target[new_name].copyDataFromGlyph(source[new_name])
             print(new_name, end=', ')
         print()
 
-        print('Derived glyphs:')
+    if deriving_names:
+        print('\n[NOTE] Deriving glyphs in `{}`:'.format(target_path))
         for deriving_name in deriving_names:
             source_name = constants.misc.DERIVING_MAP[deriving_name]
             target.newGlyph(deriving_name)
             if source_name:
                 target[deriving_name].width = target[source_name].width
-            print(deriving_name, end=', ')
+            print('{} (from {})'.format(deriving_name, source_name), end=', ')
         print()
 
-        remove_files(save_as_path)
-        target.save(save_as_path)
+    remove_files(save_as_path)
+    target.save(save_as_path)
