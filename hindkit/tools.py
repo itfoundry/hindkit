@@ -285,7 +285,7 @@ class Builder(object):
             glyph_classes = []
             glyph_classes.extend([(WriteFeaturesMarkFDK.kCombMarksClassName, glyph_filter_marks)])
 
-            if self.options['prepare_mI_variants']:
+            if self.options['match_mI_variants']:
                 glyph_classes.extend([
                     ('MATRA_I_ALTS', hindkit.devanagari.glyph_filter_matra_i_alts),
                     ('BASES_ALIVE', hindkit.devanagari.glyph_filter_bases_alive),
@@ -436,8 +436,12 @@ class Builder(object):
                 writeClassesFile = True,
                 indianScriptsFormat = self.family.script.lower() in constants.misc.SCRIPTS,
             )
-            if self.options['prepare_mI_variants']:
-                hindkit.devanagari.prepare_features_devanagari(self, style) # NOTE: not pure GPOS
+            if self.options['match_mI_variants']:
+                hindkit.devanagari.prepare_features_devanagari(
+                    self.options['position_marks_for_mI_variants'],
+                    self,
+                    style,
+                ) # NOTE: not pure GPOS
 
     def postprocess_kerning(self, original):
         postprocessed = original

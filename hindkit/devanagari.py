@@ -5,7 +5,7 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import re, collections
 import hindkit.constants
 
-def prepare_features_devanagari(builder, style):
+def prepare_features_devanagari(do_mark_positioning, builder, style):
 
     light, bold = builder.devanagari_offset_matrix
     light_min, light_max = light
@@ -24,6 +24,7 @@ def prepare_features_devanagari(builder, style):
     )
 
     hindkit.devanagari.match_matra_i_alts(
+        do_mark_positioning,
         builder,
         style,
         offset_range = offset_tuple
@@ -123,24 +124,26 @@ def restore_abvm_content(abvm_content):
 
     return original_abvm_content
 
-def write_mI_matches_to_files(builder, directory, mI_table, long_base_names):
+def write_mI_matches_to_files(do_mark_positioning, builder, directory, mI_table, long_base_names):
 
     script_prefix = get_script_prefix(builder.family.script)
 
-    # with open(directory + '/abvm.fea', 'r') as f:
-    #     abvm_content = f.read()
+    if do_mark_positioning:
 
-    # original_abvm_content = restore_abvm_content(abvm_content)
+        with open(hindkit.tools.temp(directory + '/abvm.fea'), 'r') as f:
+            abvm_content = f.read()
 
-    # original_abvm_lookup = re.search(
-    #     r'(?m)^lookup MARK_BASE_{0} \{{\n(.+\n)+^\}} MARK_BASE_{0};'.format(MATRA_I_ANCHOR_NAME),
-    #     original_abvm_content
-    # ).group()
+        original_abvm_content = restore_abvm_content(abvm_content)
 
-    # modified_abvm_lookup = original_abvm_lookup.replace(
-    #     'pos base {}{}'.format(script_prefix, MATRA_I_NAME_STEM),
-    #     'pos base @MATRA_I_BASES_'
-    # )
+        original_abvm_lookup = re.search(
+            r'(?m)^lookup MARK_BASE_{0} \{{\n(.+\n)+^\}} MARK_BASE_{0};'.format(MATRA_I_ANCHOR_NAME),
+            original_abvm_content
+        ).group()
+
+        modified_abvm_lookup = original_abvm_lookup.replace(
+            'pos base {}{}'.format(script_prefix, MATRA_I_NAME_STEM),
+            'pos base @MATRA_I_BASES_'
+        )
 
     Reph_positioning_offset = mI_table[0].glyph.width
 
@@ -163,28 +166,32 @@ def write_mI_matches_to_files(builder, directory, mI_table, long_base_names):
             print('\t       `%s` is not used.' % mI.glyph.name)
             to_comment_substitute_rule = True
 
-            # modified_abvm_lookup = modified_abvm_lookup.replace(
-            #     '\tpos base @MATRA_I_BASES_' + mI_number,
-            #     '#\tpos base @MATRA_I_BASES_' + mI_number
-            # )
+            if do_mark_positioning:
 
-        # locator = '@MATRA_I_BASES_%s <anchor ' % mI_number
-        #
-        # search_result = re.search(
-        #     locator + r'\-?\d+',
-        #     modified_abvm_lookup
-        # )
+                modified_abvm_lookup = modified_abvm_lookup.replace(
+                    '\tpos base @MATRA_I_BASES_' + mI_number,
+                    '#\tpos base @MATRA_I_BASES_' + mI_number
+                )
 
-        # if search_result:
-        #     x = search_result.group().split(' ')[-1]
-        #     modified_x = str(int(x) - Reph_positioning_offset)
-        #     modified_abvm_lookup = modified_abvm_lookup.replace(
-        #         locator + x,
-        #         locator + modified_x,
-        #     )
-        #
-        # else:
-        #     print("\t[!] `%s` doesn't have the anchor for Reph." % mI.glyph.name)
+        if do_mark_positioning:
+
+            locator = '@MATRA_I_BASES_%s <anchor ' % mI_number
+
+            search_result = re.search(
+                locator + r'\-?\d+',
+                modified_abvm_lookup
+            )
+
+            if search_result:
+                x = search_result.group().split(' ')[-1]
+                modified_x = str(int(x) - Reph_positioning_offset)
+                modified_abvm_lookup = modified_abvm_lookup.replace(
+                    locator + x,
+                    locator + modified_x,
+                )
+
+            else:
+                print("\t[!] `%s` doesn't have the anchor for Reph." % mI.glyph.name)
 
         class_def_lines.extend(
             hindkit.tools.compose_glyph_class_def_lines(
@@ -204,15 +211,17 @@ def write_mI_matches_to_files(builder, directory, mI_table, long_base_names):
 
     substitute_rule_lines.append('}} {};'.format(lookup_name))
 
-    # commented_original_abvm_lookup = '# ' + original_abvm_lookup.replace('\n', '\n# ')
+    if do_mark_positioning:
 
-    # modified_abvm_content = original_abvm_content.replace(
-    #     original_abvm_lookup,
-    #     commented_original_abvm_lookup + '\n\n\n' + modified_abvm_lookup
-    # )
+        commented_original_abvm_lookup = '# ' + original_abvm_lookup.replace('\n', '\n# ')
 
-    # with open(directory + '/abvm.fea', 'w') as f:
-    #     f.write(modified_abvm_content)
+        modified_abvm_content = original_abvm_content.replace(
+            original_abvm_lookup,
+            commented_original_abvm_lookup + '\n\n\n' + modified_abvm_lookup
+        )
+
+        with open(hindkit.tools.temp(directory + '/abvm.fea'), 'w') as f:
+            f.write(modified_abvm_content)
 
     with open(hindkit.tools.temp(directory + '/matra_i_matching.fea'), 'w') as f:
         result_lines = (
@@ -221,7 +230,7 @@ def write_mI_matches_to_files(builder, directory, mI_table, long_base_names):
         )
         f.write('\n'.join(result_lines) + '\n')
 
-def match_matra_i_alts(builder, style, offset_range = (0, 0)):
+def match_matra_i_alts(do_mark_positioning, builder, style, offset_range = (0, 0)):
 
     script_prefix = get_script_prefix(builder.family.script)
 
@@ -284,7 +293,7 @@ def match_matra_i_alts(builder, style, offset_range = (0, 0)):
                         mI_table[index - 1].matches.append(base_name)
                     break
 
-    write_mI_matches_to_files(builder, style.directory, mI_table, long_base_names)
+    write_mI_matches_to_files(do_mark_positioning, builder, style.directory, mI_table, long_base_names)
 
 POTENTIAL_BASES_FOR_WIDE_MATRA_II = '''
 KA PHA KxA PHxA K_RA PH_RA Kx_RA PHx_RA
