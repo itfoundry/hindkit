@@ -4,11 +4,13 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 
 import os
 import defcon
-import hindkit.constants as constants
+import hindkit.constants, hindkit.tools, hindkit.patches
+
+defcon.Glyph.insertAnchor = hindkit.patches.insertAnchor
 
 class Family(object):
 
-    default_client = constants.clients.DEFAULT
+    default_client = hindkit.constants.clients.DEFAULT
 
     def __init__(
         self,
@@ -58,7 +60,7 @@ class Family(object):
         goadb = []
 
         try:
-            with open(constants.paths.GOADB, 'r') as file:
+            with open(hindkit.constants.paths.GOADB, 'r') as file:
                 goadb_content = file.read()
         except IOError:
             goadb.append((None, None, None))
@@ -85,7 +87,7 @@ class Family(object):
 
     def set_styles(self, style_scheme=None):
         if not style_scheme:
-            style_scheme = constants.clients.Client(self).style_scheme
+            style_scheme = hindkit.constants.clients.Client(self).style_scheme
         self.styles = [
             Style(
                 self,
@@ -134,6 +136,8 @@ class _BaseStyle(object):
         self.interpolation_value = interpolation_value
         self._file_name = _file_name
 
+        self.postprocess_counter = 0
+
     @property
     def directory(self):
         return ''
@@ -152,14 +156,14 @@ class _BaseStyle(object):
     def open_font(self, is_temp=False):
         path = self.path
         if is_temp:
-            path = os.path.join(constants.paths.TEMP, path)
+            path = hindkit.tools.temp(path)
         return defcon.Font(path)
 
 class Master(_BaseStyle):
 
     @property
     def directory(self):
-        return constants.paths.MASTERS
+        return hindkit.constants.paths.MASTERS
 
     @property
     def file_name(self):
@@ -167,6 +171,64 @@ class Master(_BaseStyle):
             return self._file_name
         else:
             return '{}-{}.ufo'.format(self._family.name, self.name)
+
+    def import_glyphs(
+        self,
+        source_path,
+        importing_names = None,
+        excluding_names = None,
+    ):
+
+        if importing_names is None:
+            importing_names = []
+        if excluding_names is None:
+            excluding_names = []
+
+        source = defcon.Font(source_path)
+        target = self.open_font(is_temp=True)
+
+        if importing_names:
+            new_names = set(importing_names)
+        else:
+            new_names = set(source.keys())
+
+        existing_names = set(target.keys())
+        new_names.difference_update(existing_names)
+        new_names.difference_update(set(excluding_names))
+        new_names = hindkit.tools.sort_glyphs(source.glyphOrder, new_names)
+
+        print('\n[NOTE] Importing glyphs from `{}` to `{}`:'.format(source_path, self.name))
+        for new_name in new_names:
+            target.newGlyph(new_name)
+            target[new_name].copyDataFromGlyph(source[new_name])
+            print(new_name, end=', ')
+        print()
+
+        self.postprocess_counter += 1
+        self._file_name = 'TEMP{}-{}.ufo'.format(self.postprocess_counter, self.name)
+        hindkit.tools.remove_files(hindkit.tools.temp(self.path))
+        target.save(hindkit.tools.temp(self.path))
+
+    def derive_glyphs(self, deriving_names):
+
+        if deriving_names is None:
+            deriving_names = []
+
+        target = self.open_font(is_temp=True)
+
+        print('\n[NOTE] Deriving glyphs in `{}`:'.format(self.name))
+        for deriving_name in deriving_names:
+            source_name = hindkit.constants.misc.DERIVING_MAP[deriving_name]
+            target.newGlyph(deriving_name)
+            if source_name:
+                target[deriving_name].width = target[source_name].width
+            print('{} (from {})'.format(deriving_name, source_name), end=', ')
+        print()
+
+        self.postprocess_counter += 1
+        self._file_name = 'TEMP{}-{}.ufo'.format(self.postprocess_counter, self.name)
+        hindkit.tools.remove_files(hindkit.tools.temp(self.path))
+        target.save(hindkit.tools.temp(self.path))
 
 class Style(_BaseStyle):
 
@@ -208,7 +270,7 @@ class Style(_BaseStyle):
 
     @property
     def directory(self):
-        return os.path.join(constants.paths.STYLES, self.name_postscript)
+        return os.path.join(hindkit.constants.paths.STYLES, self.name_postscript)
 
     @property
     def file_name(self):
@@ -240,4 +302,4 @@ class Style(_BaseStyle):
 
     @property
     def otf_path(self):
-        return os.path.join(constants.paths.BUILD, self.otf_name)
+        return os.path.join(hindkit.constants.paths.BUILD, self.otf_name)

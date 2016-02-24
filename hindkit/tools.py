@@ -25,38 +25,6 @@ class Resource(object):
         if extensions:
             self.extensions.extend(extensions)
 
-    def _temp(self, output):
-        temp = None
-        if output:
-            temp = os.path.join(constants.paths.TEMP, output)
-        return temp
-
-    def _premade(self, output):
-        premade = None
-        if output:
-            premade_prefix = hindkit._unwrap_path_relative_to_package_dir(
-                os.path.join(
-                    'data/premade',
-                    self.builder.family.script.lower(),
-                )
-            )
-            premade = os.path.join(premade_prefix, output)
-        return premade
-
-    def prepare(self, *args, **kwargs):
-        if self.output and os.path.exists(self.output):
-            for output in [self.output] + self.extensions:
-                subprocess.call(['cp', '-fr', output, self._temp(output)])
-        elif self.output and self.generator:
-            self.generator(self._temp(self.output), *args, **kwargs)
-            for output in [self.output] + self.extensions:
-                subprocess.call(['cp', '-fr', output, self._temp(output)])
-        elif self.output and os.path.exists(self._premade(self.output)):
-            for output in [self.output] + self.extensions:
-                subprocess.call(['cp', '-fr', self._premade(output), self._temp(output)])
-        else:
-            raise SystemExit("Can't prepare {}.".format(self._temp(self.output)))
-
 class Builder(object):
 
     def __init__(
@@ -85,18 +53,21 @@ class Builder(object):
         self.options = {
 
             'prepare_kerning': self.family._has_kerning(),
-            'postprocess_kerning': False,
+
             'prepare_mark_positioning': self.family._has_mark_positioning(),
             'prepare_mark_to_mark_positioning': True,
             'match_mI_variants': self.family._has_mI_variants(),
             'position_marks_for_mI_variants': False,
+
+            'postprocess_master': False,
+            'postprocess_kerning': False,
             'postprocess_otf': False,
 
             'run_stage_prepare_styles': True,
             'run_stage_prepare_features': True,
             'run_stage_compile': True,
 
-            'run_makeinstances': bool(self.family.masters),
+            'run_makeinstances': len(self.family.masters) > len(self.family.styles),
             'run_checkoutlines': True,
             'run_autohint': False,
 
@@ -112,6 +83,11 @@ class Builder(object):
 
         self.options.update(options)
 
+        self.masters = Resource(
+            self,
+            constants.paths.MASTERS,
+            None,
+        )
         self.designspace = Resource(
             self,
             constants.paths.DESIGNSPACE,
@@ -120,7 +96,7 @@ class Builder(object):
         self.styles = Resource(
             self,
             constants.paths.STYLES,
-            self.prepare_styles,
+            self._prepare_styles,
         )
         self.features_classes = Resource(
             self,
@@ -176,6 +152,44 @@ class Builder(object):
             None,
         )
 
+    def _prepare(self, resource, *args, **kwargs):
+
+        def _premade(abstract_path):
+            if abstract_path:
+                premade_prefix = hindkit._unwrap_path_relative_to_package_dir(
+                    os.path.join('data/premade', self.family.script.lower())
+                )
+                premade_path = os.path.join(premade_prefix, abstract_path)
+            else:
+                premade_path = None
+            return premade_path
+
+        if resource.output:
+            paths = [resource.output] + resource.extensions
+            if os.path.exists(resource.output):
+                for p in paths:
+                    subprocess.call(['cp', '-fR', p, temp(p)])
+            elif resource.generator:
+                resource.generator(temp(resource.output), *args, **kwargs)
+                for p in paths:
+                    subprocess.call(['cp', '-fR', p, temp(p)])
+            elif os.path.exists(_premade(resource.output)):
+                for p in paths:
+                    subprocess.call(['cp', '-fR', _premade(p), temp(p)])
+            else:
+                raise SystemExit("Can't prepare {}.".format(resource))
+        else:
+            raise SystemExit("Output is not set for {}.".format(resource))
+
+    def postprocess_master(self, master):
+        pass
+
+    def postprocess_kerning(self, original):
+        return original
+
+    def postprocess_otf(self, original):
+        return original
+
     def _check_inputs(self, inputs):
         results = collections.OrderedDict(
             (path, os.path.exists(path))
@@ -185,6 +199,9 @@ class Builder(object):
             raise SystemExit(
                 '\n'.join('{}: {}'.format(k, v) for k, v in results.items())
             )
+
+    # def _prepare_masters(self, output):
+    #     pass
 
     def _generate_designspace(self, output):
 
@@ -196,7 +213,7 @@ class Builder(object):
 
             doc.addSource(
 
-                path = hindkit._unwrap_path_relative_to_cwd(master.path),
+                path = hindkit._unwrap_path_relative_to_cwd(temp(master.path)),
                 name = 'master-' + master.name,
                 location = {'weight': master.interpolation_value},
 
@@ -234,21 +251,16 @@ class Builder(object):
 
         doc.save()
 
-    def prepare_styles(self, output): # STAGE I
+    def _prepare_styles(self, output): # STAGE I
 
-        if not bool(self.family.masters):
-            self.family.set_masters([
-                hindkit.Master(self.family, i.name, i.interpolation_value)
-                for i in self.family.styles
-            ])
-        self._check_inputs([i.path for i in self.family.masters])
+        self._check_inputs([temp(i.path) for i in self.family.masters])
 
         for style in self.styles_to_be_built:
             make_dir(temp(style.directory))
 
         if self.options['run_makeinstances']:
 
-            self.designspace.prepare()
+            self._prepare(self.designspace)
 
             arguments = ['-d', temp(constants.paths.DESIGNSPACE)]
             if not self.options['run_checkoutlines']:
@@ -260,7 +272,7 @@ class Builder(object):
 
         else:
             for index, (master, style) in enumerate(zip(self.family.masters, self.styles_to_be_built)):
-                subprocess.call(['cp', '-fr', master.path, temp(style.path)])
+                subprocess.call(['cp', '-fR', temp(master.path), temp(style.path)])
                 font = style.open_font(is_temp=True)
                 font.info.postscriptFontName = style.output_full_name_postscript
                 font.save()
@@ -446,10 +458,6 @@ class Builder(object):
                     style,
                 ) # NOTE: not pure GPOS
 
-    def postprocess_kerning(self, original):
-        postprocessed = original
-        return postprocessed
-
     def _generate_features_weight_class(self, style):
         directory = temp(style.directory)
         with open(os.path.join(directory, 'WeightClass.fea'), 'w') as f:
@@ -574,17 +582,14 @@ class Builder(object):
         subprocess.call(['makeotf'] + arguments)
 
         if self.options['postprocess_otf'] and os.path.exists(otf_path):
-            font = TTFont(otf_path)
-            postprocessed_font = self.postprocess_otf(font)
-            postprocessed_font.save(otf_path, reorderTables=False)
+            original = TTFont(otf_path)
+            postprocessed = self.postprocess_otf(original)
+            postprocessed.save(otf_path, reorderTables=False)
             print('[NOTE] `postprocess_otf` done.')
 
         destination = constants.paths.ADOBE_FONTS
         if os.path.exists(otf_path) and os.path.isdir(destination):
             subprocess.call(['cp', '-f', otf_path, destination])
-
-    def postprocess_otf(self, font):
-        return font
 
     def _finalize_options(self):
 
@@ -628,23 +633,26 @@ class Builder(object):
         self._finalize_options()
         make_dir(constants.paths.TEMP)
         if self.options['run_stage_prepare_styles']:
-            remove_files(temp(constants.paths.STYLES))
-            make_dir(temp(constants.paths.STYLES))
-            self.styles.prepare()
+            reset_dir(temp(constants.paths.MASTERS))
+            self._prepare(self.masters)
+            if self.options['postprocess_master']:
+                for master in self.family.masters:
+                    self.postprocess_master(master)
+            reset_dir(temp(constants.paths.STYLES))
+            self._prepare(self.styles)
         if self.options['run_stage_prepare_features']:
-            remove_files(temp(constants.paths.FEATURES))
-            make_dir(temp(constants.paths.FEATURES))
-            self.features_classes.prepare()
-            self.features_tables.prepare()
-            self.features_languagesystems.prepare()
-            self.features_GSUB.prepare()
+            reset_dir(temp(constants.paths.FEATURES))
+            self._prepare(self.features_classes)
+            self._prepare(self.features_tables)
+            self._prepare(self.features_languagesystems)
+            self._prepare(self.features_GSUB)
             for style in self.styles_to_be_built:
-                self.features_GPOS.prepare(style)
+                self._prepare(self.features_GPOS, style)
                 self._generate_features_weight_class(style)
                 self._generate_features_references(style)
         if self.options['run_stage_compile']:
-            self.fmndb.prepare()
-            self.goadb.prepare()
+            self._prepare(self.fmndb)
+            self._prepare(self.goadb)
             for style in self.styles_to_be_built:
                 self._compile(style)
 
@@ -680,10 +688,14 @@ def glyph_filter_marks(family, glyph):
 # ---
 
 def remove_files(path):
-    subprocess.call(['rm', '-fr', path])
+    subprocess.call(['rm', '-fR', path])
 
 def make_dir(path):
     subprocess.call(['mkdir', '-p', path])
+
+def reset_dir(path):
+    remove_files(path)
+    make_dir(path)
 
 # ---
 
@@ -691,58 +703,8 @@ def overriding(abstract_path):
     return abstract_path
 
 def temp(abstract_path):
-    return os.path.join(constants.paths.TEMP, abstract_path)
-
-# ---
-
-import defcon
-defcon.Glyph.insertAnchor = hindkit.patches.insertAnchor
-
-def import_glyphs(
-    source_path,
-    target_path,
-    save_as_path,
-    importing_names = None,
-    excluding_names = None,
-    deriving_names = None,
-):
-
-    if importing_names is None:
-        importing_names = []
-    if excluding_names is None:
-        excluding_names = []
-    if deriving_names is None:
-        deriving_names = []
-
-    source = defcon.Font(source_path)
-    target = defcon.Font(target_path)
-
-    if importing_names:
-        new_names = set(importing_names)
+    if abstract_path:
+        temp_path = os.path.join(constants.paths.TEMP, abstract_path)
     else:
-        new_names = set(source.keys())
-    existing_names = set(target.keys())
-    new_names.difference_update(existing_names)
-    new_names.difference_update(set(excluding_names))
-    new_names = sort_glyphs(source.glyphOrder, new_names)
-
-    if new_names:
-        print('\n[NOTE] Importing glyphs from `{}` to `{}`:'.format(source_path, target_path))
-        for new_name in new_names:
-            target.newGlyph(new_name)
-            target[new_name].copyDataFromGlyph(source[new_name])
-            print(new_name, end=', ')
-        print()
-
-    if deriving_names:
-        print('\n[NOTE] Deriving glyphs in `{}`:'.format(target_path))
-        for deriving_name in deriving_names:
-            source_name = constants.misc.DERIVING_MAP[deriving_name]
-            target.newGlyph(deriving_name)
-            if source_name:
-                target[deriving_name].width = target[source_name].width
-            print('{} (from {})'.format(deriving_name, source_name), end=', ')
-        print()
-
-    remove_files(save_as_path)
-    target.save(save_as_path)
+        temp_path = None
+    return temp_path
