@@ -228,3 +228,7 @@ class Style(_BaseStyle):
         else:
             otf_name = self.output_full_name_postscript + '.otf'
         return otf_name
+
+    @property
+    def otf_path(self):
+        return os.path.join(constants.paths.BUILD, self.otf_name)

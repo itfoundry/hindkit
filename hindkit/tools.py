@@ -539,7 +539,7 @@ class Builder(object):
                 font.info.postscriptFontName = style.output_full_name_postscript
                 font.save()
 
-        otf_path = os.path.join(constants.paths.BUILD, style.otf_name)
+        otf_path = style.otf_path
 
         arguments = [
             '-f', temp(style.path),
