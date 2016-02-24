@@ -172,9 +172,9 @@ class Master(_BaseStyle):
         else:
             return '{}-{}.ufo'.format(self._family.name, self.name)
 
-    def import_glyphs(
+    def import_glyphs_from(
         self,
-        source_path,
+        source_dir,
         importing_names = None,
         excluding_names = None,
     ):
@@ -184,7 +184,10 @@ class Master(_BaseStyle):
         if excluding_names is None:
             excluding_names = []
 
+        import glob
+        source_path = glob.glob('{}*-{}.ufo'.format(source_dir, self.name))[0]
         source = defcon.Font(source_path)
+
         target = self.open_font(is_temp=True)
 
         if importing_names:
