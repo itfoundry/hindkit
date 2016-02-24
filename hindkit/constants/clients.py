@@ -28,7 +28,7 @@ class Client(object):
                     (12, self.family.info.openTypeNameDesignerURL),
                     (13, "This Font Software is protected under domestic and international trademark and copyright law. You agree to identify the ITF fonts by name and credit the ITF\'s ownership of the trademarks and copyrights in any design or production credits."),
                     (14, "http://www.indiantypefoundry.com/licensing/eula/"),
-                    (19, misc.SCRIPTS[self.family.script.lower()]['sample text']),
+                    (19, misc.SCRIPTS[self.family.script.lower()].get('sample text')),
                 ]),
                 'table_OS_2': {
                     'Vendor': 'ITFO'

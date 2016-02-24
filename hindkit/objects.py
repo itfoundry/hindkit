@@ -16,6 +16,7 @@ class Family(object):
         trademark = '',
         script = '',
         append_script_name = False,
+        name = '',
     ):
 
         if client:
@@ -27,9 +28,12 @@ class Family(object):
         self.script = script
         self.append_script_name = append_script_name
 
-        self.name = self.trademark
-        if self.script and self.append_script_name:
-            self.name += ' ' + self.script
+        if name:
+            self.name = name
+        else:
+            self.name = self.trademark
+            if self.script and self.append_script_name:
+                self.name += ' ' + self.script
         self.name_postscript = self.name.replace(' ', '')
 
         self.output_name_affix = '{}'
@@ -73,24 +77,24 @@ class Family(object):
 
         return goadb
 
-    def set_masters(self, masters = []):
-        self.masters = masters
-        if not self.masters:
+    def set_masters(self, masters = None):
+        if masters:
+            self.masters = masters
+        else:
             self.masters = [Master(self, 'Light', 0), Master(self, 'Bold', 100)]
 
-    def set_styles(self, style_scheme = []):
-
-        if not style_scheme:
+    def set_styles(self, style_scheme = None):
+        if style_scheme:
+            for style_name, interpolation_value, weight_class in style_scheme:
+                style = Style(
+                    self,
+                    name = style_name,
+                    interpolation_value = interpolation_value,
+                    weight_class = weight_class,
+                )
+                self.styles.append(style)
+        else:
             style_scheme = constants.clients.Client(self).style_scheme
-
-        for style_name, interpolation_value, weight_class in style_scheme:
-            style = Style(
-                self,
-                name = style_name,
-                interpolation_value = interpolation_value,
-                weight_class = weight_class,
-            )
-            self.styles.append(style)
 
     def get_styles_that_are_directly_derived_from_masters(self):
         master_positions = [

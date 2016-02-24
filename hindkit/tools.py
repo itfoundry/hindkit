@@ -3,6 +3,7 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import subprocess, os, argparse, collections
+from fontTools.ttLib import TTFont
 import mutatorMath.ufo.document, WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit, hindkit.devanagari, hindkit.patches
 import hindkit.constants as constants
@@ -86,8 +87,10 @@ class Builder(object):
             'prepare_kerning': self.family._has_kerning(),
             'postprocess_kerning': False,
             'prepare_mark_positioning': self.family._has_mark_positioning(),
-            'prepare_mark_to_mark_positioning': self.family._has_mark_positioning(),
-            'prepare_mI_variants': self.family._has_mI_variants(),
+            'prepare_mark_to_mark_positioning': True,
+            'match_mI_variants': self.family._has_mI_variants(),
+            'position_marks_for_mI_variants': False,
+            'postprocess_otf': False,
 
             'run_stage_prepare_styles': True,
             'run_stage_prepare_features': True,
@@ -97,7 +100,7 @@ class Builder(object):
             'run_checkoutlines': True,
             'run_autohint': False,
 
-            'override_GDEF': False,
+            'override_GDEF': True,
 
             'do_style_linking': False,
 
@@ -262,7 +265,7 @@ class Builder(object):
                 font.info.postscriptFontName = style.output_full_name_postscript
                 font.save()
             for style in self.styles_to_be_built:
-                self._simulate_makeInstancesUFO_postprocess
+                self._simulate_makeInstancesUFO_postprocess(style)
 
     def _simulate_makeInstancesUFO_postprocess(self, style):
         self._check_inputs([temp(style.path)])
@@ -570,9 +573,18 @@ class Builder(object):
 
         subprocess.call(['makeotf'] + arguments)
 
+        if self.options['postprocess_otf'] and os.path.exists(otf_path):
+            font = TTFont(otf_path)
+            postprocessed_font = self.postprocess_otf(font)
+            postprocessed_font.save(otf_path, reorderTables=False)
+            print('[NOTE] `postprocess_otf` done.')
+
         destination = constants.paths.ADOBE_FONTS
         if os.path.exists(otf_path) and os.path.isdir(destination):
             subprocess.call(['cp', '-f', otf_path, destination])
+
+    def postprocess_otf(self, font):
+        return font
 
     def _finalize_options(self):
 
@@ -689,20 +701,28 @@ defcon.Glyph.insertAnchor = hindkit.patches.insertAnchor
 def import_glyphs(
     source_paths,
     target_paths,
-    save_as_paths = None,
+    save_as_paths,
+    importing_names = None,
     excluding_names = None,
     deriving_names = None,
 ):
 
-    if not save_as_paths:
-        save_as_paths = target_paths
+    if importing_names is None:
+        importing_names = []
+    if excluding_names is None:
+        excluding_names = []
+    if deriving_names is None:
+        deriving_names = []
 
     for source_path, target_path, save_as_path in zip(source_paths, target_paths, save_as_paths):
 
         source = defcon.Font(source_path)
         target = defcon.Font(target_path)
 
-        new_names = set(source.keys())
+        if importing_names:
+            new_names = set(importing_names)
+        else:
+            new_names = set(source.keys())
         existing_names = set(target.keys())
         new_names.difference_update(existing_names)
         new_names.difference_update(set(excluding_names))
