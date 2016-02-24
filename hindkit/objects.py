@@ -77,24 +77,29 @@ class Family(object):
 
         return goadb
 
-    def set_masters(self, masters = None):
+    def set_masters(self, masters=None):
         if masters:
             self.masters = masters
         else:
             self.masters = [Master(self, 'Light', 0), Master(self, 'Bold', 100)]
 
-    def set_styles(self, style_scheme = None):
-        if style_scheme:
-            for style_name, interpolation_value, weight_class in style_scheme:
-                style = Style(
-                    self,
-                    name = style_name,
-                    interpolation_value = interpolation_value,
-                    weight_class = weight_class,
-                )
-                self.styles.append(style)
-        else:
+    def set_styles(self, style_scheme=None):
+        if not style_scheme:
             style_scheme = constants.clients.Client(self).style_scheme
+        self.styles = [
+            Style(
+                self,
+                name = style_name,
+                interpolation_value = interpolation_value,
+                weight_class = weight_class,
+            )
+            for style_name, interpolation_value, weight_class in style_scheme
+        ]
+        if not self.masters:
+            self.set_masters([
+                Master(self, i.name, i.interpolation_value)
+                for i in self.styles
+            ])
 
     def get_styles_that_are_directly_derived_from_masters(self):
         master_positions = [
