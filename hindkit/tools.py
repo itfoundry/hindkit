@@ -608,19 +608,19 @@ class Builder(object):
             '-o', '--options', action = 'store',
             help = '"0" for none, "1" for "makeinstances", "2" for "checkoutlines", and "3" for "autohint".',
         )
-        args = parser.parse_args()
+        self.args = parser.parse_args()
 
-        if args.stages:
-            stages = str(args.stages)
+        if self.args.stages:
+            stages = str(self.args.stages)
             self.options['run_stage_prepare_styles'] = '1' in stages
             self.options['run_stage_prepare_features'] = '2' in stages
             self.options['run_stage_compile'] = '3' in stages
-        if args.options:
-            options = str(args.options)
+        if self.args.options:
+            options = str(self.args.options)
             self.options['run_makeinstances'] = '1' in options
             self.options['run_checkoutlines'] = '2' in options
             self.options['run_autohint'] = '3' in options
-        if args.test:
+        if self.args.test:
             self.options['run_makeinstances'] = False
             self.options['run_checkoutlines'] = False
             self.options['run_autohint'] = False

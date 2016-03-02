@@ -185,7 +185,9 @@ class Master(_BaseStyle):
             excluding_names = []
 
         import glob
-        source_path = glob.glob('{}*-{}.ufo'.format(source_dir, self.name))[0]
+        source_path = glob.glob(
+            '{}*-{}.ufo'.format(source_dir, self.name)
+        )[0]
         source = defcon.Font(source_path)
 
         target = self.open_font(is_temp=True)
