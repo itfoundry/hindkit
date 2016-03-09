@@ -75,9 +75,9 @@ class Builder(object):
 
             'do_style_linking': False,
 
-            'use_os_2_version_4': True,
-            'prefer_typo_metrics': True,
-            'is_width_weight_slope_only': True,
+            'use_os_2_version_4': False,
+            'prefer_typo_metrics': False,
+            'is_width_weight_slope_only': False,
 
         }
 
