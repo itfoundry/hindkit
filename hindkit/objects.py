@@ -157,7 +157,11 @@ class _BaseStyle(object):
         path = self.path
         if is_temp:
             path = hindkit.tools.temp(path)
-        return defcon.Font(path)
+        if os.path.exists(path):
+            print("Opening `{}`".format(path))
+            return defcon.Font(path)
+        else:
+            raise SystemExit("`{}` is missing.".format(path))
 
 class Master(_BaseStyle):
 
@@ -185,9 +189,13 @@ class Master(_BaseStyle):
             excluding_names = []
 
         import glob
-        source_path = glob.glob(
-            '{}*-{}.ufo'.format(source_dir, self.name)
-        )[0]
+
+        file_name_pattern = '{}*-{}.ufo'.format(source_dir, self.name)
+        source_paths = glob.glob(file_name_pattern)
+        if source_paths:
+            source_path = source_paths[0]
+        else:
+            raise SystemExit("`{}` is missing.".format(file_name_pattern))
         source = defcon.Font(source_path)
 
         target = self.open_font(is_temp=True)
