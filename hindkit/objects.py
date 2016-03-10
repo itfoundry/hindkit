@@ -264,6 +264,7 @@ class Style(_BaseStyle):
         is_bold = None,
         is_italic = None,
         is_oblique = None,
+        input_format = 'UFO',
         output_format = 'OTF',
         _output_full_name_postscript = None,
         _font_name = None,
@@ -288,6 +289,7 @@ class Style(_BaseStyle):
         if is_oblique is None:
             self.is_oblique = True if 'Oblique' in self.name.split() else False
 
+        self.input_format = input_format
         self.output_format = output_format
 
         self._output_full_name_postscript = _output_full_name_postscript
@@ -301,9 +303,10 @@ class Style(_BaseStyle):
     @property
     def file_name(self):
         if self._file_name:
-            return self._file_name
+            file_name = self._file_name
         else:
-            return 'font.ufo'
+            file_name = 'font' + '.' + self.input_format.lower()
+        return file_name
 
     @property
     def output_full_name(self):
