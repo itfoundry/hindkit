@@ -70,6 +70,7 @@ class Builder(object):
             'run_makeinstances': len(self.family.masters) > len(self.family.styles),
             'run_checkoutlines': True,
             'run_autohint': False,
+            'build_ttf': False,
 
             'override_GDEF': True,
 
@@ -550,18 +551,21 @@ class Builder(object):
                 font.info.postscriptFontName = style.output_full_name_postscript
                 font.save()
 
-        otf_path = style.otf_path
+        font_path = style.font_path
 
         arguments = [
             '-f', temp(style.path),
-            '-o', otf_path,
+            '-o', font_path,
             '-mf', temp(constants.paths.FMNDB),
             '-gf', temp(constants.paths.GOADB),
-            '-r',
-            '-shw',
             '-rev', self.fontrevision,
+            '-ga',
             '-omitMacNames',
         ]
+        if not self.args.test:
+            arguments.append('-r')
+        if not self.options['run_autohint']:
+            arguments.append('-shw')
         if self.options['do_style_linking']:
             if style.is_bold:
                 arguments.append('-b')
@@ -581,31 +585,80 @@ class Builder(object):
 
         subprocess.call(['makeotf'] + arguments)
 
-        if self.options['postprocess_otf'] and os.path.exists(otf_path):
-            original = TTFont(otf_path)
-            postprocessed = self.postprocess_otf(original)
-            postprocessed.save(otf_path, reorderTables=False)
-            print('[NOTE] `postprocess_otf` done.')
+        if self.options['postprocess_font_file'] and os.path.exists(font_path):
+            original = TTFont(font_path)
+            postprocessed = self.postprocess_font_file(original)
+            postprocessed.save(font_path, reorderTables=False)
+            print('[NOTE] `postprocess_font_file` done.')
 
         destination = constants.paths.ADOBE_FONTS
-        if os.path.exists(otf_path) and os.path.isdir(destination):
-            subprocess.call(['cp', '-f', otf_path, destination])
+        if os.path.exists(font_path) and os.path.isdir(destination):
+            subprocess.call(['cp', '-f', font_path, destination])
+
+    def _build_ttf(self, style):
+
+        style.output_format = 'TTF'
+
+        with open(
+            '/Users/Lianghai/Library/Application Support/Glyphs/Temp/{}/GlyphOrderAndAliasDB'.format(
+                style.output_full_name_postscript,
+            ),
+        ) as f:
+            glyphs_goadb = collections.OrderedDict(reversed(line.split()[:2]) for line in f)
+        glyphs_goadb['CR'] = 'uni000D'
+
+        GOADB_TTF_restore_names_path = 'GlyphOrderAndAliasDB_TTF_restore_names'
+        with open(temp(GOADB_TTF_restore_names_path), 'w') as f:
+            f.writelines([' '.join(i) + '\n' for i in glyphs_goadb.items()])
+
+        style._file_name = 'temp1.ttf'
+        input_path = temp(style.path)
+
+        style._file_name = 'temp2.ttf'
+        output_path = temp(style.path)
+
+        arguments = [
+            '-f', input_path,
+            '-o', output_path,
+            '-mf', temp(constants.paths.FMNDB),
+            '-gf', temp(GOADB_TTF_restore_names_path),
+            '-rev', self.fontrevision,
+            '-ga',
+            '-omitMacNames',
+        ]
+        subprocess.call(['makeotf'] + arguments)
+
+        GOADB_TTF_path = 'GlyphOrderAndAliasDB_TTF'
+        with open(temp(GOADB_TTF_path), 'w') as f:
+            f.writelines([
+                ' '.join(filter(None, row)) + '\n' for row in self.family.goadb
+                if row[1] in glyphs_goadb
+            ])
+
+        GOADB_backup = constants.paths.GOADB
+        constants.paths.GOADB = GOADB_TTF_path
+        self._compile(style)
+        constants.paths.GOADB = GOADB_backup
 
     def _finalize_options(self):
 
         parser = argparse.ArgumentParser(
             description = 'execute `AFDKOPython build.py` to run stages as specified in build.py, or append arguments to override.'
         )
+        # parser.add_argument(
+        #     '--ttf', action = 'store_true',
+        #     help = 'build TTF from existing temp files.',
+        # )
         parser.add_argument(
-            '-t', '--test', action = 'store_true',
+            '--test', action = 'store_true',
             help = 'run a minimum and fast build process.',
         )
         parser.add_argument(
-            '-s', '--stages', action = 'store',
+            '--stages', action = 'store',
             help = '"1" for "prepare_styles", "2" for "prepare_features", and "3" for "compile".',
         )
         parser.add_argument(
-            '-o', '--options', action = 'store',
+            '--options', action = 'store',
             help = '"0" for none, "1" for "makeinstances", "2" for "checkoutlines", and "3" for "autohint".',
         )
         self.args = parser.parse_args()
@@ -624,6 +677,8 @@ class Builder(object):
             self.options['run_makeinstances'] = False
             self.options['run_checkoutlines'] = False
             self.options['run_autohint'] = False
+        # if self.args.ttf:
+        #     self.options['build_ttf'] = True
 
         self.styles_to_be_built = self.family.styles
         if self.family.masters and (not self.options['run_makeinstances']):
@@ -656,6 +711,8 @@ class Builder(object):
             self._prepare(self.goadb)
             for style in self.styles_to_be_built:
                 self._compile(style)
+                if self.options['build_ttf']:
+                    self._build_ttf(style)
 
 # ---
 
