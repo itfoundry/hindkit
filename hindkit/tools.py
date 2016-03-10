@@ -149,8 +149,8 @@ class Builder(object):
         )
         self.goadb = Resource(
             self,
-            constants.paths.GOADB,
-            None,
+            constants.paths.GOADB + '_TRIMMED',
+            self._generate_goadb,
         )
 
     def _prepare(self, resource, *args, **kwargs):
@@ -539,25 +539,54 @@ class Builder(object):
             f.writelines(i + '\n' for i in lines)
 
     def _generate_goadb(self, output):
-        pass
+        reference_font = self.styles_to_be_built[0].open_font(is_temp=True)
+        with open(output, 'w') as f:
+            f.writelines([
+                ' '.join(filter(None, row)) + '\n'
+                for row in self.family.goadb
+                if row[1] in reference_font
+            ])
+
+    def _prepare_for_compiling_ttf(self):
+
+        with open(temp(self.goadb.output)) as f:
+            original_lines = f.readlines()
+
+        modified_lines = []
+        for line in original_lines:
+            parts = line.split()
+            alt_development_name = constants.misc.GLYPH_NAME_INCOSISTENCIES_IN_TTF.get(parts[1])
+            if alt_development_name:
+                parts[1] = alt_development_name
+                modified_lines.append(' '.join(parts) + '\n')
+            else:
+                modified_lines.append(line)
+
+        self.goadb.output = self.goadb.output + '_TTF'
+        with open(temp(self.goadb.output), 'w') as f:
+            f.writelines(modified_lines)
+
+        for style in self.styles_to_be_built:
+            style.input_format = 'TTF'
+            style.output_format = 'TTF'
 
     def _compile(self, style):
 
         self._check_inputs([temp(style.path), temp(self.fmndb.output), temp(self.goadb.output)])
 
-        if style.file_name.endswith('.ufo'):
-            font = style.open_font(is_temp=True)
-            if font.info.postscriptFontName != style.output_full_name_postscript:
-                font.info.postscriptFontName = style.output_full_name_postscript
-                font.save()
+        # if style.file_name.endswith('.ufo'):
+        #     font = style.open_font(is_temp=True)
+        #     if font.info.postscriptFontName != style.output_full_name_postscript:
+        #         font.info.postscriptFontName = style.output_full_name_postscript
+        #         font.save()
 
         font_path = style.font_path
 
         arguments = [
             '-f', temp(style.path),
             '-o', font_path,
-            '-mf', temp(constants.paths.FMNDB),
-            '-gf', temp(constants.paths.GOADB),
+            '-mf', temp(self.fmndb.output),
+            '-gf', temp(self.goadb.output),
             '-rev', self.fontrevision,
             '-ga',
             '-omitMacNames',
@@ -595,60 +624,11 @@ class Builder(object):
         if os.path.exists(font_path) and os.path.isdir(destination):
             subprocess.call(['cp', '-f', font_path, destination])
 
-    def _build_ttf(self, style):
-
-        style.output_format = 'TTF'
-
-        with open(
-            '/Users/Lianghai/Library/Application Support/Glyphs/Temp/{}/GlyphOrderAndAliasDB'.format(
-                style.output_full_name_postscript,
-            ),
-        ) as f:
-            glyphs_goadb = collections.OrderedDict(reversed(line.split()[:2]) for line in f)
-        glyphs_goadb['CR'] = 'uni000D'
-
-        GOADB_TTF_restore_names_path = 'GlyphOrderAndAliasDB_TTF_restore_names'
-        with open(temp(GOADB_TTF_restore_names_path), 'w') as f:
-            f.writelines([' '.join(i) + '\n' for i in glyphs_goadb.items()])
-
-        style._file_name = 'temp1.ttf'
-        input_path = temp(style.path)
-
-        style._file_name = 'temp2.ttf'
-        output_path = temp(style.path)
-
-        arguments = [
-            '-f', input_path,
-            '-o', output_path,
-            '-mf', temp(constants.paths.FMNDB),
-            '-gf', temp(GOADB_TTF_restore_names_path),
-            '-rev', self.fontrevision,
-            '-ga',
-            '-omitMacNames',
-        ]
-        subprocess.call(['makeotf'] + arguments)
-
-        GOADB_TTF_path = 'GlyphOrderAndAliasDB_TTF'
-        with open(temp(GOADB_TTF_path), 'w') as f:
-            f.writelines([
-                ' '.join(filter(None, row)) + '\n' for row in self.family.goadb
-                if row[1] in glyphs_goadb
-            ])
-
-        GOADB_backup = constants.paths.GOADB
-        constants.paths.GOADB = GOADB_TTF_path
-        self._compile(style)
-        constants.paths.GOADB = GOADB_backup
-
     def _finalize_options(self):
 
         parser = argparse.ArgumentParser(
             description = 'execute `AFDKOPython build.py` to run stages as specified in build.py, or append arguments to override.'
         )
-        # parser.add_argument(
-        #     '--ttf', action = 'store_true',
-        #     help = 'build TTF from existing temp files.',
-        # )
         parser.add_argument(
             '--test', action = 'store_true',
             help = 'run a minimum and fast build process.',
@@ -677,8 +657,6 @@ class Builder(object):
             self.options['run_makeinstances'] = False
             self.options['run_checkoutlines'] = False
             self.options['run_autohint'] = False
-        # if self.args.ttf:
-        #     self.options['build_ttf'] = True
 
         self.styles_to_be_built = self.family.styles
         if self.family.masters and (not self.options['run_makeinstances']):
@@ -711,8 +689,10 @@ class Builder(object):
             self._prepare(self.goadb)
             for style in self.styles_to_be_built:
                 self._compile(style)
-                if self.options['build_ttf']:
-                    self._build_ttf(style)
+            if self.options['build_ttf']:
+                self._prepare_for_compiling_ttf()
+                for style in self.styles_to_be_built:
+                    self._compile(style)
 
 # ---
 

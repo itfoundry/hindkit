@@ -5,6 +5,10 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import os, collections
 import hindkit
 
+GLYPH_NAME_INCOSISTENCIES_IN_TTF = {
+    'CR': 'uni000D',
+}
+
 DERIVING_MAP = {
     'CR': 'space',
     'uni000D': 'space',
