@@ -7,6 +7,7 @@ import hindkit
 
 DERIVING_MAP = {
     'CR': 'space',
+    'uni000D': 'space',
     'uni00A0': 'space',
     'NULL': None,
     'uni200B': None,

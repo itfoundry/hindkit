@@ -61,7 +61,7 @@ class Builder(object):
 
             'postprocess_master': False,
             'postprocess_kerning': False,
-            'postprocess_otf': False,
+            'postprocess_font_file': False,
 
             'run_stage_prepare_styles': True,
             'run_stage_prepare_features': True,
@@ -188,7 +188,7 @@ class Builder(object):
     def postprocess_kerning(self, original):
         return original
 
-    def postprocess_otf(self, original):
+    def postprocess_font_file(self, original):
         return original
 
     def _check_inputs(self, inputs):
