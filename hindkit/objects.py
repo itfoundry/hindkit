@@ -163,6 +163,16 @@ class _BaseStyle(object):
         else:
             raise SystemExit("`{}` is missing.".format(path))
 
+    def update_glyph_order(self, order=None):
+        if order is None:
+            order = [i[1] for i in self._family.goadb]
+        target = self.open_font(is_temp=True)
+        target.lib['com.schriftgestaltung.glyphOrder'] = order
+        self.postprocess_counter += 1
+        self._file_name = 'TEMP{}-{}.ufo'.format(self.postprocess_counter, self.name)
+        hindkit.tools.remove_files(hindkit.tools.temp(self.path))
+        target.save(hindkit.tools.temp(self.path))
+
 class Master(_BaseStyle):
 
     @property

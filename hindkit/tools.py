@@ -635,8 +635,9 @@ class Builder(object):
         if self.options['run_stage_prepare_styles']:
             reset_dir(temp(constants.paths.MASTERS))
             self._prepare(self.masters)
-            if self.options['postprocess_master']:
-                for master in self.family.masters:
+            for master in self.family.masters:
+                master.update_glyph_order()
+                if self.options['postprocess_master']:
                     self.postprocess_master(master)
             reset_dir(temp(constants.paths.STYLES))
             self._prepare(self.styles)
