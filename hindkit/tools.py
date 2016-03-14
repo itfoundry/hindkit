@@ -59,7 +59,7 @@ class Builder(object):
             'match_mI_variants': self.family._has_mI_variants(),
             'position_marks_for_mI_variants': False,
 
-            'postprocess_master': False,
+            'prepare_master': False,
             'postprocess_kerning': False,
             'postprocess_font_file': False,
 
@@ -182,7 +182,7 @@ class Builder(object):
         else:
             raise SystemExit("Output is not set for {}.".format(resource))
 
-    def postprocess_master(self, master):
+    def prepare_master(self, master):
         pass
 
     def postprocess_kerning(self, original):
@@ -669,9 +669,9 @@ class Builder(object):
             reset_dir(temp(constants.paths.MASTERS))
             self._prepare(self.masters)
             for master in self.family.masters:
+                if self.options['prepare_master']:
+                    self.prepare_master(master)
                 master.update_glyph_order()
-                if self.options['postprocess_master']:
-                    self.postprocess_master(master)
             reset_dir(temp(constants.paths.STYLES))
             self._prepare(self.styles)
         if self.options['run_stage_prepare_features']:
