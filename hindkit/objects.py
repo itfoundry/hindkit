@@ -189,6 +189,7 @@ class Master(_BaseStyle):
     def import_glyphs_from(
         self,
         source_dir,
+        target_dir = None,
         importing_names = None,
         excluding_names = None,
     ):
@@ -200,15 +201,24 @@ class Master(_BaseStyle):
 
         import glob
 
-        file_name_pattern = '{}*-{}.ufo'.format(source_dir, self.name)
-        source_paths = glob.glob(file_name_pattern)
+        source_file_name_pattern = '{}*-{}.ufo'.format(source_dir, self.name)
+        source_paths = glob.glob(source_file_name_pattern)
         if source_paths:
             source_path = source_paths[0]
         else:
-            raise SystemExit("`{}` is missing.".format(file_name_pattern))
+            raise SystemExit("`{}` is missing.".format(source_file_name_pattern))
         source = defcon.Font(source_path)
 
-        target = self.open_font(is_temp=True)
+        if target_dir:
+            target_file_name_pattern = '{}*-{}.ufo'.format(target_dir, self.name)
+            target_paths = glob.glob(target_file_name_pattern)
+            if target_paths:
+                target_path = target_paths[0]
+            else:
+                raise SystemExit("`{}` is missing.".format(target_file_name_pattern))
+            target = defcon.Font(target_path)
+        else:
+            target = self.open_font(is_temp=True)
 
         if importing_names:
             new_names = set(importing_names)
