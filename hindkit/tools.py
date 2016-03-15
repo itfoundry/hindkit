@@ -67,7 +67,7 @@ class Builder(object):
             'run_stage_prepare_features': True,
             'run_stage_compile': True,
 
-            'run_makeinstances': len(self.family.masters) > len(self.family.styles),
+            'run_makeinstances': len(self.family.styles) > len(self.family.masters),
             'run_checkoutlines': True,
             'run_autohint': False,
             'build_ttf': False,
@@ -314,7 +314,7 @@ class Builder(object):
             glyph_order = [
                 development_name for
                 production_name, development_name, unicode_mapping in
-                self.family.goadb
+                self.family.get_goadb()
             ]
             for class_name, filter_function in glyph_classes:
                 glyph_names = [
@@ -543,7 +543,7 @@ class Builder(object):
         with open(output, 'w') as f:
             f.writelines([
                 ' '.join(filter(None, row)) + '\n'
-                for row in self.family.goadb
+                for row in self.family.get_goadb()
                 if row[1] in reference_font
             ])
 
