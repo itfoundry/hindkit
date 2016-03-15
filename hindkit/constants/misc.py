@@ -105,6 +105,7 @@ SCRIPTS = {
     },
 
     'ol chiki': {
+        'abbreviation': 'ol',
         'tag': 'olck',
     },
 }
@@ -130,7 +131,29 @@ def get_unicode_scalar_to_unicode_name_map():
 def get_aglfn():
     aglfn = collections.OrderedDict()
     with open(hindkit._unwrap_path_relative_to_package_dir('data/aglfn.txt')) as f:
-        for line in f.read().splitlines():
+        for line in f:
             if not line.startswith('#'):
-                unicode_scalar, glyph_name, unicode_name = line.split(';')
-                aglfn[glyph_name] = (unicode_scalar, unicode_name)
+                unicode_scalar, glyph_name, unicode_name = line.strip().split(';')
+                aglfn[glyph_name] = unicode_scalar
+    return aglfn
+
+@memoize
+def get_al5():
+    al5 = collections.OrderedDict()
+    with open(hindkit._unwrap_path_relative_to_package_dir('data/adobe-latin-5-precomposed.txt')) as f:
+        f.next()
+        for line in f:
+            unicode_scalar, character, production_name, unicode_name = line.strip().split('\t')[:4]
+            al5[unicode_name] = unicode_scalar
+    return al5
+
+@memoize
+def get_names():
+    names = collections.OrderedDict()
+    with open(hindkit._unwrap_path_relative_to_package_dir('data/names.txt')) as f:
+        for line in f:
+            line = line.partition('#')[0].strip()
+            if line:
+                k, v = line.split()
+                names[k] = v
+    return names

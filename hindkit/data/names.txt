@@ -1,0 +1,1105 @@
+# Devanagari
+
+dvA 0905
+dvAA 0906
+dvI 0907
+dvII 0908
+dvU 0909
+dvUU 090A
+dvvR 090B
+dvvRR 0960
+dvvL 090C
+dvvLL 0961
+dvE 090F
+dvAI 0910
+dvO 0913
+dvAU 0914
+
+dvAcandra 0972
+dvEcandra 090D
+dvOcandra 0911
+dvAshort 0904
+dvEshort 090E
+dvOshort 0912
+dvUE 0976
+dvUUE 0977
+dvOE 0973
+dvOOE 0974
+dvAW 0975
+
+dvmAA 093E
+dvmI 093F
+dvmII 0940
+dvmU 0941
+dvmUU 0942
+dvmvR 0943
+dvmvRR 0944
+dvmvL 0962
+dvmvLL 0963
+dvmE 0947
+dvmAI 0948
+dvmO 094B
+dvmAU 094C
+
+dvmEcandra 0945
+dvmOcandra 0949
+dvmEshort 0946
+dvmOshort 094A
+dvmUE 0956
+dvmUUE 0957
+dvmOE 093A
+dvmOOE 093B
+dvmAW 094F
+dvmEprishthamatra 094E
+dvmEcandralong 0955
+
+dvKA 0915
+dvKHA 0916
+dvGA 0917
+dvGHA 0918
+dvNGA 0919
+dvCA 091A
+dvCHA 091B
+dvJA 091C
+dvJHA 091D
+dvNYA 091E
+dvTTA 091F
+dvTTHA 0920
+dvDDA 0921
+dvDDHA 0922
+dvNNA 0923
+dvTA 0924
+dvTHA 0925
+dvDA 0926
+dvDHA 0927
+dvNA 0928
+dvPA 092A
+dvPHA 092B
+dvBA 092C
+dvBHA 092D
+dvMA 092E
+dvYA 092F
+dvRA 0930
+dvLA 0932
+dvVA 0935
+dvSHA 0936
+dvSSA 0937
+dvSA 0938
+dvHA 0939
+
+dvLLA 0933
+
+dvGAbar 097B
+dvJAbar 097C
+dvDDAbar 097E
+dvBAbar 097F
+dvZHA 0979
+dvYAheavy 097A
+dvDDAmarwari 0978
+
+dvKxA 0958
+dvKHxA 0959
+dvGxA 095A
+dvJxA 095B
+dvDDxA 095C
+dvDDHxA 095D
+dvNxA 0929
+dvPHxA 095E
+dvYxA 095F
+dvRxA 0931
+dvLLxA 0934
+
+dvAnusvara 0902
+dvCandrabindu 0901
+dvVisarga 0903
+dvVirama 094D
+dvNukta 093C
+dvAvagraha 093D
+
+udatta 0951
+anudatta 0952
+
+dvGrave 0953
+dvAcute 0954
+dvHighspacingdot 0971
+dvGlottalstop 097D
+dvCandrabinduinverted 0900
+
+dvOm 0950
+
+dvZero 0966
+dvOne 0967
+dvTwo 0968
+dvThree 0969
+dvFour 096A
+dvFive 096B
+dvSix 096C
+dvSeven 096D
+dvEight 096E
+dvNine 096F
+
+dvAbbreviationsign 0970
+
+danda 0964
+doubledanda 0965
+
+# Gujarati
+
+gjA 0A85
+gjAA 0A86
+gjI 0A87
+gjII 0A88
+gjU 0A89
+gjUU 0A8A
+gjvR 0A8B
+gjvRR 0AE0
+gjvL 0A8C
+gjvLL 0AE1
+gjE 0A8F
+gjAI 0A90
+gjO 0A93
+gjAU 0A94
+
+gjEcandra 0A8D
+gjOcandra 0A91
+
+gjmAA 0ABE
+gjmI 0ABF
+gjmII 0AC0
+gjmU 0AC1
+gjmUU 0AC2
+gjmvR 0AC3
+gjmvRR 0AC4
+gjmvL 0AE2
+gjmvLL 0AE3
+gjmE 0AC7
+gjmAI 0AC8
+gjmO 0ACB
+gjmAU 0ACC
+
+gjmEcandra 0AC5
+gjmOcandra 0AC9
+
+gjKA 0A95
+gjKHA 0A96
+gjGA 0A97
+gjGHA 0A98
+gjNGA 0A99
+gjCA 0A9A
+gjCHA 0A9B
+gjJA 0A9C
+gjJHA 0A9D
+gjNYA 0A9E
+gjTTA 0A9F
+gjTTHA 0AA0
+gjDDA 0AA1
+gjDDHA 0AA2
+gjNNA 0AA3
+gjTA 0AA4
+gjTHA 0AA5
+gjDA 0AA6
+gjDHA 0AA7
+gjNA 0AA8
+gjPA 0AAA
+gjPHA 0AAB
+gjBA 0AAC
+gjBHA 0AAD
+gjMA 0AAE
+gjYA 0AAF
+gjRA 0AB0
+gjLA 0AB2
+gjVA 0AB5
+gjSHA 0AB6
+gjSSA 0AB7
+gjSA 0AB8
+gjHA 0AB9
+
+gjLLA 0AB3
+
+gjZHA 0AF9
+
+gjAnusvara 0A82
+gjCandrabindu 0A81
+gjVisarga 0A83
+gjVirama 0ACD
+gjNukta 0ABC
+gjAvagraha 0ABD
+
+gjOm 0AD0
+
+gjZero 0AE6
+gjOne 0AE7
+gjTwo 0AE8
+gjThree 0AE9
+gjFour 0AEA
+gjFive 0AEB
+gjSix 0AEC
+gjSeven 0AED
+gjEight 0AEE
+gjNine 0AEF
+
+gjAbbreviationsign 0AF0
+gjRupeesign 0AF1
+
+# Gurmukhi
+
+grA 0A05
+grAA 0A06
+grI 0A07
+grII 0A08
+grU 0A09
+grUU 0A0A
+grEE 0A0F
+grAI 0A10
+grOO 0A13
+grAU 0A14
+
+grIri 0A72
+grUra 0A73
+
+grmAA 0A3E
+grmI 0A3F
+grmII 0A40
+grmU 0A41
+grmUU 0A42
+grmEE 0A47
+grmAI 0A48
+grmOO 0A4B
+grmAU 0A4C
+
+grKA 0A15
+grKHA 0A16
+grGA 0A17
+grGHA 0A18
+grNGA 0A19
+grCA 0A1A
+grCHA 0A1B
+grJA 0A1C
+grJHA 0A1D
+grNYA 0A1E
+grTTA 0A1F
+grTTHA 0A20
+grDDA 0A21
+grDDHA 0A22
+grNNA 0A23
+grTA 0A24
+grTHA 0A25
+grDA 0A26
+grDHA 0A27
+grNA 0A28
+grPA 0A2A
+grPHA 0A2B
+grBA 0A2C
+grBHA 0A2D
+grMA 0A2E
+grYA 0A2F
+grRA 0A30
+grLA 0A32
+grVA 0A35
+grSA 0A38
+grHA 0A39
+
+grRRA 0A5C
+
+grKHxA 0A59
+grGxA 0A5A
+grJxA 0A5B
+grPHxA 0A5E
+grLxA 0A33
+grSxA 0A36
+
+grBindi 0A02
+grTippi 0A70
+grVisarga 0A03
+grVirama 0A4D
+grNukta 0A3C
+grAddak 0A71
+grAdakbindi 0A01
+grUdaat 0A51
+grYakash 0A75
+
+grEkonkar 0A74
+
+grZero 0A66
+grOne 0A67
+grTwo 0A68
+grThree 0A69
+grFour 0A6A
+grFive 0A6B
+grSix 0A6C
+grSeven 0A6D
+grEight 0A6E
+grNine 0A6F
+
+# Bangla
+
+bnA 0985
+bnAA 0986
+bnI 0987
+bnII 0988
+bnU 0989
+bnUU 098A
+bnvR 098B
+bnvRR 09E0
+bnvL 098C
+bnvLL 09E1
+bnE 098F
+bnAI 0990
+bnO 0993
+bnAU 0994
+
+bnmAA 09BE
+bnmI 09BF
+bnmII 09C0
+bnmU 09C1
+bnmUU 09C2
+bnmvR 09C3
+bnmvRR 09C4
+bnmvL 09E2
+bnmvLL 09E3
+bnmE 09C7
+bnmAI 09C8
+bnmO 09CB
+bnmAU 09CC
+
+bnAUlengthmark 09D7
+
+bnKA 0995
+bnKHA 0996
+bnGA 0997
+bnGHA 0998
+bnNGA 0999
+bnCA 099A
+bnCHA 099B
+bnJA 099C
+bnJHA 099D
+bnNYA 099E
+bnTTA 099F
+bnTTHA 09A0
+bnDDA 09A1
+bnDDHA 09A2
+bnNNA 09A3
+bnTA 09A4
+bnTHA 09A5
+bnDA 09A6
+bnDHA 09A7
+bnNA 09A8
+bnPA 09AA
+bnPHA 09AB
+bnBA 09AC
+bnBHA 09AD
+bnMA 09AE
+bnYA 09AF
+bnRA 09B0
+bnLA 09B2
+bnSHA 09B6
+bnSSA 09B7
+bnSA 09B8
+bnHA 09B9
+
+bnRAasamiya 09F0
+bnWAasamiya 09F1
+
+bnDDxA 09DC
+bnDDHxA 09DD
+bnYxA 09DF
+
+bnAnusvara 0982
+bnCandrabindu 0981
+bnVisarga 0983
+bnVirama 09CD
+bnNukta 09BC
+bnAvagraha 09BD
+
+bnTAkhanda 09CE
+
+bnZero 09E6
+bnOne 09E7
+bnTwo 09E8
+bnThree 09E9
+bnFour 09EA
+bnFive 09EB
+bnSix 09EC
+bnSeven 09ED
+bnEight 09EE
+bnNine 09EF
+
+bnAnji 0980
+
+bnTaka 09F2
+bnBangladeshitaka 09F3
+
+bnNumeratorone 09F4
+bnNumeratortwo 09F5
+bnNumeratorthree 09F6
+bnNumeratorfour 09F7
+bnNumeratoroneless 09F8
+bnDenominatorsixteen 09F9
+
+bnIsshar 09FA
+
+bnGanda 09FB
+
+# Odia
+
+odA 0B05
+odAA 0B06
+odI 0B07
+odII 0B08
+odU 0B09
+odUU 0B0A
+odvR 0B0B
+odvRR 0B60
+odvL 0B0C
+odvLL 0B61
+odE 0B0F
+odAI 0B10
+odO 0B13
+odAU 0B14
+
+odmAA 0B3E
+odmI 0B3F
+odmII 0B40
+odmU 0B41
+odmUU 0B42
+odmvR 0B43
+odmvRR 0B44
+odmvL 0B62
+odmvLL 0B63
+odmE 0B47
+odmAI 0B48
+odmO 0B4B
+odmAU 0B4C
+
+odAIlengthmark 0B56
+odAUlengthmark 0B57
+
+odKA 0B15
+odKHA 0B16
+odGA 0B17
+odGHA 0B18
+odNGA 0B19
+odCA 0B1A
+odCHA 0B1B
+odJA 0B1C
+odJHA 0B1D
+odNYA 0B1E
+odTTA 0B1F
+odTTHA 0B20
+odDDA 0B21
+odDDHA 0B22
+odNNA 0B23
+odTA 0B24
+odTHA 0B25
+odDA 0B26
+odDHA 0B27
+odNA 0B28
+odPA 0B2A
+odPHA 0B2B
+odBA 0B2C
+odBHA 0B2D
+odMA 0B2E
+odYA 0B2F
+odRA 0B30
+odLA 0B32
+odVA 0B35
+odSHA 0B36
+odSSA 0B37
+odSA 0B38
+odHA 0B39
+
+odYYA 0B5F
+odLLA 0B33
+
+odWA 0B71
+
+odDDxA 0B5C
+odDDHxA 0B5D
+
+odAnusvara 0B02
+odCandrabindu 0B01
+odVisarga 0B03
+odVirama 0B4D
+odNukta 0B3C
+odAvagraha 0B3D
+
+odZero 0B66
+odOne 0B67
+odTwo 0B68
+odThree 0B69
+odFour 0B6A
+odFive 0B6B
+odSix 0B6C
+odSeven 0B6D
+odEight 0B6E
+odNine 0B6F
+
+odIsshar 0B70
+
+odOnequarter 0B72
+odOnehalf 0B73
+odThreequarters 0B74
+odOnesixteenth 0B75
+odOneeighth 0B76
+odThreesixteenths 0B77
+
+# Telugu
+
+tlA 0C05
+tlAA 0C06
+tlI 0C07
+tlII 0C08
+tlU 0C09
+tlUU 0C0A
+tlvR 0C0B
+tlvRR 0C60
+tlvL 0C0C
+tlvLL 0C61
+tlE 0C0E
+tlEE 0C0F
+tlAI 0C10
+tlO 0C12
+tlOO 0C13
+tlAU 0C14
+
+tlmAA 0C3E
+tlmI 0C3F
+tlmII 0C40
+tlmU 0C41
+tlmUU 0C42
+tlmvR 0C43
+tlmvRR 0C44
+tlmvL 0C62
+tlmvLL 0C63
+tlmE 0C46
+tlmEE 0C47
+tlmAI 0C48
+tlmO 0C4A
+tlmOO 0C4B
+tlmAU 0C4C
+
+tlLengthmark 0C55
+tlAIlengthmark 0C56
+
+tlKA 0C15
+tlKHA 0C16
+tlGA 0C17
+tlGHA 0C18
+tlNGA 0C19
+tlCA 0C1A
+tlCHA 0C1B
+tlJA 0C1C
+tlJHA 0C1D
+tlNYA 0C1E
+tlTTA 0C1F
+tlTTHA 0C20
+tlDDA 0C21
+tlDDHA 0C22
+tlNNA 0C23
+tlTA 0C24
+tlTHA 0C25
+tlDA 0C26
+tlDHA 0C27
+tlNA 0C28
+tlPA 0C2A
+tlPHA 0C2B
+tlBA 0C2C
+tlBHA 0C2D
+tlMA 0C2E
+tlYA 0C2F
+tlRA 0C30
+tlLA 0C32
+tlVA 0C35
+tlSHA 0C36
+tlSSA 0C37
+tlSA 0C38
+tlHA 0C39
+
+tlRRA 0C31
+tlRRRA 0C5A
+tlLLA 0C33
+tlLLLA 0C34
+
+tlTSA 0C58
+tlDZA 0C59
+
+tlAnusvara 0C02
+tlArasunna 0C01
+tlCandrabindu 0C00
+tlVisarga 0C03
+tlVirama 0C4D
+tlAvagraha 0C3D
+
+tlZero 0C66
+tlOne 0C67
+tlTwo 0C68
+tlThree 0C69
+tlFour 0C6A
+tlFive 0C6B
+tlSix 0C6C
+tlSeven 0C6D
+tlEight 0C6E
+tlNine 0C6F
+
+tlZeroforodd 0C78
+tlOneforodd 0C79
+tlTwoforodd 0C7A
+tlThreeforodd 0C7B
+tlOneforeven 0C7C
+tlTwoforeven 0C7D
+tlThreeforeven 0C7E
+
+tlTuumu 0C7F
+
+# Kannada
+
+knA 0C85
+knAA 0C86
+knI 0C87
+knII 0C88
+knU 0C89
+knUU 0C8A
+knvR 0C8B
+knvRR 0CE0
+knvL 0C8C
+knvLL 0CE1
+knE 0C8E
+knEE 0C8F
+knAI 0C90
+knO 0C92
+knOO 0C93
+knAU 0C94
+
+knmAA 0CBE
+knmI 0CBF
+knmII 0CC0
+knmU 0CC1
+knmUU 0CC2
+knmvR 0CC3
+knmvRR 0CC4
+knmvL 0CE2
+knmvLL 0CE3
+knmE 0CC6
+knmEE 0CC7
+knmAI 0CC8
+knmO 0CCA
+knmOO 0CCB
+knmAU 0CCC
+
+knLengthmark 0CD5
+knAIlengthmark 0CD6
+
+knKA 0C95
+knKHA 0C96
+knGA 0C97
+knGHA 0C98
+knNGA 0C99
+knCA 0C9A
+knCHA 0C9B
+knJA 0C9C
+knJHA 0C9D
+knNYA 0C9E
+knTTA 0C9F
+knTTHA 0CA0
+knDDA 0CA1
+knDDHA 0CA2
+knNNA 0CA3
+knTA 0CA4
+knTHA 0CA5
+knDA 0CA6
+knDHA 0CA7
+knNA 0CA8
+knPA 0CAA
+knPHA 0CAB
+knBA 0CAC
+knBHA 0CAD
+knMA 0CAE
+knYA 0CAF
+knRA 0CB0
+knLA 0CB2
+knVA 0CB5
+knSHA 0CB6
+knSSA 0CB7
+knSA 0CB8
+knHA 0CB9
+
+knRRA 0CB1
+knLLA 0CB3
+knLLLA 0CDE
+
+knAnusvara 0C82
+knCandrabindu 0C81
+knVisarga 0C83
+knVirama 0CCD
+knNukta 0CBC
+knAvagraha 0CBD
+
+knJihvamuliya 0CF1
+knUpadhmaniya 0CF2
+
+knZero 0CE6
+knOne 0CE7
+knTwo 0CE8
+knThree 0CE9
+knFour 0CEA
+knFive 0CEB
+knSix 0CEC
+knSeven 0CED
+knEight 0CEE
+knNine 0CEF
+
+# Malayalam
+
+mlA 0D05
+mlAA 0D06
+mlI 0D07
+mlII 0D08
+mlU 0D09
+mlUU 0D0A
+mlvR 0D0B
+mlvRR 0D60
+mlvL 0D0C
+mlvLL 0D61
+mlE 0D0E
+mlEE 0D0F
+mlAI 0D10
+mlO 0D12
+mlOO 0D13
+mlAU 0D14
+
+mlmAA 0D3E
+mlmI 0D3F
+mlmII 0D40
+mlmU 0D41
+mlmUU 0D42
+mlmvR 0D43
+mlmvRR 0D44
+mlmvL 0D62
+mlmvLL 0D63
+mlmE 0D46
+mlmEE 0D47
+mlmAI 0D48
+mlmO 0D4A
+mlmOO 0D4B
+mlmAU 0D4C
+
+mlAUlengthmark 0D57
+
+mlKA 0D15
+mlKHA 0D16
+mlGA 0D17
+mlGHA 0D18
+mlNGA 0D19
+mlCA 0D1A
+mlCHA 0D1B
+mlJA 0D1C
+mlJHA 0D1D
+mlNYA 0D1E
+mlTTA 0D1F
+mlTTHA 0D20
+mlDDA 0D21
+mlDDHA 0D22
+mlNNA 0D23
+mlTA 0D24
+mlTHA 0D25
+mlDA 0D26
+mlDHA 0D27
+mlNA 0D28
+mlPA 0D2A
+mlPHA 0D2B
+mlBA 0D2C
+mlBHA 0D2D
+mlMA 0D2E
+mlYA 0D2F
+mlRA 0D30
+mlLA 0D32
+mlVA 0D35
+mlSHA 0D36
+mlSSA 0D37
+mlSA 0D38
+mlHA 0D39
+
+mlNNNA 0D29
+mlTTTA 0D3A
+mlRRA 0D31
+mlLLA 0D33
+mlLLLA 0D34
+
+mlKchillu 0D7F
+mlNNchillu 0D7A
+mlNchillu 0D7B
+mlRRchillu 0D7C
+mlLchillu 0D7D
+mlLLchillu 0D7E
+
+mlAnusvara 0D02
+mlCandrabindu 0D01
+mlVisarga 0D03
+mlVirama 0D4D
+mlAvagraha 0D3D
+
+mlDotreph 0D4E
+
+mlZero 0D66
+mlOne 0D67
+mlTwo 0D68
+mlThree 0D69
+mlFour 0D6A
+mlFive 0D6B
+mlSix 0D6C
+mlSeven 0D6D
+mlEight 0D6E
+mlNine 0D6F
+
+mlTen 0D70
+mlOnehundred 0D71
+mlOnethousand 0D72
+
+mlOnequarter 0D73
+mlOnehalf 0D74
+mlThreequarters 0D75
+
+mlDatemark 0D79
+
+mlIIarchaic 0D5F
+
+# Tamil
+
+tmA 0B85
+tmAA 0B86
+tmI 0B87
+tmII 0B88
+tmU 0B89
+tmUU 0B8A
+tmE 0B8E
+tmEE 0B8F
+tmAI 0B90
+tmO 0B92
+tmOO 0B93
+tmAU 0B94
+
+tmmAA 0BBE
+tmmI 0BBF
+tmmII 0BC0
+tmmU 0BC1
+tmmUU 0BC2
+tmmE 0BC6
+tmmEE 0BC7
+tmmAI 0BC8
+tmmO 0BCA
+tmmOO 0BCB
+tmmAU 0BCC
+
+tmAUlengthmark 0BD7
+
+tmKA 0B95
+tmNGA 0B99
+tmCA 0B9A
+tmNYA 0B9E
+tmTTA 0B9F
+tmNNA 0BA3
+tmTA 0BA4
+tmNA 0BA8
+tmPA 0BAA
+tmMA 0BAE
+tmYA 0BAF
+tmRA 0BB0
+tmLA 0BB2
+tmVA 0BB5
+tmLLLA 0BB4
+tmLLA 0BB3
+tmRRA 0BB1
+tmNNNA 0BA9
+tmJA 0B9C
+tmSHA 0BB6
+tmSSA 0BB7
+tmSA 0BB8
+tmHA 0BB9
+
+tmAnusvara 0B82
+tmVisarga 0B83
+tmVirama 0BCD
+
+tmOm 0BD0
+
+tmZero 0BE6
+tmOne 0BE7
+tmTwo 0BE8
+tmThree 0BE9
+tmFour 0BEA
+tmFive 0BEB
+tmSix 0BEC
+tmSeven 0BED
+tmEight 0BEE
+tmNine 0BEF
+
+tmTen 0BF0
+tmOnehundred 0BF1
+tmOnethousand 0BF2
+
+tmDay 0BF3
+tmMonth 0BF4
+tmYear 0BF5
+
+tmDebit 0BF6
+tmCredit 0BF7
+tmAsabove 0BF8
+
+tmRupee 0BF9
+
+tmNumber 0BFA
+
+# Sinhala
+
+snA 0D85
+snAA 0D86
+snAE 0D87
+snAAE 0D88
+snI 0D89
+snII 0D8A
+snU 0D8B
+snUU 0D8C
+snvR 0D8D
+snvRR 0D8E
+snvL 0D8F
+snvLL 0D90
+snE 0D91
+snEE 0D92
+snAI 0D93
+snO 0D94
+snOO 0D95
+snAU 0D96
+
+snmAA 0DCF
+snmAE 0DD0
+snmAAE 0DD1
+snmI 0DD2
+snmII 0DD3
+snmU 0DD4
+snmUU 0DD6
+snmvR 0DD8
+snmvRR 0DF2
+snmvL 0DDF
+snmvLL 0DF3
+snmE 0DD9
+snmEE 0DDA
+snmAI 0DDB
+snmO 0DDC
+snmOO 0DDD
+snmAU 0DDE
+
+snKA 0D9A
+snKHA 0D9B
+snGA 0D9C
+snGHA 0D9D
+snNGA 0D9E
+snCA 0DA0
+snCHA 0DA1
+snJA 0DA2
+snJHA 0DA3
+snNYA 0DA4
+snTTA 0DA7
+snTTHA 0DA8
+snDDA 0DA9
+snDDHA 0DAA
+snNNA 0DAB
+snTA 0DAD
+snTHA 0DAE
+snDA 0DAF
+snDHA 0DB0
+snNA 0DB1
+snPA 0DB4
+snPHA 0DB5
+snBA 0DB6
+snBHA 0DB7
+snMA 0DB8
+snYA 0DBA
+snRA 0DBB
+snLA 0DBD
+snVA 0DC0
+snSHA 0DC1
+snSSA 0DC2
+snSA 0DC3
+snHA 0DC4
+
+snLLA 0DC5
+snFA 0DC6
+
+snNNGA 0D9F
+snNYJA 0DA6
+snNNDDA 0DAC
+snNDA 0DB3
+snMBA 0DB9
+
+snJNYA 0DA5
+
+snAnusvara 0D82
+snVisarga 0D83
+snVirama 0DCA
+
+snLithzero 0DE6
+snLithone 0DE7
+snLithtwo 0DE8
+snLiththree 0DE9
+snLithfour 0DEA
+snLithfive 0DEB
+snLithsix 0DEC
+snLithseven 0DED
+snLitheight 0DEE
+snLithnine 0DEF
+
+snKunddaliya 0DF4
+
+# Ol Chiki
+
+olLa 1C5A
+olAt 1C5B
+olAg 1C5C
+olAng 1C5D
+olAl 1C5E
+olLaa 1C5F
+olAak 1C60
+olAaj 1C61
+olAam 1C62
+olAaw 1C63
+olLi 1C64
+olIs 1C65
+olIh 1C66
+olIny 1C67
+olIr 1C68
+olLu 1C69
+olUc 1C6A
+olUd 1C6B
+olUnn 1C6C
+olUy 1C6D
+olLe 1C6E
+olEp 1C6F
+olEdd 1C70
+olEn 1C71
+olErr 1C72
+olLo 1C73
+olOtt 1C74
+olOb 1C75
+olOv 1C76
+olOh 1C77
+
+olMu 1C78
+olGaahlaa 1C79
+olMu_Gaahlaa 1C7A
+olRelaa 1C7B
+olPhaarkaa 1C7C
+olAhad 1C7D
+
+olZero 1C50
+olOne 1C51
+olTwo 1C52
+olThree 1C53
+olFour 1C54
+olFive 1C55
+olSix 1C56
+olSeven 1C57
+olEight 1C58
+olNine 1C59
+
+olMucaad 1C7E
+olDoublemucaad 1C7F
