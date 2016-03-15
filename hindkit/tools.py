@@ -540,12 +540,19 @@ class Builder(object):
 
     def _generate_goadb(self, output):
         reference_font = self.styles_to_be_built[0].open_font(is_temp=True)
-        with open(output, 'w') as f:
-            f.writelines([
-                ' '.join(filter(None, row)) + '\n'
-                for row in self.family.get_goadb()
-                if row[1] in reference_font
-            ])
+        not_covered_glyphs = [glyph.name for glyph in reference_font]
+        if not_covered_glyphs:
+            raise SystemExit(
+                'Some glyphs are not covered by the GOADB: ' +
+                ' '.join(not_covered_glyphs)
+            )
+        else:
+            with open(output, 'w') as f:
+                f.writelines([
+                    ' '.join(filter(None, row)) + '\n'
+                    for row in self.family.get_goadb()
+                    if row[1] in reference_font
+                ])
 
     def _prepare_for_compiling_ttf(self):
 

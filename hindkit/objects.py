@@ -233,7 +233,6 @@ class _BaseStyle(object):
     def update_glyph_order(self, order=None):
         if order is None:
             order = [i[1] for i in self._family.get_goadb()]
-        print(order)
         target = self.open_font(is_temp=True)
         target.lib['public.glyphOrder'] = order
         if 'com.schriftgestaltung.glyphOrder' in target.lib:
