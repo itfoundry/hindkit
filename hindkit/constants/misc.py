@@ -118,42 +118,67 @@ def memoize(f):
         return memo[f]
     return decorator
 
+_unwrap_path = hindkit._unwrap_path_relative_to_package_dir
+
 @memoize
-def get_unicode_scalar_to_unicode_name_map():
+def get_u_scalar_to_u_name_map():
     scalar_to_name_map = {}
-    with open(hindkit._unwrap_path_relative_to_package_dir('data/UnicodeData.txt')) as f:
+    with open(_unwrap_path('data/UnicodeData.txt')) as f:
         for line in f:
             scalar, name, rest = line.split(';', 2)
-            scalar_to_name_map[scalar] = name
+            if not name.startswith('<'):
+                scalar_to_name_map[scalar] = name
     return scalar_to_name_map
+
+def _get_glyph_list(file_name):
+    glyph_list = collections.OrderedDict()
+    with open(_unwrap_path('data/' + file_name)) as f:
+        for line in f:
+            line_without_comment = line.partition('#')[0].strip()
+            if line_without_comment:
+                u_scalar, glyph_name, u_name = line_without_comment.split(';')
+                glyph_list[glyph_name] = u_name
+    return glyph_list
 
 @memoize
 def get_aglfn():
-    aglfn = collections.OrderedDict()
-    with open(hindkit._unwrap_path_relative_to_package_dir('data/aglfn.txt')) as f:
-        for line in f:
-            if not line.startswith('#'):
-                unicode_scalar, glyph_name, unicode_name = line.strip().split(';')
-                aglfn[glyph_name] = unicode_scalar
+    aglfn = _get_glyph_list('aglfn.txt')
     return aglfn
 
 @memoize
-def get_al5():
-    al5 = collections.OrderedDict()
-    with open(hindkit._unwrap_path_relative_to_package_dir('data/adobe-latin-5-precomposed.txt')) as f:
-        f.next()
-        for line in f:
-            unicode_scalar, character, production_name, unicode_name = line.strip().split('\t')[:4]
-            al5[unicode_name] = unicode_scalar
-    return al5
+def get_itfgl():
+    itfgl = _get_glyph_list('itfgl.txt')
+    return itfgl
 
 @memoize
-def get_names():
-    names = collections.OrderedDict()
-    with open(hindkit._unwrap_path_relative_to_package_dir('data/names.txt')) as f:
+def get_itfgl_patch():
+    itfgl_patch = _get_glyph_list('itfgl_patch.txt')
+    return itfgl_patch
+
+def _get_adobe_latin(number, get_combined=False):
+    adobe_latin = collections.OrderedDict()
+    suffix = str(number)
+    if number > 3:
+        suffix = suffix + ('-combined' if get_combined else '-precomposed')
+    with open(_unwrap_path('data/adobe-latin-{}.txt'.format(suffix))) as f:
+        f.next()
         for line in f:
-            line = line.partition('#')[0].strip()
-            if line:
-                k, v = line.split()
-                names[k] = v
-    return names
+            parts = line.strip().split('\t')[:4]
+            u_scalar, u_character, production_name, u_name = parts
+            adobe_latin[production_name] = u_name
+    return adobe_latin
+
+@memoize
+def get_al3():
+    al3 = _get_adobe_latin(3)
+    return al3
+
+@memoize
+def get_al4():
+    al4 = _get_adobe_latin(4)
+    return al4
+
+@memoize
+def get_al5():
+    al5 = _get_adobe_latin(5)
+    return al5
