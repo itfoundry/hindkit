@@ -5,6 +5,8 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import os, collections
 import hindkit
 
+_unwrap_path = hindkit._unwrap_path_relative_to_package_dir
+
 GLYPH_NAME_INCOSISTENCIES_IN_TTF = {
     'CR': 'uni000D',
 }
@@ -110,27 +112,18 @@ SCRIPTS = {
     },
 }
 
-def memoize(f):
-    memo = {}
-    def decorator():
-        if f not in memo:
-            memo[f] = f()
-        return memo[f]
-    return decorator
-
-_unwrap_path = hindkit._unwrap_path_relative_to_package_dir
-
-@memoize
-def get_u_scalar_to_u_name_map():
-    scalar_to_name_map = {}
+@hindkit.memoize
+def get_u_scalar_to_u_name():
+    u_scalar_to_u_name = {}
     with open(_unwrap_path('data/UnicodeData.txt')) as f:
         for line in f:
-            scalar, name, rest = line.split(';', 2)
-            if not name.startswith('<'):
-                scalar_to_name_map[scalar] = name
-    return scalar_to_name_map
+            u_scalar, u_name, rest = line.split(';', 2)
+            if not u_name.startswith('<'):
+                u_scalar_to_u_name[u_scalar] = u_name
+    return u_scalar_to_u_name
 
-def _get_glyph_list(file_name):
+@hindkit.memoize
+def get_glyph_list(file_name):
     glyph_list = collections.OrderedDict()
     with open(_unwrap_path('data/' + file_name)) as f:
         for line in f:
@@ -140,22 +133,8 @@ def _get_glyph_list(file_name):
                 glyph_list[glyph_name] = u_name
     return glyph_list
 
-@memoize
-def get_aglfn():
-    aglfn = _get_glyph_list('aglfn.txt')
-    return aglfn
-
-@memoize
-def get_itfgl():
-    itfgl = _get_glyph_list('itfgl.txt')
-    return itfgl
-
-@memoize
-def get_itfgl_patch():
-    itfgl_patch = _get_glyph_list('itfgl_patch.txt')
-    return itfgl_patch
-
-def _get_adobe_latin(number, get_combined=False):
+@hindkit.memoize
+def get_adobe_latin(number, get_combined=False):
     adobe_latin = collections.OrderedDict()
     suffix = str(number)
     if number > 3:
@@ -167,18 +146,3 @@ def _get_adobe_latin(number, get_combined=False):
             u_scalar, u_character, production_name, u_name = parts
             adobe_latin[production_name] = u_name
     return adobe_latin
-
-@memoize
-def get_al3():
-    al3 = _get_adobe_latin(3)
-    return al3
-
-@memoize
-def get_al4():
-    al4 = _get_adobe_latin(4)
-    return al4
-
-@memoize
-def get_al5():
-    al5 = _get_adobe_latin(5)
-    return al5
