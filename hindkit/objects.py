@@ -67,98 +67,6 @@ class Family(object):
     def output_name_postscript(self):
         return self.output_name.replace(' ', '')
 
-    @hindkit.memoize
-    def get_goadb(self):
-
-        goadb = []
-
-        if os.path.exists('glyphorder.txt'):
-
-            glyphorder = []
-            with open('glyphorder.txt') as f:
-                for line in f:
-                    line_without_comment = line.partition('#')[0].strip()
-                    for development_name in line_without_comment.split():
-                        glyphorder.append(development_name)
-
-            U_SCALAR_TO_U_NAME = hindkit.constants.misc.get_u_scalar_to_u_name()
-
-            AGLFN = hindkit.constants.misc.get_glyph_list('aglfn.txt')
-            ITFGL = hindkit.constants.misc.get_glyph_list('itfgl.txt')
-            ITFGL_PATCH = hindkit.constants.misc.get_glyph_list('itfgl_patch.txt')
-
-            AL5 = hindkit.constants.misc.get_adobe_latin(5)
-
-            D_NAME_TO_U_NAME = {}
-            D_NAME_TO_U_NAME.update(AGLFN)
-            D_NAME_TO_U_NAME.update(AL5)
-            D_NAME_TO_U_NAME.update(ITFGL)
-            D_NAME_TO_U_NAME.update(ITFGL_PATCH)
-
-            U_NAME_TO_U_SCALAR = {v: k for k, v in U_SCALAR_TO_U_NAME.items()}
-            AGLFN_REVERSED = {v: k for k, v in AGLFN.items()}
-
-            PREFIXS = tuple(
-                v['abbreviation']
-                for v in hindkit.constants.misc.SCRIPTS.values()
-            )
-
-            PRESERVED_NAMES = 'NULL CR'.split()
-
-            SPECIAL_D_NAME_TO_U_SCALAR = {
-                'NULL': '0000',
-                'CR': '000D',
-            }
-
-            with open(hindkit.constants.paths.GOADB, 'w') as f:
-
-                for development_name in glyphorder:
-
-                    u_scalar = None
-                    u_mapping = None
-                    production_name = None
-
-                    u_name = D_NAME_TO_U_NAME.get(development_name)
-                    if u_name:
-                        u_scalar = U_NAME_TO_U_SCALAR[u_name]
-                    else:
-                        u_scalar = SPECIAL_D_NAME_TO_U_SCALAR.get(development_name)
-
-                    if u_scalar:
-                        form = 'uni{}' if (len(u_scalar) <= 4) else 'u{}'
-                        u_mapping = form.format(u_scalar)
-
-                    if u_name in AGLFN.values():
-                        production_name = AGLFN_REVERSED[u_name]
-                    elif (
-                        development_name in PRESERVED_NAMES or
-                        development_name.partition('.')[0].split('_')[0] in ITFGL
-                    ):
-                        production_name = development_name
-                    elif u_mapping:
-                        production_name = u_mapping
-                    else:
-                        production_name = development_name
-
-                    row = production_name, development_name, u_mapping
-                    f.write(' '.join(filter(None, row)) + '\n')
-                    goadb.append(row)
-
-        elif os.path.exists(hindkit.constants.paths.GOADB):
-            with open(hindkit.constants.paths.GOADB) as f:
-                for line in f:
-                    line_without_comment = line.partition('#')[0].strip()
-                    if line_without_comment:
-                        row = line_without_comment.split()
-                        if len(row) == 2:
-                            row.append(None)
-                        production_name, development_name, u_mapping = row
-                        goadb.append(
-                            (production_name, development_name, u_mapping)
-                        )
-
-        return goadb
-
     def set_masters(self, masters=None):
         if masters:
             self.masters = masters
@@ -242,18 +150,6 @@ class _BaseStyle(object):
             return defcon.Font(path)
         else:
             raise SystemExit("`{}` is missing.".format(path))
-
-    def update_glyph_order(self, order=None):
-        if order is None:
-            order = [i[1] for i in self._family.get_goadb()]
-        target = self.open_font(is_temp=True)
-        target.lib['public.glyphOrder'] = order
-        if 'com.schriftgestaltung.glyphOrder' in target.lib:
-            del target.lib['com.schriftgestaltung.glyphOrder']
-        self.postprocess_counter += 1
-        self._file_name = 'TEMP{}-{}.ufo'.format(self.postprocess_counter, self.name)
-        hindkit.tools.remove_files(hindkit.tools.temp(self.path))
-        target.save(hindkit.tools.temp(self.path))
 
 class Master(_BaseStyle):
 

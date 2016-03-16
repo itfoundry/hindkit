@@ -84,9 +84,11 @@ class Builder(object):
 
         self.options.update(options)
 
+        self.goadb = None
+
         self.masters = Resource(
             self,
-            constants.paths.MASTERS,
+            [i.path for i in self.family.masters],
             None,
         )
         self.designspace = Resource(
@@ -147,10 +149,10 @@ class Builder(object):
             constants.paths.FMNDB,
             self._generate_fmndb,
         )
-        self.goadb = Resource(
+        self.trimmed_goadb = Resource(
             self,
             constants.paths.GOADB + '_TRIMMED',
-            self._generate_goadb,
+            self._generate_trimmed_goadb,
         )
 
     def _prepare(self, resource, *args, **kwargs):
@@ -169,14 +171,14 @@ class Builder(object):
             paths = [resource.output] + resource.extensions
             if os.path.exists(resource.output):
                 for p in paths:
-                    subprocess.call(['cp', '-fR', p, temp(p)])
+                    copy(p, temp(p))
             elif resource.generator:
                 resource.generator(temp(resource.output), *args, **kwargs)
                 for p in paths:
-                    subprocess.call(['cp', '-fR', p, temp(p)])
+                    copy(p, temp(p))
             elif os.path.exists(_premade(resource.output)):
                 for p in paths:
-                    subprocess.call(['cp', '-fR', _premade(p), temp(p)])
+                    copy(_premade(p, temp(p))
             else:
                 raise SystemExit("Can't prepare {}.".format(resource))
         else:
@@ -200,6 +202,118 @@ class Builder(object):
             raise SystemExit(
                 '\n'.join('{}: {}'.format(k, v) for k, v in results.items())
             )
+
+
+    @hindkit.memoize
+    def get_goadb(self):
+
+        goadb = []
+
+        if os.path.exists('glyphorder.txt'):
+
+            glyphorder = []
+            with open('glyphorder.txt') as f:
+                for line in f:
+                    line_without_comment = line.partition('#')[0].strip()
+                    for development_name in line_without_comment.split():
+                        glyphorder.append(development_name)
+
+            U_SCALAR_TO_U_NAME = hindkit.constants.misc.get_u_scalar_to_u_name()
+
+            AGLFN = hindkit.constants.misc.get_glyph_list('aglfn.txt')
+            ITFGL = hindkit.constants.misc.get_glyph_list('itfgl.txt')
+            ITFGL_PATCH = hindkit.constants.misc.get_glyph_list('itfgl_patch.txt')
+
+            AL5 = hindkit.constants.misc.get_adobe_latin(5)
+
+            D_NAME_TO_U_NAME = {}
+            D_NAME_TO_U_NAME.update(AGLFN)
+            D_NAME_TO_U_NAME.update(AL5)
+            D_NAME_TO_U_NAME.update(ITFGL)
+            D_NAME_TO_U_NAME.update(ITFGL_PATCH)
+
+            U_NAME_TO_U_SCALAR = {v: k for k, v in U_SCALAR_TO_U_NAME.items()}
+            AGLFN_REVERSED = {v: k for k, v in AGLFN.items()}
+
+            PREFIXS = tuple(
+                v['abbreviation']
+                for v in hindkit.constants.misc.SCRIPTS.values()
+            )
+
+            PRESERVED_NAMES = 'NULL CR'.split()
+
+            SPECIAL_D_NAME_TO_U_SCALAR = {
+                'NULL': '0000',
+                'CR': '000D',
+            }
+
+            u_mapping_pattern = re.compile(r'uni([0-9A-F]{4})|u([0-9A-F]{5,6})$')
+
+            with open(hindkit.constants.paths.GOADB, 'w') as f:
+
+                for development_name in glyphorder:
+
+                    u_scalar = None
+                    u_mapping = None
+                    production_name = None
+
+                    match = u_mapping_pattern.match(development_name)
+                    if match:
+                        u_scalar = filter(None, match.groups())[0]
+                        u_name = U_SCALAR_TO_U_NAME[u_scalar]
+                    else:
+                        u_name = D_NAME_TO_U_NAME.get(development_name)
+                        if u_name:
+                            u_scalar = U_NAME_TO_U_SCALAR[u_name]
+                        else:
+                            u_scalar = SPECIAL_D_NAME_TO_U_SCALAR.get(development_name)
+
+                    if u_scalar:
+                        form = 'uni{}' if (len(u_scalar) <= 4) else 'u{}'
+                        u_mapping = form.format(u_scalar)
+
+                    if u_name in AGLFN.values():
+                        production_name = AGLFN_REVERSED[u_name]
+                    elif (
+                        development_name in PRESERVED_NAMES or
+                        development_name.partition('.')[0].split('_')[0] in ITFGL
+                    ):
+                        production_name = development_name
+                    elif u_mapping:
+                        production_name = u_mapping
+                    else:
+                        production_name = development_name
+
+                    row = production_name, development_name, u_mapping
+                    f.write(' '.join(filter(None, row)) + '\n')
+                    goadb.append(row)
+
+        elif os.path.exists(hindkit.constants.paths.GOADB):
+            with open(hindkit.constants.paths.GOADB) as f:
+                for line in f:
+                    line_without_comment = line.partition('#')[0].strip()
+                    if line_without_comment:
+                        row = line_without_comment.split()
+                        if len(row) == 2:
+                            row.append(None)
+                        production_name, development_name, u_mapping = row
+                        goadb.append(
+                            (production_name, development_name, u_mapping)
+                        )
+
+        return goadb
+
+    def update_glyph_order(self, style, order=None):
+        if order is None:
+            order = [i[1] for i in self.goadb]
+        target = style.open_font(is_temp=True)
+        target.lib['public.glyphOrder'] = order
+        if 'com.schriftgestaltung.glyphOrder' in target.lib:
+            del target.lib['com.schriftgestaltung.glyphOrder']
+        style.postprocess_counter += 1
+        style._file_name = 'TEMP{}-{}.ufo'.format(style.postprocess_counter, style.name)
+        hindkit.tools.remove_files(hindkit.tools.temp(style.path))
+        target.save(hindkit.tools.temp(style.path))
 
     # def _prepare_masters(self, output):
     #     pass
@@ -273,7 +387,7 @@ class Builder(object):
 
         else:
             for index, (master, style) in enumerate(zip(self.family.masters, self.styles_to_be_built)):
-                subprocess.call(['cp', '-fR', temp(master.path), temp(style.path)])
+                copy(temp(master.path), temp(style.path))
                 font = style.open_font(is_temp=True)
                 font.info.postscriptFontName = style.output_full_name_postscript
                 font.save()
@@ -314,7 +428,7 @@ class Builder(object):
             glyph_order = [
                 development_name for
                 production_name, development_name, unicode_mapping in
-                self.family.get_goadb()
+                self.goadb
             ]
             for class_name, filter_function in glyph_classes:
                 glyph_names = [
@@ -538,9 +652,16 @@ class Builder(object):
             f.write(constants.templates.FMNDB_HEAD)
             f.writelines(i + '\n' for i in lines)
 
-    def _generate_goadb(self, output):
+    def _generate_goadb(self):
+        pass
+
+    def _generate_trimmed_goadb(self, output):
         reference_font = self.styles_to_be_built[0].open_font(is_temp=True)
-        not_covered_glyphs = [glyph.name for glyph in reference_font]
+        not_covered_glyphs = [
+            glyph.name
+            for glyph in reference_font
+            if glyph.name not in (row[1] for row in self.goadb)
+        ]
         if not_covered_glyphs:
             raise SystemExit(
                 'Some glyphs are not covered by the GOADB: ' +
@@ -550,13 +671,13 @@ class Builder(object):
             with open(output, 'w') as f:
                 f.writelines([
                     ' '.join(filter(None, row)) + '\n'
-                    for row in self.family.get_goadb()
+                    for row in self.goadb
                     if row[1] in reference_font
                 ])
 
     def _prepare_for_compiling_ttf(self):
 
-        with open(temp(self.goadb.output)) as f:
+        with open(temp(self.trimmed_goadb.output)) as f:
             original_lines = f.readlines()
 
         modified_lines = []
@@ -569,8 +690,8 @@ class Builder(object):
             else:
                 modified_lines.append(line)
 
-        self.goadb.output = self.goadb.output + '_TTF'
-        with open(temp(self.goadb.output), 'w') as f:
+        self.trimmed_goadb.output = self.trimmed_goadb.output + '_TTF'
+        with open(temp(self.trimmed_goadb.output), 'w') as f:
             f.writelines(modified_lines)
 
         for style in self.styles_to_be_built:
@@ -579,7 +700,7 @@ class Builder(object):
 
     def _compile(self, style):
 
-        self._check_inputs([temp(style.path), temp(self.fmndb.output), temp(self.goadb.output)])
+        self._check_inputs([temp(style.path), temp(self.fmndb.output), temp(self.trimmed_goadb.output)])
 
         # if style.file_name.endswith('.ufo'):
         #     font = style.open_font(is_temp=True)
@@ -593,7 +714,7 @@ class Builder(object):
             '-f', temp(style.path),
             '-o', font_path,
             '-mf', temp(self.fmndb.output),
-            '-gf', temp(self.goadb.output),
+            '-gf', temp(self.trimmed_goadb.output),
             '-rev', self.fontrevision,
             '-ga',
             '-omitMacNames',
@@ -629,7 +750,7 @@ class Builder(object):
 
         destination = constants.paths.ADOBE_FONTS
         if os.path.exists(font_path) and os.path.isdir(destination):
-            subprocess.call(['cp', '-f', font_path, destination])
+            copy(font_path, destination)
 
     def _finalize_options(self):
 
@@ -674,11 +795,14 @@ class Builder(object):
         make_dir(constants.paths.TEMP)
         if self.options['run_stage_prepare_styles']:
             reset_dir(temp(constants.paths.MASTERS))
+
             self._prepare(self.masters)
             for master in self.family.masters:
                 if self.options['prepare_master']:
                     self.prepare_master(master)
-                master.update_glyph_order()
+                self._generate_goadb() # GOADB
+                self.update_glyph_order(master)
+
             reset_dir(temp(constants.paths.STYLES))
             self._prepare(self.styles)
         if self.options['run_stage_prepare_features']:
@@ -693,7 +817,7 @@ class Builder(object):
                 self._generate_features_references(style)
         if self.options['run_stage_compile']:
             self._prepare(self.fmndb)
-            self._prepare(self.goadb)
+            self._prepare(self.trimmed_goadb)
             for style in self.styles_to_be_built:
                 self._compile(style)
             if self.options['build_ttf']:
@@ -741,6 +865,12 @@ def make_dir(path):
 def reset_dir(path):
     remove_files(path)
     make_dir(path)
+
+def copy(src, dst):
+    if os.path.isdir(src):
+        shutil.copytree(src, dst)
+    else:
+        shutil.copy(src, src)
 
 # ---
 
