@@ -8,23 +8,6 @@ import mutatorMath.ufo.document, WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit, hindkit.devanagari, hindkit.patches
 import hindkit.constants as constants
 
-class Resource(object):
-
-    def __init__(
-        self,
-        builder,
-        output,
-        generator,
-        extensions = None,
-    ):
-        self.builder = builder
-        self.output = output
-        self.generator = generator
-
-        self.extensions = []
-        if extensions:
-            self.extensions.extend(extensions)
-
 class Builder(object):
 
     def __init__(
@@ -84,78 +67,12 @@ class Builder(object):
 
         self.options.update(options)
 
-        self.goadb = None
+        self.goadb = hindkit.GOADB()
 
-        self.masters = Resource(
-            self,
-            [i.path for i in self.family.masters],
-            None,
-        )
-        self.designspace = Resource(
-            self,
-            constants.paths.DESIGNSPACE,
-            self._generate_designspace,
-        )
-        self.styles = Resource(
-            self,
-            constants.paths.STYLES,
-            self._prepare_styles,
-        )
-        self.features_classes = Resource(
-            self,
-            os.path.join(constants.paths.FEATURES, 'classes.fea'), #!
-            self._generate_features_classes,
-            extensions = [
-                os.path.join(constants.paths.FEATURES, 'classes_{}.fea'.format(i))
-                for i in ['suffixing']
-            ],
-        )
-        self.features_tables = Resource(
-            self,
-            os.path.join(constants.paths.FEATURES, 'tables.fea'),
-            self._generate_features_tables,
-        )
-        self.features_languagesystems = Resource(
-            self,
-            os.path.join(constants.paths.FEATURES, 'languagesystems.fea'),
-            self._generate_features_languagesystems,
-        )
-        self.features_GSUB = Resource(
-            self,
-            os.path.join(constants.paths.FEATURES, 'GSUB.fea'), #!
-            None,
-            extensions = [
-                os.path.join(constants.paths.FEATURES, 'GSUB_{}.fea'.format(i))
-                for i in ['lookups', 'prefixing']
-            ],
-        )
-        self.features_GPOS = Resource(
-            self,
-            os.path.join(constants.paths.FEATURES, 'GPOS.fea'),
-            self._generate_features_GPOS,
-        )
-        # self.features_weight_class = Resource(
-        #     self,
-        #     None,
-        #     self._generate_features_weight_class,
-        # )
-        # self.features_references = Resource(
-        #     self,
-        #     None,
-        #     self._generate_features_references,
-        # )
-        self.fmndb = Resource(
-            self,
-            constants.paths.FMNDB,
-            self._generate_fmndb,
-        )
-        self.trimmed_goadb = Resource(
-            self,
-            constants.paths.GOADB + '_TRIMMED',
-            self._generate_trimmed_goadb,
-        )
+    def _prepare(self, output, generator, extensions=None, *args, **kwargs):
 
-    def _prepare(self, resource, *args, **kwargs):
+        if not extensions:
+            extensions = []
 
         def _premade(abstract_path):
             if abstract_path:
@@ -167,25 +84,22 @@ class Builder(object):
                 premade_path = None
             return premade_path
 
-        if resource.output:
-            paths = [resource.output] + resource.extensions
-            if os.path.exists(resource.output):
+        if output:
+            paths = [output] + extensions
+            if os.path.exists(output):
                 for p in paths:
                     copy(p, temp(p))
-            elif resource.generator:
-                resource.generator(temp(resource.output), *args, **kwargs)
+            elif generator:
+                generator(temp(output), *args, **kwargs)
                 for p in paths:
                     copy(p, temp(p))
-            elif os.path.exists(_premade(resource.output)):
+            elif os.path.exists(_premade(output)):
                 for p in paths:
                     copy(_premade(p, temp(p))
             else:
-                raise SystemExit("Can't prepare {}.".format(resource))
+                raise SystemExit("Can't prepare {}.".format(output))
         else:
-            raise SystemExit("Output is not set for {}.".format(resource))
-
-    def prepare_master(self, master):
-        pass
+            raise SystemExit("Output {} is not set.".format(output))
 
     def postprocess_kerning(self, original):
         return original
@@ -203,120 +117,8 @@ class Builder(object):
                 '\n'.join('{}: {}'.format(k, v) for k, v in results.items())
             )
 
-
-    @hindkit.memoize
-    def get_goadb(self):
-
-        goadb = []
-
-        if os.path.exists('glyphorder.txt'):
-
-            glyphorder = []
-            with open('glyphorder.txt') as f:
-                for line in f:
-                    line_without_comment = line.partition('#')[0].strip()
-                    for development_name in line_without_comment.split():
-                        glyphorder.append(development_name)
-
-            U_SCALAR_TO_U_NAME = hindkit.constants.misc.get_u_scalar_to_u_name()
-
-            AGLFN = hindkit.constants.misc.get_glyph_list('aglfn.txt')
-            ITFGL = hindkit.constants.misc.get_glyph_list('itfgl.txt')
-            ITFGL_PATCH = hindkit.constants.misc.get_glyph_list('itfgl_patch.txt')
-
-            AL5 = hindkit.constants.misc.get_adobe_latin(5)
-
-            D_NAME_TO_U_NAME = {}
-            D_NAME_TO_U_NAME.update(AGLFN)
-            D_NAME_TO_U_NAME.update(AL5)
-            D_NAME_TO_U_NAME.update(ITFGL)
-            D_NAME_TO_U_NAME.update(ITFGL_PATCH)
-
-            U_NAME_TO_U_SCALAR = {v: k for k, v in U_SCALAR_TO_U_NAME.items()}
-            AGLFN_REVERSED = {v: k for k, v in AGLFN.items()}
-
-            PREFIXS = tuple(
-                v['abbreviation']
-                for v in hindkit.constants.misc.SCRIPTS.values()
-            )
-
-            PRESERVED_NAMES = 'NULL CR'.split()
-
-            SPECIAL_D_NAME_TO_U_SCALAR = {
-                'NULL': '0000',
-                'CR': '000D',
-            }
-
-            u_mapping_pattern = re.compile(r'uni([0-9A-F]{4})|u([0-9A-F]{5,6})$')
-
-            with open(hindkit.constants.paths.GOADB, 'w') as f:
-
-                for development_name in glyphorder:
-
-                    u_scalar = None
-                    u_mapping = None
-                    production_name = None
-
-                    match = u_mapping_pattern.match(development_name)
-                    if match:
-                        u_scalar = filter(None, match.groups())[0]
-                        u_name = U_SCALAR_TO_U_NAME[u_scalar]
-                    else:
-                        u_name = D_NAME_TO_U_NAME.get(development_name)
-                        if u_name:
-                            u_scalar = U_NAME_TO_U_SCALAR[u_name]
-                        else:
-                            u_scalar = SPECIAL_D_NAME_TO_U_SCALAR.get(development_name)
-
-                    if u_scalar:
-                        form = 'uni{}' if (len(u_scalar) <= 4) else 'u{}'
-                        u_mapping = form.format(u_scalar)
-
-                    if u_name in AGLFN.values():
-                        production_name = AGLFN_REVERSED[u_name]
-                    elif (
-                        development_name in PRESERVED_NAMES or
-                        development_name.partition('.')[0].split('_')[0] in ITFGL
-                    ):
-                        production_name = development_name
-                    elif u_mapping:
-                        production_name = u_mapping
-                    else:
-                        production_name = development_name
-
-                    row = production_name, development_name, u_mapping
-                    f.write(' '.join(filter(None, row)) + '\n')
-                    goadb.append(row)
-
-        elif os.path.exists(hindkit.constants.paths.GOADB):
-            with open(hindkit.constants.paths.GOADB) as f:
-                for line in f:
-                    line_without_comment = line.partition('#')[0].strip()
-                    if line_without_comment:
-                        row = line_without_comment.split()
-                        if len(row) == 2:
-                            row.append(None)
-                        production_name, development_name, u_mapping = row
-                        goadb.append(
-                            (production_name, development_name, u_mapping)
-                        )
-
-        return goadb
-
-    def update_glyph_order(self, style, order=None):
-        if order is None:
-            order = [i[1] for i in self.goadb]
-        target = style.open_font(is_temp=True)
-        target.lib['public.glyphOrder'] = order
-        if 'com.schriftgestaltung.glyphOrder' in target.lib:
-            del target.lib['com.schriftgestaltung.glyphOrder']
-        style.postprocess_counter += 1
-        style._file_name = 'TEMP{}-{}.ufo'.format(style.postprocess_counter, style.name)
-        hindkit.tools.remove_files(hindkit.tools.temp(style.path))
-        target.save(hindkit.tools.temp(style.path))
-
-    # def _prepare_masters(self, output):
-    #     pass
+    def prepare_master(self, master):
+        pass
 
     def _generate_designspace(self, output):
 
@@ -375,7 +177,10 @@ class Builder(object):
 
         if self.options['run_makeinstances']:
 
-            self._prepare(self.designspace)
+            self._prepare(
+                constants.paths.DESIGNSPACE,
+                self._generate_designspace,
+            )
 
             arguments = ['-d', temp(constants.paths.DESIGNSPACE)]
             if not self.options['run_checkoutlines']:
@@ -425,11 +230,7 @@ class Builder(object):
 
             style_0 = self.styles_to_be_built[0].open_font(is_temp=True)
 
-            glyph_order = [
-                development_name for
-                production_name, development_name, unicode_mapping in
-                self.goadb
-            ]
+            glyph_order = self.goadb.development_names
             for class_name, filter_function in glyph_classes:
                 glyph_names = [
                     glyph.name for glyph in filter(
@@ -652,53 +453,11 @@ class Builder(object):
             f.write(constants.templates.FMNDB_HEAD)
             f.writelines(i + '\n' for i in lines)
 
-    def _generate_goadb(self):
-        pass
+    def _compile(self, style, build_ttf=False):
 
-    def _generate_trimmed_goadb(self, output):
-        reference_font = self.styles_to_be_built[0].open_font(is_temp=True)
-        not_covered_glyphs = [
-            glyph.name
-            for glyph in reference_font
-            if glyph.name not in (row[1] for row in self.goadb)
-        ]
-        if not_covered_glyphs:
-            raise SystemExit(
-                'Some glyphs are not covered by the GOADB: ' +
-                ' '.join(not_covered_glyphs)
-            )
-        else:
-            with open(output, 'w') as f:
-                f.writelines([
-                    ' '.join(filter(None, row)) + '\n'
-                    for row in self.goadb
-                    if row[1] in reference_font
-                ])
-
-    def _prepare_for_compiling_ttf(self):
-
-        with open(temp(self.trimmed_goadb.output)) as f:
-            original_lines = f.readlines()
-
-        modified_lines = []
-        for line in original_lines:
-            parts = line.split()
-            alt_development_name = constants.misc.GLYPH_NAME_INCOSISTENCIES_IN_TTF.get(parts[1])
-            if alt_development_name:
-                parts[1] = alt_development_name
-                modified_lines.append(' '.join(parts) + '\n')
-            else:
-                modified_lines.append(line)
-
-        self.trimmed_goadb.output = self.trimmed_goadb.output + '_TTF'
-        with open(temp(self.trimmed_goadb.output), 'w') as f:
-            f.writelines(modified_lines)
-
-        for style in self.styles_to_be_built:
+        if build_ttf:
             style.input_format = 'TTF'
             style.output_format = 'TTF'
-
-    def _compile(self, style):
 
         self._check_inputs([temp(style.path), temp(self.fmndb.output), temp(self.trimmed_goadb.output)])
 
@@ -791,39 +550,78 @@ class Builder(object):
             self.styles_to_be_built = self.family.get_styles_that_are_directly_derived_from_masters()
 
     def build(self):
+
         self._finalize_options()
         make_dir(constants.paths.TEMP)
+
+        reset_dir(temp(constants.paths.MASTERS))
+        for master in self.family.masters:
+            self._prepare(
+                master.path,
+                self.prepare_master,
+                master,
+            )
+
+        self.goadb.generate()
+
+        for master in self.family.masters:
+            master.update_glyph_order(self.goadb.development_names)
+
         if self.options['run_stage_prepare_styles']:
-            reset_dir(temp(constants.paths.MASTERS))
-
-            self._prepare(self.masters)
-            for master in self.family.masters:
-                if self.options['prepare_master']:
-                    self.prepare_master(master)
-                self._generate_goadb() # GOADB
-                self.update_glyph_order(master)
-
             reset_dir(temp(constants.paths.STYLES))
-            self._prepare(self.styles)
+            self._prepare(
+                constants.paths.STYLES,
+                self._prepare_styles,
+            )
+
         if self.options['run_stage_prepare_features']:
             reset_dir(temp(constants.paths.FEATURES))
-            self._prepare(self.features_classes)
-            self._prepare(self.features_tables)
-            self._prepare(self.features_languagesystems)
-            self._prepare(self.features_GSUB)
+            self._prepare(
+                os.path.join(constants.paths.FEATURES, 'classes.fea'), #!
+                self._generate_features_classes,
+                extensions = [
+                    os.path.join(constants.paths.FEATURES, 'classes_{}.fea'.format(i))
+                    for i in ['suffixing']
+                ],
+            )
+            self._prepare(
+                os.path.join(constants.paths.FEATURES, 'tables.fea'),
+                self._generate_features_tables,
+            )
+            self._prepare(
+                os.path.join(constants.paths.FEATURES, 'languagesystems.fea'),
+                self._generate_features_languagesystems,
+            )
+            self._prepare(
+                os.path.join(constants.paths.FEATURES, 'GSUB.fea'), #!
+                None,
+                extensions = [
+                    os.path.join(constants.paths.FEATURES, 'GSUB_{}.fea'.format(i))
+                    for i in ['lookups', 'prefixing']
+                ],
+            )
             for style in self.styles_to_be_built:
-                self._prepare(self.features_GPOS, style)
+                self._prepare(
+                    os.path.join(constants.paths.FEATURES, 'GPOS.fea'),
+                    self._generate_features_GPOS,
+                    style,
+                )
                 self._generate_features_weight_class(style)
                 self._generate_features_references(style)
+
         if self.options['run_stage_compile']:
-            self._prepare(self.fmndb)
-            self._prepare(self.trimmed_goadb)
+            self._prepare(
+                constants.paths.FMNDB,
+                self._generate_fmndb,
+            )
+            self.goadb.output_trimmed(
+                reference_font = self.styles_to_be_built[0].open_font(is_temp=True),
+                build_ttf = self.options['build_ttf'],
+            )
             for style in self.styles_to_be_built:
                 self._compile(style)
-            if self.options['build_ttf']:
-                self._prepare_for_compiling_ttf()
-                for style in self.styles_to_be_built:
-                    self._compile(style)
+                if self.options['build_ttf']:
+                    self._compile(style, build_ttf=True)
 
 # ---
 

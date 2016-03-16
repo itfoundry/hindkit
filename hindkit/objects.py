@@ -151,6 +151,18 @@ class _BaseStyle(object):
         else:
             raise SystemExit("`{}` is missing.".format(path))
 
+    def save_temp(self, font):
+        self.postprocess_counter += 1
+        self._file_name = '_temp{}_'.format(self.postprocess_counter) + self.name
+        font.save(hindkit.tools.temp(self.path))
+
+    def update_glyph_order(self, order):
+        font = self.open_font(is_temp=True)
+        font.lib['public.glyphOrder'] = order
+        if 'com.schriftgestaltung.glyphOrder' in font.lib:
+            del font.lib['com.schriftgestaltung.glyphOrder']
+        self.save_temp(font)
+
 class Master(_BaseStyle):
 
     @property
@@ -215,10 +227,7 @@ class Master(_BaseStyle):
             print(new_name, end=', ')
         print()
 
-        self.postprocess_counter += 1
-        self._file_name = 'TEMP{}-{}.ufo'.format(self.postprocess_counter, self.name)
-        hindkit.tools.remove_files(hindkit.tools.temp(self.path))
-        target.save(hindkit.tools.temp(self.path))
+        self.save_temp(target)
 
     def derive_glyphs(self, deriving_names):
 
@@ -236,10 +245,7 @@ class Master(_BaseStyle):
             print('{} (from {})'.format(deriving_name, source_name), end=', ')
         print()
 
-        self.postprocess_counter += 1
-        self._file_name = 'TEMP{}-{}.ufo'.format(self.postprocess_counter, self.name)
-        hindkit.tools.remove_files(hindkit.tools.temp(self.path))
-        target.save(hindkit.tools.temp(self.path))
+        self.save_temp(target)
 
 class Style(_BaseStyle):
 
