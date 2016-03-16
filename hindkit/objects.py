@@ -320,3 +320,140 @@ class Style(_BaseStyle):
     @property
     def font_path(self):
         return os.path.join(hindkit.constants.paths.BUILD, self.font_name)
+
+class GOADB(object):
+
+    def __init__(self, path=hindkit.constants.paths.GOADB):
+
+        self.path = hindkit.tools.temp(path)
+        self.path_trimmed = self.path + '_trimmed'
+        self.path_trimmed_ttf = self.path_trimmed + '_ttf'
+
+        self.production_names = []
+        self.development_names = []
+        self.u_mappings = []
+
+    def generate(self):
+
+        goadb = []
+
+        if os.path.exists('glyphorder.txt'):
+
+            glyphorder = []
+            with open('glyphorder.txt') as f:
+                for line in f:
+                    line_without_comment = line.partition('#')[0].strip()
+                    for development_name in line_without_comment.split():
+                        glyphorder.append(development_name)
+
+            U_SCALAR_TO_U_NAME = hindkit.constants.misc.get_u_scalar_to_u_name()
+
+            AGLFN = hindkit.constants.misc.get_glyph_list('aglfn.txt')
+            ITFGL = hindkit.constants.misc.get_glyph_list('itfgl.txt')
+            ITFGL_PATCH = hindkit.constants.misc.get_glyph_list('itfgl_patch.txt')
+
+            AL5 = hindkit.constants.misc.get_adobe_latin(5)
+
+            D_NAME_TO_U_NAME = {}
+            D_NAME_TO_U_NAME.update(AGLFN)
+            D_NAME_TO_U_NAME.update(AL5)
+            D_NAME_TO_U_NAME.update(ITFGL)
+            D_NAME_TO_U_NAME.update(ITFGL_PATCH)
+
+            U_NAME_TO_U_SCALAR = {v: k for k, v in U_SCALAR_TO_U_NAME.items()}
+            AGLFN_REVERSED = {v: k for k, v in AGLFN.items()}
+
+            PREFIXS = tuple(
+                v['abbreviation']
+                for v in hindkit.constants.misc.SCRIPTS.values()
+            )
+
+            PRESERVED_NAMES = 'NULL CR'.split()
+
+            SPECIAL_D_NAME_TO_U_SCALAR = {
+                'NULL': '0000',
+                'CR': '000D',
+            }
+
+            u_mapping_pattern = re.compile(r'uni([0-9A-F]{4})|u([0-9A-F]{5,6})$')
+
+            with open(hindkit.constants.paths.GOADB, 'w') as f:
+
+                for development_name in glyphorder:
+
+                    u_scalar = None
+                    u_mapping = None
+                    production_name = None
+
+                    match = u_mapping_pattern.match(development_name)
+                    if match:
+                        u_scalar = filter(None, match.groups())[0]
+                        u_name = U_SCALAR_TO_U_NAME[u_scalar]
+                    else:
+                        u_name = D_NAME_TO_U_NAME.get(development_name)
+                        if u_name:
+                            u_scalar = U_NAME_TO_U_SCALAR[u_name]
+                        else:
+                            u_scalar = SPECIAL_D_NAME_TO_U_SCALAR.get(development_name)
+
+                    if u_scalar:
+                        form = 'uni{}' if (len(u_scalar) <= 4) else 'u{}'
+                        u_mapping = form.format(u_scalar)
+
+                    if u_name in AGLFN.values():
+                        production_name = AGLFN_REVERSED[u_name]
+                    elif (
+                        development_name in PRESERVED_NAMES or
+                        development_name.partition('.')[0].split('_')[0] in ITFGL
+                    ):
+                        production_name = development_name
+                    elif u_mapping:
+                        production_name = u_mapping
+                    else:
+                        production_name = development_name
+
+                    row = production_name, development_name, u_mapping
+                    f.write(' '.join(filter(None, row)) + '\n')
+                    goadb.append(row)
+
+        elif os.path.exists(hindkit.constants.paths.GOADB):
+            with open(hindkit.constants.paths.GOADB) as f:
+                for line in f:
+                    line_without_comment = line.partition('#')[0].strip()
+                    if line_without_comment:
+                        row = line_without_comment.split()
+                        if len(row) == 2:
+                            row.append(None)
+                        production_name, development_name, u_mapping = row
+                        goadb.append(
+                            (production_name, development_name, u_mapping)
+                        )
+
+    def output_trimmed(self, reference_font, build_ttf=False):
+        DIFFERENCES = {
+            'CR CR uni000D\n': 'CR uni000D uni000D\n',
+        }
+        not_covered_glyphs = [
+            glyph.name
+            for glyph in reference_font
+            if glyph.name not in self.development_names
+        ]
+        if not_covered_glyphs:
+            raise SystemExit(
+                'Some glyphs are not covered by the GOADB: ' +
+                ' '.join(not_covered_glyphs)
+            )
+        else:
+            trimmed = open(self.path_trimmed, 'w')
+            if build_ttf:
+                trimmed_ttf = open(tself.path_trimmed_ttf, 'w')
+            for row in self.table:
+                if row.development_name in reference_font:
+                    line = ' '.join(filter(None, row)) + '\n'
+                    trimmed.write(line)
+                    if build_ttf:
+                        line_ttf = DIFFERENCES.get(line, line)
+                        trimmed_ttf.write(line_ttf)
+            trimmed.close()
+            if build_ttf:
+                trimmed_ttf.close()

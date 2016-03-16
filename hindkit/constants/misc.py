@@ -7,10 +7,6 @@ import hindkit
 
 _unwrap_path = hindkit._unwrap_path_relative_to_package_dir
 
-GLYPH_NAME_INCOSISTENCIES_IN_TTF = {
-    'CR': 'uni000D',
-}
-
 DERIVING_MAP = {
     'CR': 'space',
     'uni000D': 'space',

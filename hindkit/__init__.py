@@ -20,5 +20,5 @@ def _unwrap_path_relative_to_package_dir(relative_path):
 def _unwrap_path_relative_to_cwd(relative_path):
     return os.path.join(os.path.realpath(os.getcwdu()), relative_path)
 
-from hindkit.objects import Family, Master, Style
+from hindkit.objects import Family, Master, Style, GOADB
 from hindkit.tools import Builder
