@@ -2,9 +2,22 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os
+import os, re, sys
 import defcon
 import hindkit.constants, hindkit.tools, hindkit.patches
+
+path_FDKScripts = os.path.join(
+    os.path.dirname(sys.executable), '../SharedData/FDKScripts',
+)
+sys.path.insert(0, path_FDKScripts)
+import agd
+
+path_AGD_txt = os.path.join(
+    os.path.dirname(sys.executable), '../SharedData/AGD.txt',
+)
+AGD_DICT = None
+with open(path_AGD_txt, 'rU') as f:
+    AGD_DICT = agd.dictionary(f.read())
 
 defcon.Glyph.insertAnchor = hindkit.patches.insertAnchor
 
