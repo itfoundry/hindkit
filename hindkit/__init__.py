@@ -2,7 +2,20 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import functools, os
+import os, sys, functools
+
+def relative_to_interpreter(path):
+    return os.path.join(os.path.dirname(sys.executable), path)
+
+sys.path.insert(0, relative_to_interpreter('../SharedData/FDKScripts'))
+# __path__.append(relative_to_interpreter('../SharedData/FDKScripts'))
+import agd
+
+def relative_to_package(path):
+    return os.path.join(__path__[0], path)
+
+def relative_to_cwd(path):
+    return os.path.join(os.getcwdu(), path)
 
 def memoize(obj):
     memoized = {}
@@ -13,12 +26,6 @@ def memoize(obj):
             memoized[k] = obj(*args, **kwargs)
         return memoized[k]
     return memoizer
-
-def _unwrap_path_relative_to_package_dir(relative_path):
-    return os.path.join(__path__[0], relative_path)
-
-def _unwrap_path_relative_to_cwd(relative_path):
-    return os.path.join(os.path.realpath(os.getcwdu()), relative_path)
 
 from hindkit.objects import Family, Master, Style, GOADB
 from hindkit.tools import Builder

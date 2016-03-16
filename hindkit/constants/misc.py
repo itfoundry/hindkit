@@ -5,7 +5,8 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import os, collections
 import hindkit
 
-_unwrap_path = hindkit._unwrap_path_relative_to_package_dir
+with open(hindkit.relative_to_interpreter('../SharedData/AGD.txt'), 'rU') as f:
+    AGD_DICT = hindkit.agd.dictionary(f.read())
 
 DERIVING_MAP = {
     'CR': 'space',
@@ -111,7 +112,7 @@ SCRIPTS = {
 @hindkit.memoize
 def get_u_scalar_to_u_name():
     u_scalar_to_u_name = {}
-    with open(_unwrap_path('data/UnicodeData.txt')) as f:
+    with open(hindkit.relative_to_package('data/UnicodeData.txt')) as f:
         for line in f:
             u_scalar, u_name, rest = line.split(';', 2)
             if not u_name.startswith('<'):
@@ -121,7 +122,7 @@ def get_u_scalar_to_u_name():
 @hindkit.memoize
 def get_glyph_list(file_name):
     glyph_list = collections.OrderedDict()
-    with open(_unwrap_path('data/' + file_name)) as f:
+    with open(hindkit.relative_to_package('data/' + file_name)) as f:
         for line in f:
             line_without_comment = line.partition('#')[0].strip()
             if line_without_comment:
@@ -135,7 +136,9 @@ def get_adobe_latin(number, get_combined=False):
     suffix = str(number)
     if number > 3:
         suffix = suffix + ('-combined' if get_combined else '-precomposed')
-    with open(_unwrap_path('data/adobe-latin-{}.txt'.format(suffix))) as f:
+    with open(
+        hindkit.relative_to_package('data/adobe-latin-{}.txt'.format(suffix))
+    ) as f:
         f.next()
         for line in f:
             parts = line.strip().split('\t')[:4]

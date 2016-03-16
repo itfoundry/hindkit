@@ -76,7 +76,7 @@ class Builder(object):
 
         def _premade(abstract_path):
             if abstract_path:
-                premade_prefix = hindkit._unwrap_path_relative_to_package_dir(
+                premade_prefix = hindkit.relative_to_package(
                     os.path.join('data/premade', self.family.script.lower())
                 )
                 premade_path = os.path.join(premade_prefix, abstract_path)
@@ -95,7 +95,7 @@ class Builder(object):
                     copy(p, temp(p))
             elif os.path.exists(_premade(output)):
                 for p in paths:
-                    copy(_premade(p, temp(p))
+                    copy(_premade(p), temp(p))
             else:
                 raise SystemExit("Can't prepare {}.".format(output))
         else:
@@ -123,14 +123,16 @@ class Builder(object):
     def _generate_designspace(self, output):
 
         doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
-            hindkit._unwrap_path_relative_to_cwd(output)
+            os.path.abspath(hindkit.relative_to_cwd(output))
         )
 
         for i, master in enumerate(self.family.masters):
 
             doc.addSource(
 
-                path = hindkit._unwrap_path_relative_to_cwd(temp(master.path)),
+                path = os.path.abspath(
+                    hindkit.relative_to_cwd(temp(master.path))
+                ),
                 name = 'master-' + master.name,
                 location = {'weight': master.interpolation_value},
 
@@ -151,8 +153,8 @@ class Builder(object):
                 location = {'weight': style.interpolation_value},
                 familyName = self.family.output_name,
                 styleName = style.name,
-                fileName = hindkit._unwrap_path_relative_to_cwd(
-                    temp(style.path)
+                fileName = os.path.abspath(
+                    hindkit.relative_to_cwd(temp(style.path))
                 ),
                 postScriptFontName = style.output_full_name_postscript,
                 # styleMapFamilyName = None,
