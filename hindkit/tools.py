@@ -2,7 +2,7 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import subprocess, os, argparse, collections
+import subprocess, os, argparse, collections, shutil
 from fontTools.ttLib import TTFont
 import mutatorMath.ufo.document, WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit, hindkit.devanagari, hindkit.patches
@@ -46,6 +46,7 @@ class Builder(object):
             'postprocess_kerning': False,
             'postprocess_font_file': False,
 
+            'run_stage_prepare_masters': True,
             'run_stage_prepare_styles': True,
             'run_stage_prepare_features': True,
             'run_stage_compile': True,
@@ -67,39 +68,7 @@ class Builder(object):
 
         self.options.update(options)
 
-        self.goadb = hindkit.GOADB()
-
-    def _prepare(self, output, generator, extensions=None, *args, **kwargs):
-
-        if not extensions:
-            extensions = []
-
-        def _premade(abstract_path):
-            if abstract_path:
-                premade_prefix = hindkit.relative_to_package(
-                    os.path.join('data/premade', self.family.script.lower())
-                )
-                premade_path = os.path.join(premade_prefix, abstract_path)
-            else:
-                premade_path = None
-            return premade_path
-
-        if output:
-            paths = [output] + extensions
-            if os.path.exists(output):
-                for p in paths:
-                    copy(p, temp(p))
-            elif generator:
-                generator(temp(output), *args, **kwargs)
-                for p in paths:
-                    copy(p, temp(p))
-            elif os.path.exists(_premade(output)):
-                for p in paths:
-                    copy(_premade(p), temp(p))
-            else:
-                raise SystemExit("Can't prepare {}.".format(output))
-        else:
-            raise SystemExit("Output {} is not set.".format(output))
+        self.goadb = hindkit.GlyphData()
 
     def postprocess_kerning(self, original):
         return original
@@ -117,10 +86,20 @@ class Builder(object):
                 '\n'.join('{}: {}'.format(k, v) for k, v in results.items())
             )
 
-    def prepare_master(self, master):
-        pass
+    def prepare_masters(self):
 
-    def _generate_designspace(self, output):
+        for master in self.family.masters:
+            master.prepare()
+
+        self.goadb.generate(self.family.masters[0].open())
+
+        for master in self.family.masters:
+            font = master.open()
+            font.lib['public.glyphOrder'] = self.goadb.development_names
+            font.lib.pop('com.schriftgestaltung.glyphOrder', None)
+            master.save_as(font)
+
+    def generate_designspace(self, output):
 
         doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
             os.path.abspath(hindkit.relative_to_cwd(output))
@@ -130,10 +109,8 @@ class Builder(object):
 
             doc.addSource(
 
-                path = os.path.abspath(
-                    hindkit.relative_to_cwd(temp(master.path))
-                ),
-                name = 'master-' + master.name,
+                path = os.path.abspath(hindkit.relative_to_cwd(master.path)),
+                name = 'master ' + master.name,
                 location = {'weight': master.weight_location},
 
                 copyLib    = i == 0,
@@ -146,17 +123,17 @@ class Builder(object):
 
             )
 
-        for style in self.styles_to_be_built:
+        for style in self.styles_to_produce:
 
             doc.startInstance(
-                name = 'instance-' + style.name,
+                name = 'instance ' + style.name,
                 location = {'weight': style.weight_location},
-                familyName = self.family.output_name,
+                familyName = self.family.name,
                 styleName = style.name,
                 fileName = os.path.abspath(
-                    hindkit.relative_to_cwd(temp(style.path))
+                    hindkit.relative_to_cwd(style.path)
                 ),
-                postScriptFontName = style.output_full_name_postscript,
+                postScriptFontName = style.full_name_postscript,
                 # styleMapFamilyName = None,
                 # styleMapStyleName = None,
             )
@@ -170,19 +147,15 @@ class Builder(object):
 
         doc.save()
 
-    def _prepare_styles(self, output): # STAGE I
+    def prepare_styles(self): # STAGE I
 
-        self._check_inputs([temp(i.path) for i in self.family.masters])
-
-        for style in self.styles_to_be_built:
-            make_dir(temp(style.directory))
+        for style in self.styles_to_produce:
+            style.temp = True
+            make_dir(style.directory)
 
         if self.options['run_makeinstances']:
 
-            self._prepare(
-                constants.paths.DESIGNSPACE,
-                self._generate_designspace,
-            )
+            self.designspace.prepare()
 
             arguments = ['-d', temp(constants.paths.DESIGNSPACE)]
             if not self.options['run_checkoutlines']:
@@ -193,27 +166,26 @@ class Builder(object):
             subprocess.call(['makeInstancesUFO'] + arguments)
 
         else:
-            for index, (master, style) in enumerate(zip(self.family.masters, self.styles_to_be_built)):
-                copy(temp(master.path), temp(style.path))
-                font = style.open_font(is_temp=True)
-                font.info.postscriptFontName = style.output_full_name_postscript
-                font.save()
-            for style in self.styles_to_be_built:
+            for index, (master, style) in enumerate(zip(self.family.masters, self.styles_to_produce)):
+                copy(master.path, style.path)
+                font = style.open()
+                if font.info.postscriptFontName != style.full_name_postscript:
+                    font.info.postscriptFontName = style.full_name_postscript
+                    font.save()
                 self._simulate_makeInstancesUFO_postprocess(style)
 
     def _simulate_makeInstancesUFO_postprocess(self, style):
-        self._check_inputs([temp(style.path)])
         if self.options['run_checkoutlines'] or self.options['run_autohint']:
             options = {
                 'doOverlapRemoval': self.options['run_checkoutlines'],
                 'doAutoHint': self.options['run_autohint'],
                 'allowDecimalCoords': False,
             }
-            hindkit.patches.updateInstance(options, temp(style.path))
+            hindkit.patches.updateInstance(options, style.path)
 
-    def _generate_features_classes(self, output):
+    def generate_features_classes(self, output):
 
-        self._check_inputs([temp(i.path) for i in self.styles_to_be_built])
+        self._check_inputs([temp(i.path) for i in self.styles_to_produce])
 
         lines = []
 
@@ -230,7 +202,7 @@ class Builder(object):
                     # ('BASES_FOR_WIDE_MATRA_II', hindkit.devanagari.glyph_filter_bases_for_wide_matra_ii),
                 ])
 
-            style_0 = self.styles_to_be_built[0].open_font(is_temp=True)
+            style_0 = self.styles_to_produce[0].open_font(is_temp=True)
 
             glyph_order = self.goadb.development_names
             for class_name, filter_function in glyph_classes:
@@ -247,7 +219,7 @@ class Builder(object):
                 )
             style_0.save()
 
-            for style in self.styles_to_be_built[1:]:
+            for style in self.styles_to_produce[1:]:
                 font = style.open_font(is_temp=True)
                 font.groups.update(style_0.groups)
                 font.save()
@@ -256,7 +228,7 @@ class Builder(object):
             with open(output, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-    def _generate_features_tables(self, output):
+    def generate_features_tables(self, output):
 
         lines = []
         tables = collections.OrderedDict([
@@ -328,7 +300,7 @@ class Builder(object):
             with open(output, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-    def _generate_features_languagesystems(self, output):
+    def generate_features_languagesystems(self, output):
 
         lines = ['languagesystem DFLT dflt;']
         tag = constants.misc.SCRIPTS[self.family.script.lower()]['tag']
@@ -342,10 +314,10 @@ class Builder(object):
             with open(output, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-    def _generate_features_GSUB(self, output):
+    def generate_features_GSUB(self, output):
         pass
 
-    def _generate_features_GPOS(self, output, style):
+    def generate_features_GPOS(self, output, style):
         self._check_inputs([temp(style.path)])
         directory = temp(style.directory)
         if self.options['prepare_kerning']:
@@ -376,12 +348,12 @@ class Builder(object):
                     style,
                 ) # NOTE: not pure GPOS
 
-    def _generate_features_weight_class(self, style):
+    def generate_features_weight_class(self, style):
         directory = temp(style.directory)
         with open(os.path.join(directory, 'WeightClass.fea'), 'w') as f:
             f.write('WeightClass {};\n'.format(str(style.weight_class)))
 
-    def _generate_features_references(self, style):
+    def generate_features_references(self, style):
         directory = temp(style.directory)
         with open(os.path.join(directory, 'features'), 'w') as f:
             lines = ['table head { FontRevision 1.000; } head;']
@@ -420,12 +392,12 @@ class Builder(object):
                     lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, file_name))
             f.writelines(i + '\n' for i in lines)
 
-    def _generate_fmndb(self, output):
+    def generate_fmndb(self, output):
 
         f_name = self.family.output_name
         lines = []
 
-        for style in self.styles_to_be_built:
+        for style in self.styles_to_produce:
 
             lines.append('')
             lines.append('[{}]'.format(style.output_full_name_postscript))
@@ -547,57 +519,44 @@ class Builder(object):
             self.options['run_checkoutlines'] = False
             self.options['run_autohint'] = False
 
-        self.styles_to_be_built = self.family.styles
+        self.styles_to_produce = self.family.styles
         if self.family.masters and (not self.options['run_makeinstances']):
-            self.styles_to_be_built = self.family.get_styles_that_are_directly_derived_from_masters()
+            self.styles_to_produce = self.family.get_styles_that_are_directly_derived_from_masters()
 
     def build(self):
 
         self._finalize_options()
         make_dir(constants.paths.TEMP)
 
-        reset_dir(temp(constants.paths.MASTERS))
-        for master in self.family.masters:
-            self._prepare(
-                master.path,
-                self.prepare_master,
-                master,
-            )
-
-        self.goadb.generate(self.family.masters[0].open_font())
-
-        for master in self.family.masters:
-            font = master.open()
-            font.lib['public.glyphOrder'] = self.goadb.development_names
-            font.lib.pop('com.schriftgestaltung.glyphOrder', None)
-            master.save_as(font)
+        if self.options['run_stage_prepare_masters']:
+            reset_dir(temp(constants.paths.MASTERS))
+            self.prepare_masters()
 
         if self.options['run_stage_prepare_styles']:
             reset_dir(temp(constants.paths.STYLES))
-            self._prepare(
-                constants.paths.STYLES,
-                self._prepare_styles,
-            )
+            self.prepare_styles()
 
         if self.options['run_stage_prepare_features']:
             reset_dir(temp(constants.paths.FEATURES))
-            self._prepare(
+            self.prepare(
                 os.path.join(constants.paths.FEATURES, 'classes.fea'), #!
-                self._generate_features_classes,
+                self.generate_features_classes,
                 extensions = [
                     os.path.join(constants.paths.FEATURES, 'classes_{}.fea'.format(i))
                     for i in ['suffixing']
                 ],
             )
-            self._prepare(
+            self.prepare(
                 os.path.join(constants.paths.FEATURES, 'tables.fea'),
-                self._generate_features_tables,
+                self.generate_features_tables,
+                None,
             )
-            self._prepare(
+            self.prepare(
                 os.path.join(constants.paths.FEATURES, 'languagesystems.fea'),
-                self._generate_features_languagesystems,
+                self.generate_features_languagesystems,
+                None,
             )
-            self._prepare(
+            self.prepare(
                 os.path.join(constants.paths.FEATURES, 'GSUB.fea'), #!
                 None,
                 extensions = [
@@ -605,25 +564,27 @@ class Builder(object):
                     for i in ['lookups', 'prefixing']
                 ],
             )
-            for style in self.styles_to_be_built:
-                self._prepare(
+            for style in self.styles_to_produce:
+                self.prepare(
                     os.path.join(constants.paths.FEATURES, 'GPOS.fea'),
-                    self._generate_features_GPOS,
+                    self.generate_features_GPOS,
+                    None,
                     style,
                 )
-                self._generate_features_weight_class(style)
-                self._generate_features_references(style)
+                self.generate_features_weight_class(style)
+                self.generate_features_references(style)
 
         if self.options['run_stage_compile']:
-            self._prepare(
+            self.prepare(
                 constants.paths.FMNDB,
-                self._generate_fmndb,
+                self.generate_fmndb,
+                None,
             )
             self.goadb.output_trimmed(
-                reference_font = self.styles_to_be_built[0].open_font(is_temp=True),
+                reference_font = self.styles_to_produce[0].open_font(is_temp=True),
                 build_ttf = self.options['build_ttf'],
             )
-            for style in self.styles_to_be_built:
+            for style in self.styles_to_produce:
                 self._compile(style)
                 if self.options['build_ttf']:
                     self._compile(style, build_ttf=True)

@@ -7,7 +7,7 @@ import os, re, sys, collections
 import defcon, hindkit.patches
 defcon.Glyph.insertAnchor = hindkit.patches.insertAnchor
 
-import hindkit.constants, hindkit.tools
+from hindkit import constants, tools
 
 def fallback(*candidates):
     # if len(candidates) == 1 and isinstance(candidates[0], collections.Iterable):
@@ -22,8 +22,6 @@ def postscript(name):
 
 class Family(object):
 
-    default_client = 'Google Fonts'
-
     def __init__(
         self,
         client = None,
@@ -33,9 +31,7 @@ class Family(object):
         name = None,
     ):
 
-        _BaseObject.__init__(self)
-
-        self.client = fallback(client, hindkit.constants.clients.DEFAULT)
+        self.client = client
 
         self.trademark = trademark
         self.script = script
@@ -62,7 +58,7 @@ class Family(object):
 
     def set_styles(self, style_scheme=None):
         if not style_scheme:
-            style_scheme = hindkit.constants.clients.Client(self).style_scheme
+            style_scheme = constants.clients.Client(self).style_scheme
         self.styles = [
             Style(
                 self,
@@ -98,7 +94,7 @@ class Family(object):
         pass
 
 
-class _BaseFont(_BaseObject):
+class _BaseFont(object):
 
     def __init__(self, family, name):
 
@@ -106,7 +102,7 @@ class _BaseFont(_BaseObject):
         self.name = name
 
         self.file_format = 'UFO'
-        self.directory = None
+        self.abstract_directory = None
         self.temp = False
 
         self._name_postscript = None
@@ -114,6 +110,7 @@ class _BaseFont(_BaseObject):
         self._full_name_postscript = None
         self._extension = None
         self._filename = None
+        self._directory = None
         self._path = None
 
         self.counter = 0
@@ -157,13 +154,23 @@ class _BaseFont(_BaseObject):
         self._filename = value
 
     @property
+    def directory(self):
+        directory = self.abstract_directory
+        if self.temp:
+            directory = os.path.join(constants.paths.TEMP, directory)
+        return fallback(
+            self._directory,
+            directory,
+        )
+    @directory.setter
+    def directory(self, value):
+        self._directory = value
+
+    @property
     def path(self):
         filename = self.filename
         if self.extension:
             filename += '.' + self.extension
-        directory = self.directory
-        if self.temp:
-            os.path.join(constants.paths.TEMP, directory)
         return fallback(
             self._path,
             os.path.join(self.directory, filename),
@@ -171,6 +178,19 @@ class _BaseFont(_BaseObject):
     @path.setter
     def path(self, value):
         self._path = value
+
+    def prepare(self, *args, **kwargs):
+        path = self.path
+        if os.path.exists(path):
+            if not self.temp:
+                self.temp = True
+                copy(path, self.path)
+        else:
+            self.temp = True
+            self.generate(*args, **kwargs)
+
+    def generate(self):
+        raise SystemExit("Can't generate {}.".format(self.path))
 
     def open(self):
         if os.path.exists(self.path):
@@ -195,11 +215,11 @@ class Master(_BaseFont):
     def __init__(self, family, name, weight_location=0):
 
         _BaseFont.__init__(self, family, name)
-        self.directory = hindkit.constants.paths.MASTERS
+        self.abstract_directory = constants.paths.MASTERS
 
         self.weight_location = weight_location
 
-    @property
+    @_BaseFont.filename.getter
     def filename(self):
         '''According to Glyphs app's convention.'''
         return fallback(self._filename, self.family.name + '-' + self.name)
@@ -246,7 +266,7 @@ class Master(_BaseFont):
         existing_names = set(target.keys())
         new_names.difference_update(existing_names)
         new_names.difference_update(set(excluding_names))
-        new_names = hindkit.tools.sort_glyphs(source.glyphOrder, new_names)
+        new_names = tools.sort_glyphs(source.glyphOrder, new_names)
 
         print('\n[NOTE] Importing glyphs from `{}` to `{}`:'.format(source_path, self.name))
         for new_name in new_names:
@@ -266,7 +286,7 @@ class Master(_BaseFont):
 
         print('\n[NOTE] Deriving glyphs in `{}`:'.format(self.name))
         for deriving_name in deriving_names:
-            source_name = hindkit.constants.misc.DERIVING_MAP[deriving_name]
+            source_name = constants.misc.DERIVING_MAP[deriving_name]
             target.newGlyph(deriving_name)
             if source_name:
                 target[deriving_name].width = target[source_name].width
@@ -291,12 +311,12 @@ class Style(_BaseFont):
     ):
 
         _BaseFont.__init__(self, family, name)
-        self._directory = None
+        self._abstract_directory = None
 
         self.weight_location = weight_location
 
-        self.full_name = _family.name + ' ' + self.name
-        self.full_name_postscript = _family.name_postscript + '-' + self.name_postscript
+        self.full_name = family.name + ' ' + self.name
+        self.full_name_postscript = family.name_postscript + '-' + self.name_postscript
 
         self.weight_class = weight_class
 
@@ -313,16 +333,16 @@ class Style(_BaseFont):
         self._output_full_name_postscript = _output_full_name_postscript
 
     @property
-    def directory(self):
+    def abstract_directory(self):
         return fallback(
-            self._directory,
-            os.path.join(hindkit.constants.paths.STYLES, self.name),
+            self._abstract_directory,
+            os.path.join(constants.paths.STYLES, self.name),
         )
-    @directory.setter
-    def directory(self, value):
-        self._directory = value
+    @abstract_directory.setter
+    def abstract_directory(self, value):
+        self._abstract_directory = value
 
-    @property
+    @_BaseFont.filename.getter
     def filename(self):
         return fallback(self._filename, 'font')
 
@@ -335,14 +355,14 @@ class Product(_BaseFont):
     def __init__(self, family, style, file_format='OTF'):
         _BaseFont.__init__(self, family, style.name)
         self.file_format = file_format
-        self.directory = hindkit.constants.paths.BUILD
+        self.abstract_directory = constants.paths.BUILD
 
-    @property
+    @_BaseFont.filename.getter
     def filename(self):
         return fallback(self._filename, self.full_name_postscript)
 
 
-class GlyphData(_BaseObject):
+class GlyphData(object):
 
     @staticmethod
     def normalize(lines):
@@ -361,8 +381,8 @@ class GlyphData(_BaseObject):
         self.glyph_order_path = glyph_order_path
 
         self.goadb_path = goadb_path
-        self.goadb_path_trimmed = hindkit.tools.temp(self.goadb_path + '_trimmed')
-        self.goadb_path_trimmed_ttf = hindkit.tools.temp(self.goadb_path + '_trimmed_ttf')
+        self.goadb_path_trimmed = tools.temp(self.goadb_path + '_trimmed')
+        self.goadb_path_trimmed_ttf = tools.temp(self.goadb_path + '_trimmed_ttf')
 
         self.name_order = []
 
@@ -389,7 +409,7 @@ class GlyphData(_BaseObject):
 
         if os.path.exists('glyphorder.txt'):
 
-            self.goadb_path = hindkit.tools.temp(self.goadb_path)
+            self.goadb_path = tools.temp(self.goadb_path)
 
             glyphorder = []
             with open('glyphorder.txt') as f:
@@ -397,13 +417,13 @@ class GlyphData(_BaseObject):
                     for development_name in line.split():
                         glyphorder.append(development_name)
 
-            U_SCALAR_TO_U_NAME = hindkit.constants.misc.get_u_scalar_to_u_name()
+            U_SCALAR_TO_U_NAME = constants.misc.get_u_scalar_to_u_name()
 
-            AGLFN = hindkit.constants.misc.get_glyph_list('aglfn.txt')
-            ITFGL = hindkit.constants.misc.get_glyph_list('itfgl.txt')
-            ITFGL_PATCH = hindkit.constants.misc.get_glyph_list('itfgl_patch.txt')
+            AGLFN = constants.misc.get_glyph_list('aglfn.txt')
+            ITFGL = constants.misc.get_glyph_list('itfgl.txt')
+            ITFGL_PATCH = constants.misc.get_glyph_list('itfgl_patch.txt')
 
-            AL5 = hindkit.constants.misc.get_adobe_latin(5)
+            AL5 = constants.misc.get_adobe_latin(5)
 
             D_NAME_TO_U_NAME = {}
             D_NAME_TO_U_NAME.update(AGLFN)
@@ -416,7 +436,7 @@ class GlyphData(_BaseObject):
 
             PREFIXS = tuple(
                 v['abbreviation']
-                for v in hindkit.constants.misc.SCRIPTS.values()
+                for v in constants.misc.SCRIPTS.values()
             )
 
             PRESERVED_NAMES = 'NULL CR'.split()
@@ -428,7 +448,7 @@ class GlyphData(_BaseObject):
 
             u_mapping_pattern = re.compile(r'uni([0-9A-F]{4})|u([0-9A-F]{5,6})$')
 
-            hindkit.tools.make_dir(hindkit.constants.paths.TEMP)
+            tools.make_dir(constants.paths.TEMP)
 
             with open(self.goadb_path, 'w') as f:
 
@@ -508,3 +528,6 @@ class GlyphData(_BaseObject):
             trimmed.close()
             if build_ttf:
                 trimmed_ttf.close()
+
+class DesignSpace(_BaseObject):
+    pass
