@@ -89,7 +89,7 @@ class Builder(object):
     def prepare_masters(self):
 
         for master in self.family.masters:
-            master.prepare()
+            master.prepare(self)
 
         self.goadb.generate(self.family.masters[0].open())
 

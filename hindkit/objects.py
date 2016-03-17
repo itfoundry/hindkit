@@ -179,7 +179,7 @@ class _BaseFont(object):
     def path(self, value):
         self._path = value
 
-    def prepare(self, *args, **kwargs):
+    def prepare(self, builder, *args, **kwargs):
         path = self.path
         if os.path.exists(path):
             if not self.temp:
@@ -187,10 +187,13 @@ class _BaseFont(object):
                 copy(path, self.path)
         else:
             self.temp = True
-            self.generate(*args, **kwargs)
+            try:
+                self.generate(builder, *args, **kwargs)
+            except AttributeError:
+                raise SystemExit("Can't generate {}.".format(self.path))
 
-    def generate(self):
-        raise SystemExit("Can't generate {}.".format(self.path))
+    # def generate(builder, self):
+    #     pass
 
     def open(self):
         if os.path.exists(self.path):
@@ -204,8 +207,8 @@ class _BaseFont(object):
 
     def save_as(self, font, temp=True):
         self.counter += 1
-        self._filename = None
-        self.filename = '_{}-'.format(self.counter) + self.filename
+        self.filename = None
+        self.filename += '--{}'.format(self.counter)
         self.temp = temp
         font.save(self.path)
 
@@ -529,5 +532,5 @@ class GlyphData(object):
             if build_ttf:
                 trimmed_ttf.close()
 
-class DesignSpace(_BaseObject):
-    pass
+# class DesignSpace(_BaseObject):
+#     pass
