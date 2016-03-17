@@ -5,8 +5,6 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import datetime, collections
 from . import styles, misc
 
-DEFAULT = 'Google Fonts'
-
 class Client(object):
 
     def __init__(self, family):

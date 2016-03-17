@@ -134,7 +134,7 @@ class Builder(object):
                     hindkit.relative_to_cwd(temp(master.path))
                 ),
                 name = 'master-' + master.name,
-                location = {'weight': master.interpolation_value},
+                location = {'weight': master.weight_location},
 
                 copyLib    = i == 0,
                 copyGroups = i == 0,
@@ -150,7 +150,7 @@ class Builder(object):
 
             doc.startInstance(
                 name = 'instance-' + style.name,
-                location = {'weight': style.interpolation_value},
+                location = {'weight': style.weight_location},
                 familyName = self.family.output_name,
                 styleName = style.name,
                 fileName = os.path.abspath(
@@ -564,10 +564,13 @@ class Builder(object):
                 master,
             )
 
-        self.goadb.generate()
+        self.goadb.generate(self.family.masters[0].open_font())
 
         for master in self.family.masters:
-            master.update_glyph_order(self.goadb.development_names)
+            font = master.open()
+            font.lib['public.glyphOrder'] = self.goadb.development_names
+            font.lib.pop('com.schriftgestaltung.glyphOrder', None)
+            master.save_as(font)
 
         if self.options['run_stage_prepare_styles']:
             reset_dir(temp(constants.paths.STYLES))

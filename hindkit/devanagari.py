@@ -11,13 +11,13 @@ def prepare_features_devanagari(do_mark_positioning, builder, style):
     light_min, light_max = light
     bold_min, bold_max = bold
 
-    axis_start = builder.family.masters[0].interpolation_value
-    axis_end = builder.family.masters[-1].interpolation_value
+    axis_start = builder.family.masters[0].weight_location
+    axis_end = builder.family.masters[-1].weight_location
     axis_range = axis_end - axis_start
     if axis_range == 0:
         ratio = 1
     else:
-        ratio = (style.interpolation_value - axis_start) / axis_range
+        ratio = (style.weight_location - axis_start) / axis_range
     offset_tuple = (
         light_min + (bold_min - light_min) * ratio,
         light_max + (bold_max - light_max) * ratio,

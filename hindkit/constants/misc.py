@@ -5,9 +5,6 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import os, collections
 import hindkit
 
-with open(hindkit.relative_to_interpreter('../SharedData/AGD.txt'), 'rU') as f:
-    AGD_DICT = hindkit.agd.dictionary(f.read())
-
 DERIVING_MAP = {
     'CR': 'space',
     'uni000D': 'space',

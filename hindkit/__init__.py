@@ -27,5 +27,5 @@ def memoize(obj):
         return memoized[k]
     return memoizer
 
-from hindkit.objects import Family, Master, Style, GOADB
+from hindkit.objects import Family, Master, Style, GlyphData
 from hindkit.tools import Builder

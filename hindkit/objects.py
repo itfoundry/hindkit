@@ -2,29 +2,40 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, re, sys
-import defcon
-import hindkit.constants, hindkit.tools, hindkit.patches
+import os, re, sys, collections
 
+import defcon, hindkit.patches
 defcon.Glyph.insertAnchor = hindkit.patches.insertAnchor
+
+import hindkit.constants, hindkit.tools
+
+def fallback(*candidates):
+    # if len(candidates) == 1 and isinstance(candidates[0], collections.Iterable):
+    #     candidates = candidates[0]
+    for i in candidates:
+        if i is not None:
+            return i
+
+def postscript(name):
+    return name.replace(' ', '')
+
 
 class Family(object):
 
-    default_client = hindkit.constants.clients.DEFAULT
+    default_client = 'Google Fonts'
 
     def __init__(
         self,
         client = None,
-        trademark = '',
-        script = '',
+        trademark = None,
+        script = None,
         append_script_name = False,
-        name = '',
+        name = None,
     ):
 
-        if client:
-            self.client = client
-        else:
-            self.client = self.default_client
+        _BaseObject.__init__(self)
+
+        self.client = fallback(client, hindkit.constants.clients.DEFAULT)
 
         self.trademark = trademark
         self.script = script
@@ -38,21 +49,10 @@ class Family(object):
                 self.name += ' ' + self.script
         self.name_postscript = self.name.replace(' ', '')
 
-        self.output_name_affix = '{}'
-
         self.masters = []
         self.styles = []
 
-        info_host = defcon.Font()
-        self.info = info_host.info
-
-    @property
-    def output_name(self):
-        return self.output_name_affix.format(self.name)
-
-    @property
-    def output_name_postscript(self):
-        return self.output_name.replace(' ', '')
+        self.info = defcon.Font().info
 
     def set_masters(self, masters=None):
         if masters:
@@ -67,24 +67,24 @@ class Family(object):
             Style(
                 self,
                 name = style_name,
-                interpolation_value = interpolation_value,
+                weight_location = weight_location,
                 weight_class = weight_class,
             )
-            for style_name, interpolation_value, weight_class in style_scheme
+            for style_name, weight_location, weight_class in style_scheme
         ]
         if not self.masters:
             self.set_masters([
-                Master(self, i.name, i.interpolation_value)
+                Master(self, i.name, i.weight_location)
                 for i in self.styles
             ])
 
     def get_styles_that_are_directly_derived_from_masters(self):
         master_positions = [
-            master.interpolation_value for master in self.masters
+            master.weight_location for master in self.masters
         ]
         styles_that_are_directly_derived_from_masters = []
         for style in self.styles:
-            if style.interpolation_value in master_positions:
+            if style.weight_location in master_positions:
                 styles_that_are_directly_derived_from_masters.append(style)
         return styles_that_are_directly_derived_from_masters
 
@@ -97,71 +97,112 @@ class Family(object):
     def _has_mI_variants(self): # TODO
         pass
 
-class _BaseStyle(object):
 
-    def __init__(
-        self,
-        _family,
-        name = 'Regular',
-        interpolation_value = 0,
-        _file_name = None,
-    ):
-        self._family = _family
+class _BaseFont(_BaseObject):
+
+    def __init__(self, family, name):
+
+        self.family = family
         self.name = name
-        self.interpolation_value = interpolation_value
-        self._file_name = _file_name
 
-        self.postprocess_counter = 0
+        self.file_format = 'UFO'
+        self.directory = None
+        self.temp = False
+
+        self._name_postscript = None
+        self._full_name = None
+        self._full_name_postscript = None
+        self._extension = None
+        self._filename = None
+        self._path = None
+
+        self.counter = 0
 
     @property
-    def directory(self):
-        return ''
+    def name_postscript(self):
+        return fallback(self._name_postscript, postscript(self.name))
+    @name_postscript.setter
+    def name_postscript(self, value):
+        self._name_postscript = value
 
     @property
-    def file_name(self):
-        if self._file_name:
-            return self._file_name
-        else:
-            return ''
+    def full_name(self):
+        return fallback(self._full_name, self.family.name + ' ' + self.name)
+    @full_name.setter
+    def full_name(self, value):
+        self._full_name = value
+
+    @property
+    def full_name_postscript(self):
+        return fallback(
+            self._full_name_postscript,
+            postscript(self.family.name) + '-' + self.name_postscript,
+        )
+    @full_name_postscript.setter
+    def full_name_postscript(self, value):
+        self._full_name_postscript = value
+
+    @property
+    def extension(self):
+        return fallback(self._extension, self.file_format.lower())
+    @extension.setter
+    def extension(self, value):
+        self._extension = value
+
+    @property
+    def filename(self):
+        return fallback(self._filename, self.name)
+    @filename.setter
+    def filename(self, value):
+        self._filename = value
 
     @property
     def path(self):
-        return os.path.join(self.directory, self.file_name)
+        filename = self.filename
+        if self.extension:
+            filename += '.' + self.extension
+        directory = self.directory
+        if self.temp:
+            os.path.join(constants.paths.TEMP, directory)
+        return fallback(
+            self._path,
+            os.path.join(self.directory, filename),
+        )
+    @path.setter
+    def path(self, value):
+        self._path = value
 
-    def open_font(self, is_temp=False):
-        path = self.path
-        if is_temp:
-            path = hindkit.tools.temp(path)
-        if os.path.exists(path):
-            print("Opening `{}`".format(path))
-            return defcon.Font(path)
+    def open(self):
+        if os.path.exists(self.path):
+            if self.file_format == 'UFO':
+                print("Opening `{}`".format(self.path))
+                return defcon.Font(self.path)
+            else:
+                raise SystemExit("`{}` is not supported by defcon.".format(self.path))
         else:
-            raise SystemExit("`{}` is missing.".format(path))
+            raise SystemExit("`{}` is missing.".format(self.path))
 
-    def save_temp(self, font):
-        self.postprocess_counter += 1
-        self._file_name = '_temp{}_'.format(self.postprocess_counter) + self.name
-        font.save(hindkit.tools.temp(self.path))
+    def save_as(self, font, temp=True):
+        self.counter += 1
+        self._filename = None
+        self.filename = '_{}-'.format(self.counter) + self.filename
+        self.temp = temp
+        font.save(self.path)
 
-    def update_glyph_order(self, order):
-        font = self.open_font(is_temp=True)
-        font.lib['public.glyphOrder'] = order
-        if 'com.schriftgestaltung.glyphOrder' in font.lib:
-            del font.lib['com.schriftgestaltung.glyphOrder']
-        self.save_temp(font)
 
-class Master(_BaseStyle):
+class Master(_BaseFont):
+
+    def __init__(self, family, name, weight_location=0):
+
+        _BaseFont.__init__(self, family, name)
+        self.directory = hindkit.constants.paths.MASTERS
+
+        self.weight_location = weight_location
 
     @property
-    def directory(self):
-        return hindkit.constants.paths.MASTERS
-
-    @property
-    def file_name(self):
-        if self._file_name:
-            return self._file_name
-        else:
-            return '{}-{}.ufo'.format(self._family.name, self.name)
+    def filename(self):
+        '''According to Glyphs app's convention.'''
+        return fallback(self._filename, self.family.name + '-' + self.name)
 
     def import_glyphs_from(
         self,
@@ -178,24 +219,24 @@ class Master(_BaseStyle):
 
         import glob
 
-        source_file_name_pattern = '{}*-{}.ufo'.format(source_dir, self.name)
-        source_paths = glob.glob(source_file_name_pattern)
+        source_filename_pattern = '{}*-{}.ufo'.format(source_dir, self.name)
+        source_paths = glob.glob(source_filename_pattern)
         if source_paths:
             source_path = source_paths[0]
         else:
-            raise SystemExit("`{}` is missing.".format(source_file_name_pattern))
+            raise SystemExit("`{}` is missing.".format(source_filename_pattern))
         source = defcon.Font(source_path)
 
         if target_dir:
-            target_file_name_pattern = '{}*-{}.ufo'.format(target_dir, self.name)
-            target_paths = glob.glob(target_file_name_pattern)
+            target_filename_pattern = '{}*-{}.ufo'.format(target_dir, self.name)
+            target_paths = glob.glob(target_filename_pattern)
             if target_paths:
                 target_path = target_paths[0]
             else:
-                raise SystemExit("`{}` is missing.".format(target_file_name_pattern))
+                raise SystemExit("`{}` is missing.".format(target_filename_pattern))
             target = defcon.Font(target_path)
         else:
-            target = self.open_font(is_temp=True)
+            target = self.open()
 
         if importing_names:
             new_names = set(importing_names)
@@ -214,14 +255,14 @@ class Master(_BaseStyle):
             print(new_name, end=', ')
         print()
 
-        self.save_temp(target)
+        self.save_as(target)
 
     def derive_glyphs(self, deriving_names):
 
         if deriving_names is None:
             deriving_names = []
 
-        target = self.open_font(is_temp=True)
+        target = self.open()
 
         print('\n[NOTE] Deriving glyphs in `{}`:'.format(self.name))
         for deriving_name in deriving_names:
@@ -232,28 +273,27 @@ class Master(_BaseStyle):
             print('{} (from {})'.format(deriving_name, source_name), end=', ')
         print()
 
-        self.save_temp(target)
+        self.save_as(target)
 
-class Style(_BaseStyle):
+
+class Style(_BaseFont):
 
     def __init__(
         self,
-        _family,
-        name = 'Regular',
-        interpolation_value = 0,
+        family,
+        name,
+        weight_location = 0,
         weight_class = 400,
         is_bold = None,
         is_italic = None,
         is_oblique = None,
-        input_format = 'UFO',
-        output_format = 'OTF',
         _output_full_name_postscript = None,
-        _font_name = None,
     ):
 
-        super(Style, self).__init__(_family, name, interpolation_value)
+        _BaseFont.__init__(self, family, name)
+        self._directory = None
 
-        self.name_postscript = self.name.replace(' ', '')
+        self.weight_location = weight_location
 
         self.full_name = _family.name + ' ' + self.name
         self.full_name_postscript = _family.name_postscript + '-' + self.name_postscript
@@ -270,73 +310,91 @@ class Style(_BaseStyle):
         if is_oblique is None:
             self.is_oblique = True if 'Oblique' in self.name.split() else False
 
-        self.input_format = input_format
-        self.output_format = output_format
-
         self._output_full_name_postscript = _output_full_name_postscript
-
-        self._font_name = _font_name
 
     @property
     def directory(self):
-        return os.path.join(hindkit.constants.paths.STYLES, self.name_postscript)
+        return fallback(
+            self._directory,
+            os.path.join(hindkit.constants.paths.STYLES, self.name),
+        )
+    @directory.setter
+    def directory(self, value):
+        self._directory = value
 
     @property
-    def file_name(self):
-        if self._file_name:
-            file_name = self._file_name
-        else:
-            file_name = 'font' + '.' + self.input_format.lower()
-        return file_name
+    def filename(self):
+        return fallback(self._filename, 'font')
+
+    def produce(self, file_format='OTF'):
+        return Product(self.family, self, file_format=file_format)
+
+
+class Product(_BaseFont):
+
+    def __init__(self, family, style, file_format='OTF'):
+        _BaseFont.__init__(self, family, style.name)
+        self.file_format = file_format
+        self.directory = hindkit.constants.paths.BUILD
 
     @property
-    def output_full_name(self):
-        output_full_name = self._family.output_name + ' ' + self.name
-        return output_full_name
+    def filename(self):
+        return fallback(self._filename, self.full_name_postscript)
 
-    @property
-    def output_full_name_postscript(self):
-        if self._output_full_name_postscript:
-            output_full_name_postscript = self._output_full_name_postscript
-        else:
-            output_full_name_postscript = self._family.output_name_postscript + '-' + self.name_postscript
-        return output_full_name_postscript
 
-    @property
-    def font_name(self):
-        if self._font_name:
-            font_name = self._font_name
-        else:
-            font_name = self.output_full_name_postscript + '.' + self.output_format.lower()
-        return font_name
+class GlyphData(_BaseObject):
 
-    @property
-    def font_path(self):
-        return os.path.join(hindkit.constants.paths.BUILD, self.font_name)
+    @staticmethod
+    def normalize(lines):
+        for line in lines:
+            yield '\t'.join(line.partition('#')[0].split())
 
-class GOADB(object):
+    @classmethod
+    def patch(cls, dictionary):
+        ITFDG = []
+        for glyph in ITFDG:
+            dictionary.add(glyph, priority=3)
+        return dictionary
 
-    def __init__(self, path=hindkit.constants.paths.GOADB):
+    def __init__(self, glyph_order_path='glyphorder.txt', goadb_path='GlyphOrderAndAliasDB'):
 
-        self.path = hindkit.tools.temp(path)
-        self.path_trimmed = self.path + '_trimmed'
-        self.path_trimmed_ttf = self.path_trimmed + '_ttf'
+        self.glyph_order_path = glyph_order_path
+
+        self.goadb_path = goadb_path
+        self.goadb_path_trimmed = hindkit.tools.temp(self.goadb_path + '_trimmed')
+        self.goadb_path_trimmed_ttf = hindkit.tools.temp(self.goadb_path + '_trimmed_ttf')
+
+        self.name_order = []
 
         self.production_names = []
         self.development_names = []
         self.u_mappings = []
 
-    def generate(self):
+        with open(hindkit.relative_to_interpreter('../SharedData/AGD.txt'), 'rU') as f:
+            self.agd_dictionary = hindkit.agd.dictionary(f.read())
+
+        self.itfgd_dictionary = self.patch(self.agd_dictionary)
+
+    def generate_name_order(self):
+        for section in self.name_order_raw:
+            if is_agd():
+                self.name_order.extend(hindkit.agd.cfforder(section))
+            else:
+                self.name_order.extend(section)
+
+
+    def generate(self, reference_font):
 
         goadb = []
 
         if os.path.exists('glyphorder.txt'):
 
+            self.goadb_path = hindkit.tools.temp(self.goadb_path)
+
             glyphorder = []
             with open('glyphorder.txt') as f:
-                for line in f:
-                    line_without_comment = line.partition('#')[0].strip()
-                    for development_name in line_without_comment.split():
+                for line in self.normalize(f):
+                    for development_name in line.split():
                         glyphorder.append(development_name)
 
             U_SCALAR_TO_U_NAME = hindkit.constants.misc.get_u_scalar_to_u_name()
@@ -370,7 +428,9 @@ class GOADB(object):
 
             u_mapping_pattern = re.compile(r'uni([0-9A-F]{4})|u([0-9A-F]{5,6})$')
 
-            with open(hindkit.constants.paths.GOADB, 'w') as f:
+            hindkit.tools.make_dir(hindkit.constants.paths.TEMP)
+
+            with open(self.goadb_path, 'w') as f:
 
                 for development_name in glyphorder:
 
@@ -409,18 +469,16 @@ class GOADB(object):
                     f.write(' '.join(filter(None, row)) + '\n')
                     goadb.append(row)
 
-        elif os.path.exists(hindkit.constants.paths.GOADB):
-            with open(hindkit.constants.paths.GOADB) as f:
-                for line in f:
-                    line_without_comment = line.partition('#')[0].strip()
-                    if line_without_comment:
-                        row = line_without_comment.split()
-                        if len(row) == 2:
-                            row.append(None)
-                        production_name, development_name, u_mapping = row
-                        goadb.append(
-                            (production_name, development_name, u_mapping)
-                        )
+        else:
+            with open(self.path) as f:
+                for line in self.normalize(f):
+                    row = line.split()
+                    if len(row) == 2:
+                        row.append(None)
+                    production_name, development_name, u_mapping = row
+                    goadb.append(
+                        (production_name, development_name, u_mapping)
+                    )
 
     def output_trimmed(self, reference_font, build_ttf=False):
         DIFFERENCES = {
@@ -439,7 +497,7 @@ class GOADB(object):
         else:
             trimmed = open(self.path_trimmed, 'w')
             if build_ttf:
-                trimmed_ttf = open(tself.path_trimmed_ttf, 'w')
+                trimmed_ttf = open(self.path_trimmed_ttf, 'w')
             for row in self.table:
                 if row.development_name in reference_font:
                     line = ' '.join(filter(None, row)) + '\n'
