@@ -3,10 +3,11 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import subprocess, os, argparse, collections, shutil
-from fontTools.ttLib import TTFont
-import mutatorMath.ufo.document, WriteFeaturesKernFDK, WriteFeaturesMarkFDK
-import hindkit, hindkit.devanagari, hindkit.patches
-import hindkit.constants as constants
+
+import fontTools.ttLib, mutatorMath.ufo.document
+import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
+
+from hindkit import *
 
 class Builder(object):
 
@@ -68,7 +69,7 @@ class Builder(object):
 
         self.options.update(options)
 
-        self.goadb = hindkit.GlyphData()
+        self.goadb = GlyphData()
 
     def postprocess_kerning(self, original):
         return original
@@ -102,14 +103,14 @@ class Builder(object):
     def generate_designspace(self, output):
 
         doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
-            os.path.abspath(hindkit.relative_to_cwd(output))
+            os.path.abspath(relative_to_cwd(output))
         )
 
         for i, master in enumerate(self.family.masters):
 
             doc.addSource(
 
-                path = os.path.abspath(hindkit.relative_to_cwd(master.path)),
+                path = os.path.abspath(relative_to_cwd(master.path)),
                 name = 'master ' + master.name,
                 location = {'weight': master.weight_location},
 
@@ -131,7 +132,7 @@ class Builder(object):
                 familyName = self.family.name,
                 styleName = style.name,
                 fileName = os.path.abspath(
-                    hindkit.relative_to_cwd(style.path)
+                    relative_to_cwd(style.path)
                 ),
                 postScriptFontName = style.full_name_postscript,
                 # styleMapFamilyName = None,
@@ -181,7 +182,7 @@ class Builder(object):
                 'doAutoHint': self.options['run_autohint'],
                 'allowDecimalCoords': False,
             }
-            hindkit.patches.updateInstance(options, style.path)
+            patches.updateInstance(options, style.path)
 
     def generate_features_classes(self, output):
 
@@ -196,10 +197,10 @@ class Builder(object):
 
             if self.options['match_mI_variants']:
                 glyph_classes.extend([
-                    ('MATRA_I_ALTS', hindkit.devanagari.glyph_filter_matra_i_alts),
-                    ('BASES_ALIVE', hindkit.devanagari.glyph_filter_bases_alive),
-                    ('BASES_DEAD', hindkit.devanagari.glyph_filter_bases_dead),
-                    # ('BASES_FOR_WIDE_MATRA_II', hindkit.devanagari.glyph_filter_bases_for_wide_matra_ii),
+                    ('MATRA_I_ALTS', devanagari.glyph_filter_matra_i_alts),
+                    ('BASES_ALIVE', devanagari.glyph_filter_bases_alive),
+                    ('BASES_DEAD', devanagari.glyph_filter_bases_dead),
+                    # ('BASES_FOR_WIDE_MATRA_II', devanagari.glyph_filter_bases_for_wide_matra_ii),
                 ])
 
             style_0 = self.styles_to_produce[0].open_font(is_temp=True)
@@ -342,7 +343,7 @@ class Builder(object):
                 indianScriptsFormat = self.family.script.lower() in constants.misc.SCRIPTS,
             )
             if self.options['match_mI_variants']:
-                hindkit.devanagari.prepare_features_devanagari(
+                devanagari.prepare_features_devanagari(
                     self.options['position_marks_for_mI_variants'],
                     self,
                     style,
@@ -476,7 +477,7 @@ class Builder(object):
         subprocess.call(['makeotf'] + arguments)
 
         if self.options['postprocess_font_file'] and os.path.exists(font_path):
-            original = TTFont(font_path)
+            original = fontTools.ttLib.TTFont(font_path)
             postprocessed = self.postprocess_font_file(original)
             postprocessed.save(font_path, reorderTables=False)
             print('[NOTE] `postprocess_font_file` done.')

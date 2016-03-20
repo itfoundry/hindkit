@@ -4,10 +4,7 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 
 import os, re, sys, collections
 
-import defcon, hindkit.patches
-defcon.Glyph.insertAnchor = hindkit.patches.insertAnchor
-
-from hindkit import constants, tools
+from hindkit import constants, patches
 
 def fallback(*candidates):
     # if len(candidates) == 1 and isinstance(candidates[0], collections.Iterable):
@@ -393,15 +390,15 @@ class GlyphData(object):
         self.development_names = []
         self.u_mappings = []
 
-        with open(hindkit.relative_to_interpreter('../SharedData/AGD.txt'), 'rU') as f:
-            self.agd_dictionary = hindkit.agd.dictionary(f.read())
+        with open(relative_to_interpreter('../SharedData/AGD.txt'), 'rU') as f:
+            self.agd_dictionary = agd.dictionary(f.read())
 
         self.itfgd_dictionary = self.patch(self.agd_dictionary)
 
     def generate_name_order(self):
         for section in self.name_order_raw:
             if is_agd():
-                self.name_order.extend(hindkit.agd.cfforder(section))
+                self.name_order.extend(agd.cfforder(section))
             else:
                 self.name_order.extend(section)
 

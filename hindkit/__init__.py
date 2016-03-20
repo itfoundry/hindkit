@@ -7,10 +7,6 @@ import os, sys, functools
 def relative_to_interpreter(path):
     return os.path.join(os.path.dirname(sys.executable), path)
 
-sys.path.insert(0, relative_to_interpreter('../SharedData/FDKScripts'))
-# __path__.append(relative_to_interpreter('../SharedData/FDKScripts'))
-import agd
-
 def relative_to_package(path):
     return os.path.join(__path__[0], path)
 
@@ -27,5 +23,14 @@ def memoize(obj):
         return memoized[k]
     return memoizer
 
-from hindkit.objects import Family, Master, Style, GlyphData
-from hindkit.tools import Builder
+import hindkit.objects as objects
+import hindkit.tools as tools
+import hindkit.constants as constants
+import hindkit.patches as patches
+
+import defcon
+defcon.Glyph.insertAnchor = patches.insertAnchor
+
+sys.path.insert(0, relative_to_interpreter('../SharedData/FDKScripts'))
+# __path__.append(relative_to_interpreter('../SharedData/FDKScripts'))
+import agd

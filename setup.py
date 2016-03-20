@@ -5,9 +5,10 @@ import setuptools
 setuptools.setup(
     name = 'hindkit',
     version = '1.0.0',
+    url = "https://github.com/itfoundry/hindkit",
     author = 'Liang Hai',
     author_email = 'lianghai@gmail.com',
-    url = "https://github.com/itfoundry/hindkit",
+    license='MIT',
     packages = [
         'hindkit',
         'hindkit.constants',
