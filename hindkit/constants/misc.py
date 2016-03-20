@@ -3,15 +3,8 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import os, collections
-import hindkit
 
-DERIVING_MAP = {
-    'CR': 'space',
-    'uni000D': 'space',
-    'uni00A0': 'space',
-    'NULL': None,
-    'uni200B': None,
-}
+import hindkit as kit
 
 CONSONANT_STEMS = '''
 K KH G GH NG
@@ -106,20 +99,20 @@ SCRIPTS = {
     },
 }
 
-@hindkit.memoize
+@kit.memoize
 def get_u_scalar_to_u_name():
     u_scalar_to_u_name = {}
-    with open(hindkit.relative_to_package('data/UnicodeData.txt')) as f:
+    with open(kit.relative_to_package('data/UnicodeData.txt')) as f:
         for line in f:
             u_scalar, u_name, rest = line.split(';', 2)
             if not u_name.startswith('<'):
                 u_scalar_to_u_name[u_scalar] = u_name
     return u_scalar_to_u_name
 
-@hindkit.memoize
+@kit.memoize
 def get_glyph_list(file_name):
     glyph_list = collections.OrderedDict()
-    with open(hindkit.relative_to_package('data/' + file_name)) as f:
+    with open(kit.relative_to_package('data/' + file_name)) as f:
         for line in f:
             line_without_comment = line.partition('#')[0].strip()
             if line_without_comment:
@@ -127,14 +120,14 @@ def get_glyph_list(file_name):
                 glyph_list[glyph_name] = u_name
     return glyph_list
 
-@hindkit.memoize
+@kit.memoize
 def get_adobe_latin(number, get_combined=False):
     adobe_latin = collections.OrderedDict()
     suffix = str(number)
     if number > 3:
         suffix = suffix + ('-combined' if get_combined else '-precomposed')
     with open(
-        hindkit.relative_to_package('data/adobe-latin-{}.txt'.format(suffix))
+        kit.relative_to_package('data/adobe-latin-{}.txt'.format(suffix))
     ) as f:
         f.next()
         for line in f:

@@ -2,16 +2,45 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-from hindkit.objects.base import BaseObject
+import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 
-class Feature(BaseObject):
+import hindkit as kit
+
+def compose_glyph_class_def_lines(class_name, glyph_names):
+    if glyph_names:
+        glyph_class_def_lines = (
+            ['@{} = ['.format(class_name)] +
+            ['  {}'.format(glyph_name) for glyph_name in glyph_names] +
+            ['];', '']
+        )
+    else:
+        glyph_class_def_lines = ['# @{} = [];'.format(class_name), '']
+    return glyph_class_def_lines
+
+def glyph_filter_marks(family, glyph):
+    has_mark_anchor = False
+    for anchor in glyph.anchors:
+        if anchor.name:
+            if anchor.name.startswith('_'):
+                has_mark_anchor = True
+                break
+    return has_mark_anchor
+
+def sort_names(names, order=None):
+    sorted_names = (
+        [i for i in order if i in names] +
+        [i for i in names if i not in order]
+    )
+    return sorted_names
+
+class Feature(kit.BaseObject):
 
     def __init__(self, name, builder, style):
 
         super(FeatureFile, self).__init__(name)
 
         self.file_format = 'FEA'
-        self.abstract_directory = kit.constants.paths.FEATURES
+        self.abstract_directory = kit.Builder.directories['features']
 
     def generate(self, builder):
 
@@ -49,7 +78,7 @@ class Feature(BaseObject):
                         style_0,
                     )
                 ]
-                glyph_names = sort_glyphs(glyph_order, glyph_names)
+                glyph_names = sort_names(glyph_order, glyph_names)
                 style_0.groups.update({class_name: glyph_names})
                 lines.extend(
                     compose_glyph_class_def_lines(class_name, glyph_names)
@@ -77,7 +106,7 @@ class Feature(BaseObject):
 
         tables['OS/2'].extend([
             'include (weightclass.fea);',
-            'Vendor "{}";'.format(kit.constants.clients.Client(builder.family).table_OS_2['Vendor']),
+            'Vendor "{}";'.format(kit.clients.Client(builder.family).table_OS_2['Vendor']),
         ])
 
         if builder.vertical_metrics:
@@ -110,9 +139,9 @@ class Feature(BaseObject):
                 'marks': '',
                 'components': '',
             }
-            if builder.options['prepare_mark_positioning'] or os.path.exists(temp(os.path.join(kit.constants.paths.FEATURES, 'classes.fea'))):
+            if builder.options['prepare_mark_positioning'] or os.path.exists(temp(os.path.join(kit.paths.FEATURES, 'classes.fea'))):
                 GDEF_records['marks'] = '@{}'.format(WriteFeaturesMarkFDK.kCombMarksClassName)
-            if os.path.exists(temp(os.path.join(kit.constants.paths.FEATURES, 'classes_suffixing.fea'))):
+            if os.path.exists(temp(os.path.join(kit.paths.FEATURES, 'classes_suffixing.fea'))):
                 GDEF_records['marks'] = '@{}'.format('COMBINING_MARKS_GDEF')
             tables['GDEF'].extend([
                 'GlyphClassDef {bases}, {ligatures}, {marks}, {components};'.format(**GDEF_records)
@@ -123,7 +152,7 @@ class Feature(BaseObject):
                 name_id,
                 content.encode('unicode_escape').replace('\\x', '\\00').replace('\\u', '\\')
             )
-            for name_id, content in kit.constants.clients.Client(builder.family).table_name.items()
+            for name_id, content in kit.clients.Client(builder.family).table_name.items()
             if content
         )
 
@@ -140,7 +169,7 @@ class Feature(BaseObject):
     def generate_languagesystems(self, builder):
 
         lines = ['languagesystem DFLT dflt;']
-        tag = kit.constants.misc.SCRIPTS[builder.family.script.lower()]['tag']
+        tag = kit.misc.SCRIPTS[builder.family.script.lower()]['tag']
         if isinstance(tag, tuple):
             lines.append('languagesystem {} dflt;'.format(tag[1]))
             lines.append('languagesystem {} dflt;'.format(tag[0]))
@@ -172,7 +201,7 @@ class Feature(BaseObject):
                 trimCasingTags = False,
                 genMkmkFeature = builder.options['prepare_mark_to_mark_positioning'],
                 writeClassesFile = True,
-                indianScriptsFormat = builder.family.script.lower() in kit.constants.misc.SCRIPTS,
+                indianScriptsFormat = builder.family.script.lower() in kit.misc.SCRIPTS,
             )
             if builder.options['match_mI_variants']:
                 devanagari.prepare_features_devanagari(
@@ -199,11 +228,11 @@ class Feature(BaseObject):
                 'GSUB_lookups',
                 'GSUB',
             ]:
-                abstract_path = os.path.join(kit.constants.paths.FEATURES, file_name + '.fea')
+                abstract_path = os.path.join(kit.paths.FEATURES, file_name + '.fea')
                 if os.path.exists(temp(abstract_path)):
                     lines.append('include (../../{});'.format(abstract_path))
             if os.path.exists(os.path.join(directory, WriteFeaturesKernFDK.kKernFeatureFileName)):
-                if builder.family.script.lower() in kit.constants.misc.SCRIPTS:
+                if builder.family.script.lower() in kit.misc.SCRIPTS:
                     kerning_feature_name = 'dist'
                 else:
                     kerning_feature_name = 'kern'

@@ -2,7 +2,7 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, sys, functools
+import os, sys, functools, shutil, errno
 
 def relative_to_interpreter(path):
     return os.path.join(os.path.dirname(sys.executable), path)
@@ -23,12 +23,39 @@ def memoize(obj):
         return memoized[k]
     return memoizer
 
-sys.path.insert(0, relative_to_interpreter('../SharedData/FDKScripts'))
-# __path__.append(relative_to_interpreter('../SharedData/FDKScripts'))
-import agd
+def remove(path):
+    try:
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        else:
+            os.remove(path)
+    except OSError as e:
+        if e.errno == errno.ENOENT:
+            pass
+        else:
+            raise
 
-import hindkit.patches
-import defcon as defcon_patched
-defcon_patched.Glyph.insertAnchor = patches.insertAnchor
 
-from hindkit import constants, objects, tools
+def makedirs(path):
+    try:
+        os.makedirs(path)
+    except OSError as e:
+        if e.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
+def copy(src, dst):
+    if os.path.isdir(src):
+        shutil.copytree(src, dst)
+    else:
+        shutil.copy(src, src)
+
+from hindkit.constants import styles, clients, misc
+from hindkit.objects.base import BaseObject
+from hindkit.objects.family import Family
+from hindkit.objects.font import Master, Style, Product
+from hindkit.objects.glyphdata import GlyphData
+from hindkit.objects.builder import Builder
+
+from hindkit import scripts

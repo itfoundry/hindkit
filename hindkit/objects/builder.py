@@ -2,7 +2,22 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
+import os, argparse, subprocess, collections
+
+import fontTools.ttLib, mutatorMath.ufo.document
+
+import hindkit as kit
+
 class Builder(object):
+
+    directories = {
+        'masters': 'masters',
+        'styles': 'styles',
+        'features': 'features',
+        'build': 'build',
+        'temp': 'temp',
+        'Adobe/Fonts': '/Library/Application Support/Adobe/Fonts',
+    }
 
     def __init__(
         self,
@@ -29,11 +44,11 @@ class Builder(object):
 
         self.options = {
 
-            'prepare_kerning': self.family._has_kerning(),
+            'prepare_kerning': False,
 
-            'prepare_mark_positioning': self.family._has_mark_positioning(),
+            'prepare_mark_positioning': False,
             'prepare_mark_to_mark_positioning': True,
-            'match_mI_variants': self.family._has_mI_variants(),
+            'match_mI_variants': False,
             'position_marks_for_mI_variants': False,
 
             'prepare_master': False,
@@ -62,7 +77,10 @@ class Builder(object):
 
         self.options.update(options)
 
-        self.goadb = kit.objects.GlyphData()
+        self.goadb = kit.GlyphData()
+
+    def temp(self, abstract_path):
+        return os.path.join(self.directories['temp'], abstract_path)
 
     def postprocess_kerning(self, original):
         return original
@@ -132,13 +150,13 @@ class Builder(object):
 
         for style in self.styles_to_produce:
             style.temp = True
-            make_dir(style.directory)
+            kit.makedirs(style.directory)
 
         if self.options['run_makeinstances']:
 
             self.designspace.prepare()
 
-            arguments = ['-d', temp(kit.constants.paths.DESIGNSPACE)]
+            arguments = ['-d', self.temp('font.designspace')]
             if not self.options['run_checkoutlines']:
                 arguments.append('-c')
             if not self.options['run_autohint']:
@@ -162,7 +180,7 @@ class Builder(object):
                 'doAutoHint': self.options['run_autohint'],
                 'allowDecimalCoords': False,
             }
-            patches.updateInstance(options, style.path)
+            _updateInstance(options, style.path)
 
     def generate_features_GSUB(self, output):
         pass
@@ -173,7 +191,7 @@ class Builder(object):
             style.input_format = 'TTF'
             style.output_format = 'TTF'
 
-        self._check_inputs([temp(style.path), temp(self.fmndb.output), temp(self.trimmed_goadb.output)])
+        self._check_inputs([self.temp(style.path), self.temp(self.fmndb.output), self.temp(self.trimmed_goadb.output)])
 
         # if style.file_name.endswith('.ufo'):
         #     font = style.open_font(is_temp=True)
@@ -184,10 +202,10 @@ class Builder(object):
         font_path = style.font_path
 
         arguments = [
-            '-f', temp(style.path),
+            '-f', self.temp(style.path),
             '-o', font_path,
-            '-mf', temp(self.fmndb.output),
-            '-gf', temp(self.trimmed_goadb.output),
+            '-mf', self.temp(self.fmndb.output),
+            '-gf', self.temp(self.trimmed_goadb.output),
             '-rev', self.fontrevision,
             '-ga',
             '-omitMacNames',
@@ -210,9 +228,6 @@ class Builder(object):
                 arguments.append('-osbOn' if boolean else '-osbOff')
                 arguments.append(digit)
 
-        if not os.path.isdir(kit.constants.paths.BUILD):
-            os.makedirs(kit.constants.paths.BUILD)
-
         subprocess.call(['makeotf'] + arguments)
 
         if self.options['postprocess_font_file'] and os.path.exists(font_path):
@@ -221,7 +236,7 @@ class Builder(object):
             postprocessed.save(font_path, reorderTables=False)
             print('[NOTE] `postprocess_font_file` done.')
 
-        destination = kit.constants.paths.ADOBE_FONTS
+        destination = self.directories['Adobe Fonts']
         if os.path.exists(font_path) and os.path.isdir(destination):
             copy(font_path, destination)
 
@@ -265,14 +280,17 @@ class Builder(object):
 
     def build(self):
 
+        kit.makedirs(self.directories['temp'])
+
         self._finalize_options()
-        make_dir(kit.constants.paths.TEMP)
 
         if self.options['run_stage_prepare_styles']:
 
             if self.options['run_stage_prepare_masters']:
 
-                reset_dir(temp(kit.constants.paths.MASTERS))
+                path = self.temp(self.directories['masters'])
+                kit.remove(path)
+                kit.makedirs(path)
 
                 for master in self.family.masters:
                     master.prepare(self)
@@ -285,12 +303,16 @@ class Builder(object):
                     font.lib.pop('com.schriftgestaltung.glyphOrder', None)
                     master.save_as(font)
 
-            reset_dir(temp(kit.constants.paths.STYLES))
+            path = self.temp(self.directories['styles'])
+            kit.remove(path)
+            kit.makedirs(path)
             self.prepare_styles()
 
         if self.options['run_stage_prepare_features']:
 
-            reset_dir(temp(kit.constants.paths.FEATURES))
+            path = self.temp(kit.paths.FEATURES)
+            kit.remove(path)
+            kit.makedirs(path)
 
             kit.objects.FeatureFile(
                 'classes',
@@ -314,6 +336,7 @@ class Builder(object):
                 self.features_references.prepare(self, style)
 
         if self.options['run_stage_compile']:
+            kit.makedirs(self.directories['build'])
             kit.objects.FmndbFile().prepare(self)
             self.goadb.output_trimmed(
                 reference_font = self.styles_to_produce[0].open_font(is_temp=True),
@@ -323,3 +346,72 @@ class Builder(object):
                 self._compile(style)
                 if self.options['build_ttf']:
                     self._compile(style, build_ttf=True)
+
+# makeInstancesUFO.updateInstance
+
+def _updateInstance(options, fontInstancePath):
+    if options['doOverlapRemoval']:
+        print("\tdoing overlap removal with checkOutlinesUFO %s ..." % (fontInstancePath))
+        logList = []
+        opList = ["-e", fontInstancePath]
+        if options['allowDecimalCoords']:
+            opList.insert(0, "-dec")
+        if os.name == "nt":
+            opList.insert(0, 'checkOutlinesUFO.cmd')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        else:
+            opList.insert(0, 'checkOutlinesUFO')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        while 1:
+            output = proc.stdout.readline()
+            if output:
+                print(".", end=' ')
+                logList.append(output)
+            if proc.poll() != None:
+                output = proc.stdout.readline()
+                if output:
+                    print(output, end=' ')
+                    logList.append(output)
+                break
+        log = "".join(logList)
+        if not ("Done with font" in log):
+            print()
+            print(log)
+            print("Error in checkOutlinesUFO %s" % (fontInstancePath))
+            # raise(SnapShotError)
+        else:
+            print()
+
+    if options['doAutoHint']:
+        print("\tautohinting %s ..." % (fontInstancePath))
+        logList = []
+        opList = ['-q', '-nb', fontInstancePath]
+        if options['allowDecimalCoords']:
+            opList.insert(0, "-dec")
+        if os.name == "nt":
+            opList.insert(0, 'autohint.cmd')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        else:
+            opList.insert(0, 'autohint')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        while 1:
+            output = proc.stdout.readline()
+            if output:
+                print(output, end=' ')
+                logList.append(output)
+            if proc.poll() != None:
+                output = proc.stdout.readline()
+                if output:
+                    print(output, end=' ')
+                    logList.append(output)
+                break
+        log = "".join(logList)
+        if not ("Done with font" in log):
+            print()
+            print(log)
+            print("Error in autohinting %s" % (fontInstancePath))
+            # raise(SnapShotError)
+        else:
+            print()
+
+    return

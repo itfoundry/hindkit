@@ -2,6 +2,13 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
+import sys
+
+import hindkit as kit
+
+sys.path.insert(0, kit.relative_to_interpreter('../SharedData/FDKScripts'))
+import agd
+
 class GlyphData(object):
 
     @staticmethod
@@ -16,13 +23,9 @@ class GlyphData(object):
             dictionary.add(glyph, priority=3)
         return dictionary
 
-    def __init__(self, glyph_order_path='glyphorder.txt', goadb_path='GlyphOrderAndAliasDB'):
+    def __init__(self, glyph_order_path='glyphorder.txt'):
 
         self.glyph_order_path = glyph_order_path
-
-        self.goadb_path = goadb_path
-        self.goadb_path_trimmed = kit.tools.temp(self.goadb_path + '_trimmed')
-        self.goadb_path_trimmed_ttf = kit.tools.temp(self.goadb_path + '_trimmed_ttf')
 
         self.name_order = []
 
@@ -31,7 +34,7 @@ class GlyphData(object):
         self.u_mappings = []
 
         with open(kit.relative_to_interpreter('../SharedData/AGD.txt'), 'rU') as f:
-            self.agd_dictionary = kit.agd.dictionary(f.read())
+            self.agd_dictionary = agd.dictionary(f.read())
 
         self.itfgd_dictionary = self.patch(self.agd_dictionary)
 
@@ -43,13 +46,22 @@ class GlyphData(object):
                 self.name_order.extend(section)
 
 
+class Goadb(kit.BaseObject):
+
+    def __init__(self, name='GlyphOrderAndAliasDB'):
+
+        super(Goadb, self).__init__(name)
+
+        # self.goadb_path_trimmed = kit.temp(self.goadb_path + '_trimmed')
+        # self.goadb_path_trimmed_ttf = kit.temp(self.goadb_path + '_trimmed_ttf')
+
     def generate(self, reference_font):
 
         goadb = []
 
         if os.path.exists('glyphorder.txt'):
 
-            self.goadb_path = kit.tools.temp(self.goadb_path)
+            self.goadb_path = kit.temp(self.goadb_path)
 
             glyphorder = []
             with open('glyphorder.txt') as f:
@@ -57,13 +69,13 @@ class GlyphData(object):
                     for development_name in line.split():
                         glyphorder.append(development_name)
 
-            U_SCALAR_TO_U_NAME = kit.constants.misc.get_u_scalar_to_u_name()
+            U_SCALAR_TO_U_NAME = kit.misc.get_u_scalar_to_u_name()
 
-            AGLFN = kit.constants.misc.get_glyph_list('aglfn.txt')
-            ITFGL = kit.constants.misc.get_glyph_list('itfgl.txt')
-            ITFGL_PATCH = kit.constants.misc.get_glyph_list('itfgl_patch.txt')
+            AGLFN = kit.misc.get_glyph_list('aglfn.txt')
+            ITFGL = kit.misc.get_glyph_list('itfgl.txt')
+            ITFGL_PATCH = kit.misc.get_glyph_list('itfgl_patch.txt')
 
-            AL5 = kit.constants.misc.get_adobe_latin(5)
+            AL5 = kit.misc.get_adobe_latin(5)
 
             D_NAME_TO_U_NAME = {}
             D_NAME_TO_U_NAME.update(AGLFN)
@@ -76,7 +88,7 @@ class GlyphData(object):
 
             PREFIXS = tuple(
                 v['abbreviation']
-                for v in kit.constants.misc.SCRIPTS.values()
+                for v in kit.misc.SCRIPTS.values()
             )
 
             PRESERVED_NAMES = 'NULL CR'.split()
@@ -87,8 +99,6 @@ class GlyphData(object):
             }
 
             u_mapping_pattern = re.compile(r'uni([0-9A-F]{4})|u([0-9A-F]{5,6})$')
-
-            kit.tools.make_dir(kit.constants.paths.TEMP)
 
             with open(self.goadb_path, 'w') as f:
 

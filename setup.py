@@ -12,6 +12,7 @@ setuptools.setup(
     packages = [
         'hindkit',
         'hindkit.constants',
+        'hindkit.objects',
     ],
     package_data = {
         'hindkit': ['data/*'],

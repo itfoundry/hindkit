@@ -2,6 +2,9 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
+import os
+import hindkit as kit
+
 class BaseObject(object):
 
     @staticmethod
@@ -17,7 +20,10 @@ class BaseObject(object):
         self.name = name
         self.file_format = None
         self.abstract_directory = ''
+
         self.temp = False
+        self.temp_directory = kit.Builder.directories['temp']
+
         self.counter = 0
 
         self._filename_extension = None
@@ -43,7 +49,7 @@ class BaseObject(object):
     def directory(self):
         directory = self.abstract_directory
         if self.temp:
-            directory = os.path.join(kit.constants.paths.TEMP, directory)
+            directory = os.path.join(self.temp_directory, directory)
         return self.fallback(self._directory, directory)
     @directory.setter
     def directory(self, value):

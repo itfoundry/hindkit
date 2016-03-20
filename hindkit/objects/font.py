@@ -2,9 +2,33 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-from hindkit.objects.base import BaseObject
+import os, glob
+import defcon
+import hindkit as kit
 
-class BaseFont(BaseObject):
+def _insertAnchor(self, index, anchor):
+    # try:
+    #     assert anchor.glyph != self
+    # except AttributeError:
+    #     pass
+    if not isinstance(anchor, self._anchorClass):
+        anchor = self.instantiateAnchor(anchorDict=anchor)
+    assert anchor.glyph in (self, None), "This anchor belongs to another glyph."
+    if anchor.glyph is None:
+        if anchor.identifier is not None:
+            identifiers = self._identifiers
+            assert anchor.identifier not in identifiers
+            identifiers.add(anchor.identifier)
+        anchor.glyph = self
+        anchor.beginSelfNotificationObservation()
+    self.beginSelfAnchorNotificationObservation(anchor)
+    self._anchors.insert(index, anchor)
+    self.postNotification(notification="Glyph.AnchorsChanged")
+    self.dirty = True
+
+defcon.Glyph.insertAnchor = _insertAnchor
+
+class BaseFont(kit.BaseObject):
 
     @staticmethod
     def postscript(name):
@@ -50,7 +74,7 @@ class BaseFont(BaseObject):
         if os.path.exists(self.path):
             if self.file_format == 'UFO':
                 print("Opening `{}`".format(self.path))
-                return kit.defcon_patched.Font(self.path)
+                return defcon.Font(self.path)
             else:
                 raise SystemExit("`{}` is not supported by defcon.".format(self.path))
         else:
@@ -69,7 +93,7 @@ class Master(BaseFont):
     def __init__(self, family, name, weight_location=0):
 
         super(Master, self).__init__(family, name)
-        self.abstract_directory = kit.constants.paths.MASTERS
+        self.abstract_directory = kit.Builder.directories['masters']
 
         self.weight_location = weight_location
 
@@ -91,15 +115,13 @@ class Master(BaseFont):
         if excluding_names is None:
             excluding_names = []
 
-        import glob
-
         source_filename_pattern = '{}*-{}.ufo'.format(source_dir, self.name)
         source_paths = glob.glob(source_filename_pattern)
         if source_paths:
             source_path = source_paths[0]
         else:
             raise SystemExit("`{}` is missing.".format(source_filename_pattern))
-        source = kit.defcon_patched.Font(source_path)
+        source = defcon.Font(source_path)
 
         if target_dir:
             target_filename_pattern = '{}*-{}.ufo'.format(target_dir, self.name)
@@ -108,7 +130,7 @@ class Master(BaseFont):
                 target_path = target_paths[0]
             else:
                 raise SystemExit("`{}` is missing.".format(target_filename_pattern))
-            target = kit.defcon_patched.Font(target_path)
+            target = defcon.Font(target_path)
         else:
             target = self.open()
 
@@ -120,7 +142,10 @@ class Master(BaseFont):
         existing_names = set(target.keys())
         new_names.difference_update(existing_names)
         new_names.difference_update(set(excluding_names))
-        new_names = kit.tools.sort_glyphs(source.glyphOrder, new_names)
+        new_names = (
+            [i for i in source.glyphOrder if i in new_names] +
+            [i for i in new_names if i not in source.glyphOrder]
+        )
 
         print('\n[NOTE] Importing glyphs from `{}` to `{}`:'.format(source_path, self.name))
         for new_name in new_names:
@@ -140,7 +165,13 @@ class Master(BaseFont):
 
         print('\n[NOTE] Deriving glyphs in `{}`:'.format(self.name))
         for deriving_name in deriving_names:
-            source_name = kit.constants.misc.DERIVING_MAP[deriving_name]
+            source_name = {
+                'CR': 'space',
+                'uni000D': 'space',
+                'uni00A0': 'space',
+                'NULL': None,
+                'uni200B': None,
+            }[deriving_name]
             target.newGlyph(deriving_name)
             if source_name:
                 target[deriving_name].width = target[source_name].width
@@ -183,7 +214,7 @@ class Style(BaseFont):
     def abstract_directory(self):
         return self.fallback(
             self._abstract_directory,
-            os.path.join(kit.constants.paths.STYLES, self.name),
+            os.path.join(kit.paths.STYLES, self.name),
         )
     @abstract_directory.setter
     def abstract_directory(self, value):
@@ -202,7 +233,7 @@ class Product(BaseFont):
     def __init__(self, family, style, file_format='OTF'):
         super(Product, self).__init__(family, style.name)
         self.file_format = file_format
-        self.abstract_directory = kit.constants.paths.BUILD
+        self.abstract_directory = kit.paths.BUILD
 
     @BaseFont.filename.getter
     def filename(self):

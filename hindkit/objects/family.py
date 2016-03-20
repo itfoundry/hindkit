@@ -2,6 +2,10 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
+import defcon
+
+import hindkit as kit
+
 class Family(object):
 
     def __init__(
@@ -30,19 +34,19 @@ class Family(object):
         self.masters = []
         self.styles = []
 
-        self.info = kit.defcon_patched.Font().info
+        self.info = defcon.Font().info
 
     def set_masters(self, masters=None):
         if masters:
             self.masters = masters
         else:
-            self.masters = [Master(self, 'Light', 0), Master(self, 'Bold', 100)]
+            self.masters = [kit.Master(self, 'Light', 0), kit.Master(self, 'Bold', 100)]
 
     def set_styles(self, style_scheme=None):
         if not style_scheme:
-            style_scheme = kit.constants.clients.Client(self).style_scheme
+            style_scheme = kit.clients.Client(self).style_scheme
         self.styles = [
-            Style(
+            kit.Style(
                 self,
                 name = style_name,
                 weight_location = weight_location,
@@ -52,7 +56,7 @@ class Family(object):
         ]
         if not self.masters:
             self.set_masters([
-                Master(self, i.name, i.weight_location)
+                kit.Master(self, i.name, i.weight_location)
                 for i in self.styles
             ])
 
@@ -66,11 +70,61 @@ class Family(object):
                 styles_that_are_directly_derived_from_masters.append(style)
         return styles_that_are_directly_derived_from_masters
 
-    def _has_kerning(self): #TODO
-        pass
+    def _has_kerning(self):
+        raise NotImplementedError()
 
-    def _has_mark_positioning(self): #TODO
-        pass
+    def _has_mark_positioning(self):
+        raise NotImplementedError()
 
-    def _has_mI_variants(self): #TODO
-        pass
+    def _has_mI_variants(self):
+        raise NotImplementedError()
+
+
+class Fmndb(kit.BaseObject):
+
+    LINES_HEAD = [
+        '# [PostScriptName]',
+        '#   f = Preferred Family Name',
+        '#   s = Subfamily/Style Name',
+        '#   l = Compatible Family Menu Name (Style-Linking Family Name)',
+        '#   m = 1, Macintosh Compatible Full Name (Deprecated)',
+    ]
+
+    def __init__(self, builder, name='FontMenuNameDB'):
+        super(FeatureFile, self).__init__(name)
+        self.builder = builder
+        self.lines = []
+        self.lines.extend(LINES_HEAD)
+
+    def generate(self):
+
+        f_name = self.builder.family.name
+
+        for style in self.builder.styles_to_produce:
+
+            self.lines.append('')
+            self.lines.append('[{}]'.format(style.full_name_postscript))
+            self.lines.append('  f = {}'.format(f_name))
+            self.lines.append('  s = {}'.format(style.name))
+
+            l_name = style.full_name
+            comment_lines = []
+
+            if self.builder.options['do_style_linking']:
+                if style.name == 'Regular':
+                    l_name = l_name.replace(' Regular', '')
+                else:
+                    if style.is_bold:
+                        comment_lines.append('  # IsBoldStyle')
+                        l_name = l_name.replace(' Bold', '')
+                    if style.is_italic:
+                        comment_lines.append('  # IsItalicStyle')
+                        l_name = l_name.replace(' Italic', '')
+
+            if l_name != f_name:
+                self.lines.append('  l = {}'.format(l_name))
+
+            self.lines.extend(comment_lines)
+
+        with open(self.path, 'w') as f:
+            f.writelines(i + '\n' for i in self.lines)

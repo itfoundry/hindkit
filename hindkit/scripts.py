@@ -3,7 +3,8 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import re, collections
-import hindkit.constants
+
+import hindkit as kit
 
 def prepare_features_devanagari(do_mark_positioning, builder, style):
 
@@ -23,7 +24,7 @@ def prepare_features_devanagari(do_mark_positioning, builder, style):
         light_max + (bold_max - light_max) * ratio,
     )
 
-    hindkit.devanagari.match_matra_i_alts(
+    match_matra_i_alts(
         do_mark_positioning,
         builder,
         style,
@@ -40,12 +41,12 @@ MATRA_I_ANCHOR_NAME = 'abvm.i'
 
 STEM_ANCHOR_NAMES = ['abvm.e', 'abvm']
 
-ALIVE_CONSONANTS = [i + 'A' for i in hindkit.constants.misc.CONSONANT_STEMS] + \
+ALIVE_CONSONANTS = [i + 'A' for i in kit.misc.CONSONANT_STEMS] + \
                    'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
-DEAD_CONSONANTS = hindkit.constants.misc.CONSONANT_STEMS
+DEAD_CONSONANTS = kit.misc.CONSONANT_STEMS
 
 def get_script_prefix(script_name):
-    return hindkit.constants.misc.SCRIPTS[script_name.lower()]['abbreviation']
+    return kit.misc.SCRIPTS[script_name.lower()]['abbreviation']
 
 def glyph_filter_matra_i_alts(family, glyph):
     match = re.match(
@@ -78,7 +79,7 @@ def glyph_filter_bases_dead(family, glyph):
 def glyph_filter_bases_for_wide_matra_ii(family, glyph):
     name = glyph.name
     if name.startswith(
-        hindkit.constants.misc.SCRIPTS['devanagari']['abbreviation']
+        kit.misc.SCRIPTS['devanagari']['abbreviation']
     ):
         name = name[2:]
     return name in POTENTIAL_BASES_FOR_WIDE_MATRA_II
@@ -130,7 +131,7 @@ def write_mI_matches_to_files(do_mark_positioning, builder, directory, mI_table,
 
     if do_mark_positioning:
 
-        with open(hindkit.tools.temp(directory + '/abvm.fea'), 'r') as f:
+        with open(kit.temp(directory + '/abvm.fea'), 'r') as f:
             abvm_content = f.read()
 
         original_abvm_content = restore_abvm_content(abvm_content)
@@ -149,7 +150,7 @@ def write_mI_matches_to_files(do_mark_positioning, builder, directory, mI_table,
 
     class_def_lines = []
     class_def_lines.extend(
-        hindkit.tools.compose_glyph_class_def_lines('MATRA_I_BASES_TOO_LONG', long_base_names)
+        kit.compose_glyph_class_def_lines('MATRA_I_BASES_TOO_LONG', long_base_names)
     )
 
     substitute_rule_lines = []
@@ -194,7 +195,7 @@ def write_mI_matches_to_files(do_mark_positioning, builder, directory, mI_table,
                 print("\t[!] `%s` doesn't have the anchor for Reph." % mI.glyph.name)
 
         class_def_lines.extend(
-            hindkit.tools.compose_glyph_class_def_lines(
+            kit.compose_glyph_class_def_lines(
                 'MATRA_I_BASES_' + mI_number,
                 mI.matches
             )
@@ -220,10 +221,10 @@ def write_mI_matches_to_files(do_mark_positioning, builder, directory, mI_table,
             commented_original_abvm_lookup + '\n\n\n' + modified_abvm_lookup
         )
 
-        with open(hindkit.tools.temp(directory + '/abvm.fea'), 'w') as f:
+        with open(kit.temp(directory + '/abvm.fea'), 'w') as f:
             f.write(modified_abvm_content)
 
-    with open(hindkit.tools.temp(directory + '/matra_i_matching.fea'), 'w') as f:
+    with open(kit.temp(directory + '/matra_i_matching.fea'), 'w') as f:
         result_lines = (
             ['# CLASSES', ''] + class_def_lines +
             ['# RULES', ''] + substitute_rule_lines
