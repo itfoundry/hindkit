@@ -23,14 +23,12 @@ def memoize(obj):
         return memoized[k]
     return memoizer
 
-import hindkit.objects as objects
-import hindkit.tools as tools
-import hindkit.constants as constants
-import hindkit.patches as patches
-
-import defcon
-defcon.Glyph.insertAnchor = patches.insertAnchor
-
 sys.path.insert(0, relative_to_interpreter('../SharedData/FDKScripts'))
 # __path__.append(relative_to_interpreter('../SharedData/FDKScripts'))
 import agd
+
+import hindkit.patches
+import defcon as defcon_patched
+defcon_patched.Glyph.insertAnchor = patches.insertAnchor
+
+from hindkit import constants, objects, tools

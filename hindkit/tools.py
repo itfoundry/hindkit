@@ -7,7 +7,7 @@ import subprocess, os, argparse, collections, shutil
 import fontTools.ttLib, mutatorMath.ufo.document
 import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 
-from hindkit import *
+import hindkit as kit
 
 class Builder(object):
 
@@ -69,7 +69,7 @@ class Builder(object):
 
         self.options.update(options)
 
-        self.goadb = GlyphData()
+        self.goadb = kit.objects.GlyphData()
 
     def postprocess_kerning(self, original):
         return original
@@ -86,19 +86,6 @@ class Builder(object):
             raise SystemExit(
                 '\n'.join('{}: {}'.format(k, v) for k, v in results.items())
             )
-
-    def prepare_masters(self):
-
-        for master in self.family.masters:
-            master.prepare(self)
-
-        self.goadb.generate(self.family.masters[0].open())
-
-        for master in self.family.masters:
-            font = master.open()
-            font.lib['public.glyphOrder'] = self.goadb.development_names
-            font.lib.pop('com.schriftgestaltung.glyphOrder', None)
-            master.save_as(font)
 
     def generate_designspace(self, output):
 
@@ -158,7 +145,7 @@ class Builder(object):
 
             self.designspace.prepare()
 
-            arguments = ['-d', temp(constants.paths.DESIGNSPACE)]
+            arguments = ['-d', temp(kit.constants.paths.DESIGNSPACE)]
             if not self.options['run_checkoutlines']:
                 arguments.append('-c')
             if not self.options['run_autohint']:
@@ -184,249 +171,8 @@ class Builder(object):
             }
             patches.updateInstance(options, style.path)
 
-    def generate_features_classes(self, output):
-
-        self._check_inputs([temp(i.path) for i in self.styles_to_produce])
-
-        lines = []
-
-        if self.options['prepare_mark_positioning']:
-
-            glyph_classes = []
-            glyph_classes.extend([(WriteFeaturesMarkFDK.kCombMarksClassName, glyph_filter_marks)])
-
-            if self.options['match_mI_variants']:
-                glyph_classes.extend([
-                    ('MATRA_I_ALTS', devanagari.glyph_filter_matra_i_alts),
-                    ('BASES_ALIVE', devanagari.glyph_filter_bases_alive),
-                    ('BASES_DEAD', devanagari.glyph_filter_bases_dead),
-                    # ('BASES_FOR_WIDE_MATRA_II', devanagari.glyph_filter_bases_for_wide_matra_ii),
-                ])
-
-            style_0 = self.styles_to_produce[0].open_font(is_temp=True)
-
-            glyph_order = self.goadb.development_names
-            for class_name, filter_function in glyph_classes:
-                glyph_names = [
-                    glyph.name for glyph in filter(
-                        lambda glyph: filter_function(self.family, glyph),
-                        style_0,
-                    )
-                ]
-                glyph_names = sort_glyphs(glyph_order, glyph_names)
-                style_0.groups.update({class_name: glyph_names})
-                lines.extend(
-                    compose_glyph_class_def_lines(class_name, glyph_names)
-                )
-            style_0.save()
-
-            for style in self.styles_to_produce[1:]:
-                font = style.open_font(is_temp=True)
-                font.groups.update(style_0.groups)
-                font.save()
-
-        if lines:
-            with open(output, 'w') as f:
-                f.writelines(i + '\n' for i in lines)
-
-    def generate_features_tables(self, output):
-
-        lines = []
-        tables = collections.OrderedDict([
-            ('hhea', []),
-            ('OS/2', []),
-            ('GDEF', []),
-            ('name', []),
-        ])
-
-        tables['OS/2'].extend([
-            'include (weightclass.fea);',
-            'Vendor "{}";'.format(constants.clients.Client(self.family).table_OS_2['Vendor']),
-        ])
-
-        if self.vertical_metrics:
-            tables['hhea'].extend(
-                i.format(**self.vertical_metrics)
-                for i in [
-                    'Ascender {Ascender};',
-                    'Descender {Descender};',
-                    'LineGap {LineGap};',
-                ]
-            )
-            tables['OS/2'].extend(
-                i.format(**self.vertical_metrics)
-                for i in [
-                    'TypoAscender {TypoAscender};',
-                    'TypoDescender {TypoDescender};',
-                    'TypoLineGap {TypoLineGap};',
-                    'winAscent {winAscent};',
-                    'winDescent {winDescent};',
-                ]
-            )
-
-        # tables['OS/2'].extend(self.generate_UnicodeRange)
-        # tables['OS/2'].extend(self.generate_CodePageRange)
-
-        if self.options['override_GDEF']:
-            GDEF_records = {
-                'bases': '',
-                'ligatures': '',
-                'marks': '',
-                'components': '',
-            }
-            if self.options['prepare_mark_positioning'] or os.path.exists(temp(os.path.join(constants.paths.FEATURES, 'classes.fea'))):
-                GDEF_records['marks'] = '@{}'.format(WriteFeaturesMarkFDK.kCombMarksClassName)
-            if os.path.exists(temp(os.path.join(constants.paths.FEATURES, 'classes_suffixing.fea'))):
-                GDEF_records['marks'] = '@{}'.format('COMBINING_MARKS_GDEF')
-            tables['GDEF'].extend([
-                'GlyphClassDef {bases}, {ligatures}, {marks}, {components};'.format(**GDEF_records)
-            ])
-
-        tables['name'].extend(
-            'nameid {} "{}";'.format(
-                name_id,
-                content.encode('unicode_escape').replace('\\x', '\\00').replace('\\u', '\\')
-            )
-            for name_id, content in constants.clients.Client(self.family).table_name.items()
-            if content
-        )
-
-        for name, entries in tables.items():
-            if entries:
-                lines.append('table {} {{'.format(name))
-                lines.extend('  ' + i for i in entries)
-                lines.append('}} {};'.format(name))
-
-        if lines:
-            with open(output, 'w') as f:
-                f.writelines(i + '\n' for i in lines)
-
-    def generate_features_languagesystems(self, output):
-
-        lines = ['languagesystem DFLT dflt;']
-        tag = constants.misc.SCRIPTS[self.family.script.lower()]['tag']
-        if isinstance(tag, tuple):
-            lines.append('languagesystem {} dflt;'.format(tag[1]))
-            lines.append('languagesystem {} dflt;'.format(tag[0]))
-        else:
-            lines.append('languagesystem {} dflt;'.format(tag))
-
-        if lines:
-            with open(output, 'w') as f:
-                f.writelines(i + '\n' for i in lines)
-
     def generate_features_GSUB(self, output):
         pass
-
-    def generate_features_GPOS(self, output, style):
-        self._check_inputs([temp(style.path)])
-        directory = temp(style.directory)
-        if self.options['prepare_kerning']:
-            WriteFeaturesKernFDK.KernDataClass(
-                font = style.open_font(is_temp=True),
-                folderPath = directory,
-            )
-            kern_path = os.path.join(directory, WriteFeaturesKernFDK.kKernFeatureFileName)
-            if self.options['postprocess_kerning'] and os.path.exists(kern_path):
-                with open(kern_path) as f:
-                    original = f.read()
-                postprocessed = self.postprocess_kerning(original)
-                with open(kern_path, 'w') as f:
-                    f.write(postprocessed)
-        if self.options['prepare_mark_positioning']:
-            WriteFeaturesMarkFDK.MarkDataClass(
-                font = style.open_font(is_temp=True),
-                folderPath = directory,
-                trimCasingTags = False,
-                genMkmkFeature = self.options['prepare_mark_to_mark_positioning'],
-                writeClassesFile = True,
-                indianScriptsFormat = self.family.script.lower() in constants.misc.SCRIPTS,
-            )
-            if self.options['match_mI_variants']:
-                devanagari.prepare_features_devanagari(
-                    self.options['position_marks_for_mI_variants'],
-                    self,
-                    style,
-                ) # NOTE: not pure GPOS
-
-    def generate_features_weight_class(self, style):
-        directory = temp(style.directory)
-        with open(os.path.join(directory, 'WeightClass.fea'), 'w') as f:
-            f.write('WeightClass {};\n'.format(str(style.weight_class)))
-
-    def generate_features_references(self, style):
-        directory = temp(style.directory)
-        with open(os.path.join(directory, 'features'), 'w') as f:
-            lines = ['table head { FontRevision 1.000; } head;']
-            for file_name in [
-                'classes',
-                'classes_suffixing',
-                'tables',
-                'languagesystems',
-                'GSUB_prefixing',
-                'GSUB_lookups',
-                'GSUB',
-            ]:
-                abstract_path = os.path.join(constants.paths.FEATURES, file_name + '.fea')
-                if os.path.exists(temp(abstract_path)):
-                    lines.append('include (../../{});'.format(abstract_path))
-            if os.path.exists(os.path.join(directory, WriteFeaturesKernFDK.kKernFeatureFileName)):
-                if self.family.script.lower() in constants.misc.SCRIPTS:
-                    kerning_feature_name = 'dist'
-                else:
-                    kerning_feature_name = 'kern'
-                lines.append(
-                    'feature {0} {{ include ({1}); }} {0};'.format(
-                        kerning_feature_name,
-                        WriteFeaturesKernFDK.kKernFeatureFileName,
-                    )
-                )
-            if os.path.exists(os.path.join(directory, WriteFeaturesMarkFDK.kMarkClassesFileName)):
-                lines.append('include ({});'.format(WriteFeaturesMarkFDK.kMarkClassesFileName))
-            for feature_name, file_name in [
-                ('mark', WriteFeaturesMarkFDK.kMarkFeatureFileName),
-                ('mkmk', WriteFeaturesMarkFDK.kMkmkFeatureFileName),
-                ('abvm', WriteFeaturesMarkFDK.kAbvmFeatureFileName),
-                ('blwm', WriteFeaturesMarkFDK.kBlwmFeatureFileName),
-            ]:
-                if os.path.exists(os.path.join(directory, file_name)):
-                    lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, file_name))
-            f.writelines(i + '\n' for i in lines)
-
-    def generate_fmndb(self, output):
-
-        f_name = self.family.output_name
-        lines = []
-
-        for style in self.styles_to_produce:
-
-            lines.append('')
-            lines.append('[{}]'.format(style.output_full_name_postscript))
-            lines.append('  f = {}'.format(f_name))
-            lines.append('  s = {}'.format(style.name))
-
-            l_name = style.output_full_name
-            comment_lines = []
-
-            if self.options['do_style_linking']:
-                if style.name == 'Regular':
-                    l_name = l_name.replace(' Regular', '')
-                else:
-                    if style.is_bold:
-                        comment_lines.append('  # IsBoldStyle')
-                        l_name = l_name.replace(' Bold', '')
-                    if style.is_italic:
-                        comment_lines.append('  # IsItalicStyle')
-                        l_name = l_name.replace(' Italic', '')
-
-            if l_name != f_name:
-                lines.append('  l = {}'.format(l_name))
-
-            lines.extend(comment_lines)
-
-        with open(output, 'w') as f:
-            f.write(constants.templates.FMNDB_HEAD)
-            f.writelines(i + '\n' for i in lines)
 
     def _compile(self, style, build_ttf=False):
 
@@ -471,8 +217,8 @@ class Builder(object):
                 arguments.append('-osbOn' if boolean else '-osbOff')
                 arguments.append(digit)
 
-        if not os.path.isdir(constants.paths.BUILD):
-            os.makedirs(constants.paths.BUILD)
+        if not os.path.isdir(kit.constants.paths.BUILD):
+            os.makedirs(kit.constants.paths.BUILD)
 
         subprocess.call(['makeotf'] + arguments)
 
@@ -482,7 +228,7 @@ class Builder(object):
             postprocessed.save(font_path, reorderTables=False)
             print('[NOTE] `postprocess_font_file` done.')
 
-        destination = constants.paths.ADOBE_FONTS
+        destination = kit.constants.paths.ADOBE_FONTS
         if os.path.exists(font_path) and os.path.isdir(destination):
             copy(font_path, destination)
 
@@ -527,60 +273,55 @@ class Builder(object):
     def build(self):
 
         self._finalize_options()
-        make_dir(constants.paths.TEMP)
-
-        if self.options['run_stage_prepare_masters']:
-            reset_dir(temp(constants.paths.MASTERS))
-            self.prepare_masters()
+        make_dir(kit.constants.paths.TEMP)
 
         if self.options['run_stage_prepare_styles']:
-            reset_dir(temp(constants.paths.STYLES))
+
+            if self.options['run_stage_prepare_masters']:
+
+                reset_dir(temp(kit.constants.paths.MASTERS))
+
+                for master in self.family.masters:
+                    master.prepare(self)
+
+                self.goadb.generate(self.family.masters[0].open())
+
+                for master in self.family.masters:
+                    font = master.open()
+                    font.lib['public.glyphOrder'] = self.goadb.development_names
+                    font.lib.pop('com.schriftgestaltung.glyphOrder', None)
+                    master.save_as(font)
+
+            reset_dir(temp(kit.constants.paths.STYLES))
             self.prepare_styles()
 
         if self.options['run_stage_prepare_features']:
-            reset_dir(temp(constants.paths.FEATURES))
-            self.prepare(
-                os.path.join(constants.paths.FEATURES, 'classes.fea'), #!
-                self.generate_features_classes,
-                extensions = [
-                    os.path.join(constants.paths.FEATURES, 'classes_{}.fea'.format(i))
-                    for i in ['suffixing']
-                ],
-            )
-            self.prepare(
-                os.path.join(constants.paths.FEATURES, 'tables.fea'),
-                self.generate_features_tables,
-                None,
-            )
-            self.prepare(
-                os.path.join(constants.paths.FEATURES, 'languagesystems.fea'),
-                self.generate_features_languagesystems,
-                None,
-            )
-            self.prepare(
-                os.path.join(constants.paths.FEATURES, 'GSUB.fea'), #!
-                None,
-                extensions = [
-                    os.path.join(constants.paths.FEATURES, 'GSUB_{}.fea'.format(i))
-                    for i in ['lookups', 'prefixing']
-                ],
-            )
+
+            reset_dir(temp(kit.constants.paths.FEATURES))
+
+            kit.objects.FeatureFile(
+                'classes',
+                extensions = ['classes_suffixing'],
+            ).prepare(self)
+            kit.objects.FeatureFile('tables').prepare(self)
+            kit.objects.FeatureFile('languagesystems').prepare(self)
+            kit.objects.FeatureFile(
+                'GSUB',
+                extensions = ['GSUB_lookups', 'GSUB_prefixing'],
+            ).prepare(self)
+
             for style in self.styles_to_produce:
-                self.prepare(
-                    os.path.join(constants.paths.FEATURES, 'GPOS.fea'),
-                    self.generate_features_GPOS,
-                    None,
-                    style,
-                )
-                self.generate_features_weight_class(style)
-                self.generate_features_references(style)
+
+                kit.objects.FeatureFile('GPOS').prepare(self, style)
+
+                kit.objects.FeatureFile('WeightClass').prepare(self, style)
+
+                self.features_references = kit.objects.FeatureFile('features')
+                self.features_references.filename_extension = None
+                self.features_references.prepare(self, style)
 
         if self.options['run_stage_compile']:
-            self.prepare(
-                constants.paths.FMNDB,
-                self.generate_fmndb,
-                None,
-            )
+            kit.objects.FmndbFile().prepare(self)
             self.goadb.output_trimmed(
                 reference_font = self.styles_to_produce[0].open_font(is_temp=True),
                 build_ttf = self.options['build_ttf'],
@@ -644,7 +385,7 @@ def overriding(abstract_path):
 
 def temp(abstract_path):
     if abstract_path:
-        temp_path = os.path.join(constants.paths.TEMP, abstract_path)
+        temp_path = os.path.join(kit.constants.paths.TEMP, abstract_path)
     else:
         temp_path = None
     return temp_path
