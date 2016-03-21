@@ -3,7 +3,7 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import datetime, collections
-from . import styles, misc
+import hindkit as kit
 
 class Client(object):
 
@@ -14,7 +14,7 @@ class Client(object):
         DATA = {
             'ITF': {
                 'info': {
-                    'style_scheme': styles.ITF,
+                    'style_scheme': kit.styles.ITF,
                 },
                 'table_name': collections.OrderedDict([
                     (0, self.family.info.copyright if self.family.info.copyright else "Copyright {} Indian Type Foundry. All Rights Reserved.".format(datetime.date.today().year)),
@@ -26,7 +26,7 @@ class Client(object):
                     (12, self.family.info.openTypeNameDesignerURL),
                     (13, "This Font Software is protected under domestic and international trademark and copyright law. You agree to identify the ITF fonts by name and credit the ITF\'s ownership of the trademarks and copyrights in any design or production credits."),
                     (14, "http://www.indiantypefoundry.com/licensing/eula/"),
-                    (19, misc.SCRIPTS[self.family.script.lower()].get('sample text')),
+                    (19, kit.misc.SCRIPTS[self.family.script.lower()].get('sample text')),
                 ]),
                 'table_OS_2': {
                     'Vendor': 'ITFO'
@@ -34,7 +34,7 @@ class Client(object):
             },
             'Google Fonts': {
                 'info': {
-                    'style_scheme': styles.ITF_CamelCase,
+                    'style_scheme': kit.styles.ITF_CamelCase,
                 },
                 'table_name': collections.OrderedDict([
                     (0, self.family.info.copyright if self.family.info.copyright else "Copyright (c) {} Indian Type Foundry (info@indiantypefoundry.com)".format(datetime.date.today().year)),

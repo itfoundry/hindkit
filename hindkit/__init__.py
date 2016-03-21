@@ -48,12 +48,13 @@ def copy(src, dst):
     else:
         shutil.copy(src, dst)
 
-from hindkit.constants import styles, clients, misc
+from hindkit.constants import styles, misc
 
 from hindkit.objects.base import BaseObject
 from hindkit.objects.family import Family
 from hindkit.objects.font import Master, Style, Product
 from hindkit.objects.glyphdata import GlyphData
 from hindkit.objects.builder import Builder
+from hindkit.objects.client import Client
 
 from hindkit import scripts
