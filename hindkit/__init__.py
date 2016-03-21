@@ -2,7 +2,7 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, sys, functools, shutil, errno
+import os, sys, functools, shutil
 
 def relative_to_interpreter(path):
     return os.path.join(os.path.dirname(sys.executable), path)
@@ -25,33 +25,31 @@ def memoize(obj):
 
 def remove(path):
     try:
+        os.remove(path)
+    except OSError:
         if os.path.isdir(path):
             shutil.rmtree(path)
-        else:
-            os.remove(path)
-    except OSError as e:
-        if e.errno == errno.ENOENT:
+        elif not os.path.exists(path):
             pass
         else:
             raise
-
 
 def makedirs(path):
     try:
         os.makedirs(path)
-    except OSError as e:
-        if e.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else:
+    except OSError:
+        if not os.path.isdir(path):
             raise
 
 def copy(src, dst):
     if os.path.isdir(src):
+        remove(dst)
         shutil.copytree(src, dst)
     else:
-        shutil.copy(src, src)
+        shutil.copy(src, dst)
 
 from hindkit.constants import styles, clients, misc
+
 from hindkit.objects.base import BaseObject
 from hindkit.objects.family import Family
 from hindkit.objects.font import Master, Style, Product
