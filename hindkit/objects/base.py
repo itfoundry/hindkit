@@ -22,7 +22,7 @@ class BaseObject(object):
         self.abstract_directory = ''
 
         self.temp = False
-        self.temp_directory = kit.Builder.directories['temp']
+        self.temp_directory = kit.Builder.directories['intermediates']
 
         self.builder = builder
         self.optional_file_names = []

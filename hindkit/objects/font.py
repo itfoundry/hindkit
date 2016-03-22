@@ -239,7 +239,7 @@ class Product(BaseFont):
         super(Product, self).__init__(self.style.family, self.style.name)
         self.builder = builder
         self.file_format = file_format
-        self.abstract_directory = kit.Builder.directories['build']
+        self.abstract_directory = kit.Builder.directories['products']
 
     @BaseFont.filename.getter
     def filename(self):
@@ -306,6 +306,6 @@ class Product(BaseFont):
             postprocessed.save(path, reorderTables=False)
             print('[NOTE] `postprocess_font_file` done.')
 
-        destination = self.builder.directories['Adobe/Fonts']
+        destination = self.builder.directories['output']
         if os.path.exists(path) and os.path.isdir(destination):
             kit.copy(path, destination)

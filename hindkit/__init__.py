@@ -54,8 +54,8 @@ from hindkit.objects.base import BaseObject
 from hindkit.objects.family import Family, DesignSpace, Fmndb
 from hindkit.objects.font import Master, Style, Product
 from hindkit.objects.glyphdata import GlyphData, Goadb
-from hindkit.objects.builder import Builder
 from hindkit.objects.client import Client
 from hindkit.objects.feature import Feature
+from hindkit.objects.project import Project
 
 from hindkit import scripts

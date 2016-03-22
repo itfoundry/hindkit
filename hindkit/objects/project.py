@@ -6,15 +6,15 @@ import os, argparse, subprocess, collections
 import fontTools.ttLib
 import hindkit as kit
 
-class Builder(object):
+class Project(object):
 
     directories = {
         'masters': 'masters',
         'styles': 'styles',
         'features': 'features',
-        'build': 'build',
-        'temp': 'temp',
-        'Adobe/Fonts': '/Library/Application Support/Adobe/Fonts',
+        'temp': 'intermediates',
+        'products': 'products',
+        'output': '/Library/Application Support/Adobe/Fonts',
     }
 
     def __init__(
@@ -97,7 +97,7 @@ class Builder(object):
             )
 
     def temp(self, abstract_path):
-        return os.path.join(self.directories['temp'], abstract_path)
+        return os.path.join(self.directories['intermediates'], abstract_path)
 
     def _finalize_options(self):
 
@@ -163,7 +163,7 @@ class Builder(object):
 
     def build(self):
 
-        kit.makedirs(self.directories['temp'])
+        kit.makedirs(self.directories['intermediates'])
 
         self._finalize_options()
 
@@ -219,7 +219,7 @@ class Builder(object):
                 self.features_references.prepare(style=style)
 
         if self.options['compile']:
-            kit.makedirs(self.directories['build'])
+            kit.makedirs(self.directories['products'])
             self.fmndb.prepare()
             for product in self.products:
                 product.style.temp = True
