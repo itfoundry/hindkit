@@ -2,8 +2,7 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import sys
-
+import sys, StringIO
 import hindkit as kit
 
 sys.path.insert(0, kit.relative_to_interpreter('../SharedData/FDKScripts'))
@@ -11,32 +10,35 @@ import agd
 
 class GlyphData(object):
 
+    ITFDG = []
+
     @staticmethod
     def normalize(lines):
         for line in lines:
             yield '\t'.join(line.partition('#')[0].split())
 
-    @classmethod
-    def patch(cls, dictionary):
-        ITFDG = []
-        for glyph in ITFDG:
-            dictionary.add(glyph, priority=3)
-        return dictionary
+    def __init__(self, glyph_order_path=None):
 
-    def __init__(self, glyph_order_path='glyphorder.txt'):
-
-        self.glyph_order_path = glyph_order_path
-
-        self.name_order = []
+        self.glyph_order = []
+        with open(glyph_order_path) as f:
+            for line in self.normalize(f):
+                for development_name in line.split():
+                    self.glyph_order.append(development_name)
 
         self.production_names = []
         self.development_names = []
         self.u_mappings = []
 
         with open(kit.relative_to_interpreter('../SharedData/AGD.txt'), 'rU') as f:
-            self.agd_dictionary = agd.dictionary(f.read())
+            agd_content = f.read()
 
-        self.itfgd_dictionary = self.patch(self.agd_dictionary)
+        self.agd_dictionary = agd.dictionary(agd_content)
+
+        self.dictionary = agd.dictionary(agd_content)
+        for glyph in self.ITFDG:
+            self.dictionary.add(glyph, priority=3)
+
+        self.goadb = None
 
     def generate_name_order(self):
         for section in self.name_order_raw:
@@ -45,17 +47,38 @@ class GlyphData(object):
             else:
                 self.name_order.extend(section)
 
+    def generate_goadb(self, names=None):
+        self.goadb = self.dictionary.aliasfile(names) + '\n'
+        self.goadb_glyph_list = agd.parsealiasfile(self.goadb)
+
 
 class Goadb(kit.BaseObject):
 
-    def __init__(self, name='GlyphOrderAndAliasDB'):
+    TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP = {
+        'CR CR uni000D\n': 'CR uni000D uni000D\n',
+    }
 
-        super(Goadb, self).__init__(name)
+    def __init__(
+        self,
+        builder,
+        glyphdata,
+        name = 'GlyphOrderAndAliasDB',
+        for_ttf = False,
+    ):
+        super(Goadb, self).__init__(name, builder=builder)
+        self.glyphdata = glyphdata
+        self.for_ttf = for_ttf
 
-        # self.goadb_path_trimmed = kit.temp(self.goadb_path + '_trimmed')
-        # self.goadb_path_trimmed_ttf = kit.temp(self.goadb_path + '_trimmed_ttf')
+    def generate(self, names=None):
+        if self.glyphdata.goadb is None:
+            self.glyphdata.generate_goadb(names)
+        with open(self.path, 'w') as f:
+            for line in StringIO.StringIO(self.glyphdata.goadb):
+                if self.for_ttf:
+                    line = self.TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP.get(line, line)
+                f.write(line)
 
-    def generate(self, reference_font):
+    def old(self):
 
         goadb = []
 
@@ -63,11 +86,11 @@ class Goadb(kit.BaseObject):
 
             self.goadb_path = kit.temp(self.goadb_path)
 
-            glyphorder = []
-            with open('glyphorder.txt') as f:
-                for line in self.normalize(f):
-                    for development_name in line.split():
-                        glyphorder.append(development_name)
+            # glyphorder = []
+            # with open('glyphorder.txt') as f:
+            #     for line in self.normalize(f):
+            #         for development_name in line.split():
+            #             glyphorder.append(development_name)
 
             U_SCALAR_TO_U_NAME = kit.misc.get_u_scalar_to_u_name()
 
@@ -149,32 +172,3 @@ class Goadb(kit.BaseObject):
                     goadb.append(
                         (production_name, development_name, u_mapping)
                     )
-
-    def output_trimmed(self, reference_font, build_ttf=False):
-        DIFFERENCES = {
-            'CR CR uni000D\n': 'CR uni000D uni000D\n',
-        }
-        not_covered_glyphs = [
-            glyph.name
-            for glyph in reference_font
-            if glyph.name not in self.development_names
-        ]
-        if not_covered_glyphs:
-            raise SystemExit(
-                'Some glyphs are not covered by the GOADB: ' +
-                ' '.join(not_covered_glyphs)
-            )
-        else:
-            trimmed = open(self.path_trimmed, 'w')
-            if build_ttf:
-                trimmed_ttf = open(self.path_trimmed_ttf, 'w')
-            for row in self.table:
-                if row.development_name in reference_font:
-                    line = ' '.join(filter(None, row)) + '\n'
-                    trimmed.write(line)
-                    if build_ttf:
-                        line_ttf = DIFFERENCES.get(line, line)
-                        trimmed_ttf.write(line_ttf)
-            trimmed.close()
-            if build_ttf:
-                trimmed_ttf.close()

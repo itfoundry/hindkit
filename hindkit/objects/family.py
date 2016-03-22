@@ -2,8 +2,8 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import defcon
-
+import os, subprocess
+import defcon, mutatorMath.ufo.document
 import hindkit as kit
 
 class Family(object):
@@ -79,6 +79,98 @@ class Family(object):
     def _has_mI_variants(self):
         raise NotImplementedError()
 
+    def prepare_styles(self):
+        self.generate_styles()
+
+    def generate_styles(self): # STAGE I
+
+        b = self.family.builder
+
+        styles = [product.style for product in b.products]
+
+        for style in styles:
+            style.temp = True
+            kit.makedirs(style.directory)
+
+        if b.options['run_makeinstances']:
+
+            b.designspace.prepare()
+
+            arguments = ['-d', b.designspace.path]
+            if not b.options['run_checkoutlines']:
+                arguments.append('-c')
+            if not b.options['run_autohint']:
+                arguments.append('-a')
+
+            subprocess.call(['makeInstancesUFO'] + arguments)
+
+        else:
+            for master, style in zip(self.masters, styles):
+                kit.copy(master.path, style.path)
+                font = style.open()
+                font.info.postscriptFontName = style.full_name_postscript
+                if font.dirty:
+                    font.save()
+                if b.options['run_checkoutlines'] or b.options['run_autohint']:
+                    options = {
+                        'doOverlapRemoval': b.options['run_checkoutlines'],
+                        'doAutoHint': b.options['run_autohint'],
+                        'allowDecimalCoords': False,
+                    }
+                    _updateInstance(options, style.path)
+
+
+class DesignSpace(kit.BaseObject):
+
+    def __init__(self, builder, name='font'):
+        super(DesignSpace, self).__init__(name, builder=builder)
+        self.file_format = 'DesignSpace'
+
+    def generate(self):
+
+        doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
+            os.path.abspath(kit.relative_to_cwd(self.path))
+        )
+
+        for i, master in enumerate(self.builder.family.masters):
+
+            doc.addSource(
+
+                path = os.path.abspath(kit.relative_to_cwd(master.path)),
+                name = 'master ' + master.name,
+                location = {'weight': master.weight_location},
+
+                copyLib    = i == 0,
+                copyGroups = i == 0,
+                copyInfo   = i == 0,
+
+                # muteInfo = False,
+                # muteKerning = False,
+                # mutedGlyphNames = None,
+
+            )
+
+        for product in self.builder.products:
+            if product.file_format == 'OTF':
+                style = product.style
+                doc.startInstance(
+                    name = 'instance ' + style.name,
+                    location = {'weight': style.weight_location},
+                    familyName = self.builder.family.name,
+                    styleName = style.name,
+                    fileName = os.path.abspath(
+                        kit.relative_to_cwd(style.path)
+                    ),
+                    postScriptFontName = style.full_name_postscript,
+                    # styleMapFamilyName = None,
+                    # styleMapStyleName = None,
+                )
+                doc.writeInfo()
+                if self.builder.options['prepare_kerning']:
+                    doc.writeKerning()
+                doc.endInstance()
+        doc.save()
+
 
 class Fmndb(kit.BaseObject):
 
@@ -91,40 +183,43 @@ class Fmndb(kit.BaseObject):
     ]
 
     def __init__(self, builder, name='FontMenuNameDB'):
-        super(FeatureFile, self).__init__(name)
-        self.builder = builder
+        super(Fmndb, self).__init__(name, builder=builder)
         self.lines = []
-        self.lines.extend(LINES_HEAD)
+        self.lines.extend(self.LINES_HEAD)
 
     def generate(self):
 
         f_name = self.builder.family.name
 
-        for style in self.builder.styles_to_produce:
+        for product in self.builder.products:
 
-            self.lines.append('')
-            self.lines.append('[{}]'.format(style.full_name_postscript))
-            self.lines.append('  f = {}'.format(f_name))
-            self.lines.append('  s = {}'.format(style.name))
+            if product.file_format == 'OTF':
 
-            l_name = style.full_name
-            comment_lines = []
+                style = product.style
 
-            if self.builder.options['do_style_linking']:
-                if style.name == 'Regular':
-                    l_name = l_name.replace(' Regular', '')
-                else:
-                    if style.is_bold:
-                        comment_lines.append('  # IsBoldStyle')
-                        l_name = l_name.replace(' Bold', '')
-                    if style.is_italic:
-                        comment_lines.append('  # IsItalicStyle')
-                        l_name = l_name.replace(' Italic', '')
+                self.lines.append('')
+                self.lines.append('[{}]'.format(style.full_name_postscript))
+                self.lines.append('  f = {}'.format(f_name))
+                self.lines.append('  s = {}'.format(style.name))
 
-            if l_name != f_name:
-                self.lines.append('  l = {}'.format(l_name))
+                l_name = style.full_name
+                comment_lines = []
 
-            self.lines.extend(comment_lines)
+                if self.builder.options['do_style_linking']:
+                    if style.name == 'Regular':
+                        l_name = l_name.replace(' Regular', '')
+                    else:
+                        if style.is_bold:
+                            comment_lines.append('  # IsBoldStyle')
+                            l_name = l_name.replace(' Bold', '')
+                        if style.is_italic:
+                            comment_lines.append('  # IsItalicStyle')
+                            l_name = l_name.replace(' Italic', '')
+
+                if l_name != f_name:
+                    self.lines.append('  l = {}'.format(l_name))
+
+                self.lines.extend(comment_lines)
 
         with open(self.path, 'w') as f:
             f.writelines(i + '\n' for i in self.lines)

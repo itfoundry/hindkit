@@ -2,7 +2,7 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, glob
+import os, glob, subprocess
 import defcon
 import hindkit as kit
 
@@ -48,7 +48,7 @@ class BaseFont(kit.BaseObject):
 
     @property
     def name_postscript(self):
-        return self.fallback(self._name_postscript, postscript(self.name))
+        return self.fallback(self._name_postscript, self.postscript(self.name))
     @name_postscript.setter
     def name_postscript(self, value):
         self._name_postscript = value
@@ -64,7 +64,7 @@ class BaseFont(kit.BaseObject):
     def full_name_postscript(self):
         return self.fallback(
             self._full_name_postscript,
-            postscript(self.family.name) + '-' + self.name_postscript,
+            self.postscript(self.family.name) + '-' + self.name_postscript,
         )
     @full_name_postscript.setter
     def full_name_postscript(self, value):
@@ -94,7 +94,6 @@ class Master(BaseFont):
 
         super(Master, self).__init__(family, name)
         self.abstract_directory = kit.Builder.directories['masters']
-
         self.weight_location = weight_location
 
     @BaseFont.filename.getter
@@ -210,11 +209,13 @@ class Style(BaseFont):
         if is_oblique is None:
             self.is_oblique = True if 'Oblique' in self.name.split() else False
 
+        # self.products = []
+
     @property
     def abstract_directory(self):
         return self.fallback(
             self._abstract_directory,
-            os.path.join(kit.paths.STYLES, self.name),
+            os.path.join('styles', self.name),
         )
     @abstract_directory.setter
     def abstract_directory(self, value):
@@ -224,17 +225,87 @@ class Style(BaseFont):
     def filename(self):
         return self.fallback(self._filename, 'font')
 
-    def produce(self, file_format='OTF'):
-        return Product(self.family, self, file_format=file_format)
+    def produce(self, builder, file_format='OTF'):
+        return Product(builder, self, file_format=file_format)
+
+    def generate(self):
+        pass
 
 
 class Product(BaseFont):
 
-    def __init__(self, family, style, file_format='OTF'):
-        super(Product, self).__init__(family, style.name)
+    def __init__(self, builder, style, file_format='OTF'):
+        self.style = style
+        super(Product, self).__init__(self.style.family, self.style.name)
+        self.builder = builder
         self.file_format = file_format
-        self.abstract_directory = kit.paths.BUILD
+        self.abstract_directory = kit.Builder.directories['build']
 
     @BaseFont.filename.getter
     def filename(self):
         return self.fallback(self._filename, self.full_name_postscript)
+
+    def prepare(self, builder=None):
+        if builder:
+            self.builder = builder
+        self.generate()
+
+    def generate(self):
+
+        style = self.style
+
+        if self.file_format == 'OTF':
+            style.file_format = 'UFO'
+            goadb = self.builder.goadb_trimmed
+        elif self.file_format == 'TTF':
+            style.file_format = 'TTF'
+            goadb = self.builder.goadb_trimmed_ttf
+
+        goadb.prepare(self.builder.glyph_order_trimmed)
+
+        # if style.file_name.endswith('.ufo'):
+        #     font = style.open()
+        #     font.info.postscriptFontName = self.full_name_postscript
+        #     if font.dirty:
+        #         font.save()
+
+        path = self.path
+
+        arguments = [
+            '-f', style.path,
+            '-o', path,
+            '-mf', self.builder.fmndb.path,
+            '-gf', goadb.path,
+            '-rev', self.builder.fontrevision,
+            '-ga',
+            '-omitMacNames',
+        ]
+        if not self.builder.args.test:
+            arguments.append('-r')
+        if not self.builder.options['run_autohint']:
+            arguments.append('-shw')
+        if self.builder.options['do_style_linking']:
+            if style.is_bold:
+                arguments.append('-b')
+            if style.is_italic:
+                arguments.append('-i')
+        if self.builder.options['use_os_2_version_4']:
+            for digit, boolean in [
+                ('7', self.builder.options['prefer_typo_metrics']),
+                ('8', self.builder.options['is_width_weight_slope_only']),
+                ('9', style.is_oblique),
+            ]:
+                arguments.append('-osbOn' if boolean else '-osbOff')
+                arguments.append(digit)
+
+        subprocess.call(['makeotf'] + arguments)
+
+        if self.builder.options['postprocess_font_file'] and os.path.exists(path):
+            original = fontTools.ttLib.TTFont(path)
+            postprocessed = self.builder.postprocess_font_file(original)
+            postprocessed.save(path, reorderTables=False)
+            print('[NOTE] `postprocess_font_file` done.')
+
+        destination = self.builder.directories['Adobe/Fonts']
+        if os.path.exists(path) and os.path.isdir(destination):
+            kit.copy(path, destination)

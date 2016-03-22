@@ -15,7 +15,7 @@ class BaseObject(object):
             if i is not None:
                 return i
 
-    def __init__(self, name):
+    def __init__(self, name, builder=None):
 
         self.name = name
         self.file_format = None
@@ -23,6 +23,9 @@ class BaseObject(object):
 
         self.temp = False
         self.temp_directory = kit.Builder.directories['temp']
+
+        self.builder = builder
+        self.optional_file_names = []
 
         self.counter = 0
 
@@ -33,7 +36,10 @@ class BaseObject(object):
 
     @property
     def filename_extension(self):
-        return self.fallback(self._filename_extension, self.file_format.lower())
+        return self.fallback(
+            self._filename_extension,
+            self.file_format.lower() if self.file_format else None,
+        )
     @filename_extension.setter
     def filename_extension(self, value):
         self._filename_extension = value
@@ -68,15 +74,34 @@ class BaseObject(object):
     def path(self, value):
         self._path = value
 
-    def prepare(self, builder, *args, **kwargs):
-        path = self.path
-        if os.path.exists(path):
-            if not self.temp:
-                self.temp = True
-                copy(path, self.path)
+    def check_override(self, *args, **kwargs):
+        if self.temp == True and os.path.exists(self.path):
+            return
+        path_old = self.path
+        if os.path.exists(path_old):
+            self.temp = True
+            path_new = self.path
+            kit.copy(path_old, path_new)
+            for optional_file_name in self.optional_file_names:
+                f = kit.BaseObject(optional_file_name)
+                f.file_format = self.file_format
+                f.abstract_directory = self.abstract_directory
+                optional_path_old = f.path
+                f.temp = True
+                optional_path_new = f.path
+                try:
+                    kit.copy(optional_path_old, optional_path_new)
+                except IOError:
+                    if not os.path.exists(optional_path_old):
+                        pass
+                    else:
+                        raise
         else:
             self.temp = True
-            self.generate(builder, *args, **kwargs)
+            self.generate(*args, **kwargs)
+
+    def prepare(self, *args, **kwargs):
+        self.check_override(*args, **kwargs)
 
     def generate(self):
         raise NotImplementedError("Can't generate {}.".format(self.path))
