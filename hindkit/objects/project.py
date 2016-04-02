@@ -61,9 +61,7 @@ class Project(object):
 
         self.options.update(options)
 
-        self.glyphdata = kit.GlyphData('glyphorder.txt')
-        self.glyph_order = self.glyphdata.glyph_order
-        self.glyph_order_trimmed = None
+        self.glyph_data = kit.GlyphData()
 
         self.designspace = kit.DesignSpace(self)
         self.feature_classes = kit.Feature(
@@ -85,13 +83,13 @@ class Project(object):
         self.fmndb = kit.Fmndb(self)
         self.goadb_trimmed = kit.Goadb(
             self,
-            self.glyphdata,
+            self.glyph_data.glyph_order_trimmed,
             'GlyphOrderAndAliasDB_trimmed',
         )
         if self.options['build_ttf']:
             self.goadb_trimmed_ttf = kit.Goadb(
                 self,
-                self.glyphdata,
+                self.glyph_data.glyph_order_trimmed,
                 'GlyphOrderAndAliasDB_trimmed_ttf',
                 for_ttf = True,
             )
@@ -177,14 +175,14 @@ class Project(object):
                 master.prepare()
 
             reference_font = self.family.masters[0].open()
-            self.glyph_order_trimmed = self.trim_glyph_names(
-                self.glyph_order,
-                reference_font.glyphOrder
+            self.glyph_data.glyph_order_trimmed = self.trim_glyph_names(
+                self.glyph_data.glyph_order,
+                reference_font.glyphOrder,
             )
 
             for master in self.family.masters:
                 font = master.open()
-                font.lib['public.glyphOrder'] = self.glyph_order_trimmed
+                font.lib['public.glyphOrder'] = self.glyph_data.glyph_order_trimmed
                 font.lib.pop('com.schriftgestaltung.glyphOrder', None)
                 master.save_as(font)
 
