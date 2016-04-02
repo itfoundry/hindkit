@@ -258,10 +258,12 @@ class Product(BaseFont):
             style.file_format = 'TTF'
             goadb = self.project.goadb_trimmed_ttf
 
-        while not os.path.exists(style.path):
-            raw_input("\n[PROMPT] Source file {} is missing. Press Enter to try again...".format(style.path))
+        goadb.prepare()
 
-        goadb.prepare(self.project.glyph_order_trimmed)
+        while not os.path.exists(style.path):
+            print("\n[PROMPT] Input file {} is missing. Try again? [Y/n] ".format(style.path))
+            if raw_input().upper().startswith('N'):
+                return
 
         # if style.file_name.endswith('.ufo'):
         #     font = style.open()
