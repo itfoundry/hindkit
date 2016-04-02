@@ -6,7 +6,7 @@ import os, subprocess
 import defcon, mutatorMath.ufo.document
 import hindkit as kit
 
-class Family(object):
+class Family(kit.Base):
 
     def __init__(
         self,
@@ -36,29 +36,21 @@ class Family(object):
 
         self.info = defcon.Font().info
 
-    def set_masters(self, masters=None):
-        if masters:
-            self.masters = masters
-        else:
-            self.masters = [kit.Master(self, 'Light', 0), kit.Master(self, 'Bold', 100)]
-
-    def set_styles(self, style_scheme=None):
-        if not style_scheme:
-            style_scheme = kit.clients.Client(self).style_scheme
-        self.styles = [
-            kit.Style(
-                self,
-                name = style_name,
-                weight_location = weight_location,
-                weight_class = weight_class,
-            )
-            for style_name, weight_location, weight_class in style_scheme
+    def set_masters(self, value=None):
+        scheme = self.fallback(value, [('Light', 0), ('Bold',  100)])
+        self.masters = [
+            kit.Master(self, name, weight_location)
+            for name, weight_location in scheme
         ]
-        if not self.masters:
-            self.set_masters([
-                kit.Master(self, i.name, i.weight_location)
-                for i in self.styles
-            ])
+
+    def set_styles(self, value=None):
+        scheme = self.fallback(value, kit.Client(self).style_scheme)
+        self.styles = [
+            kit.Style(self, name, weight_location, weight_class)
+            for name, weight_location, weight_class in scheme
+        ]
+        if self.masters is None:
+            self.set_masters((i.name, i.weight_location) for i in self.styles)
 
     def get_styles_that_are_directly_derived_from_masters(self):
         master_positions = [
@@ -80,30 +72,15 @@ class Family(object):
         raise NotImplementedError()
 
     def prepare_styles(self):
-        self.generate_styles()
 
-    def generate_styles(self): # STAGE I
-
-        b = self.family.builder
-
+        b = self.project
         styles = [product.style for product in b.products]
-
         for style in styles:
             style.temp = True
             kit.makedirs(style.directory)
 
         if b.options['run_makeinstances']:
-
-            b.designspace.prepare()
-
-            arguments = ['-d', b.designspace.path]
-            if not b.options['run_checkoutlines']:
-                arguments.append('-c')
-            if not b.options['run_autohint']:
-                arguments.append('-a')
-
-            subprocess.call(['makeInstancesUFO'] + arguments)
-
+            self.generate_styles()
         else:
             for master, style in zip(self.masters, styles):
                 kit.copy(master.path, style.path)
@@ -119,11 +96,24 @@ class Family(object):
                     }
                     _updateInstance(options, style.path)
 
+    def generate_styles(self):
 
-class DesignSpace(kit.BaseObject):
+        b = self.project
+        b.designspace.prepare()
 
-    def __init__(self, builder, name='font'):
-        super(DesignSpace, self).__init__(name, builder=builder)
+        arguments = ['-d', b.designspace.path]
+        if not b.options['run_checkoutlines']:
+            arguments.append('-c')
+        if not b.options['run_autohint']:
+            arguments.append('-a')
+
+        subprocess.call(['makeInstancesUFO'] + arguments)
+
+
+class DesignSpace(kit.BaseFile):
+
+    def __init__(self, project, name='font'):
+        super(DesignSpace, self).__init__(name, project=project)
         self.file_format = 'DesignSpace'
 
     def generate(self):
@@ -132,7 +122,7 @@ class DesignSpace(kit.BaseObject):
             os.path.abspath(kit.relative_to_cwd(self.path))
         )
 
-        for i, master in enumerate(self.builder.family.masters):
+        for i, master in enumerate(self.project.family.masters):
 
             doc.addSource(
 
@@ -150,13 +140,13 @@ class DesignSpace(kit.BaseObject):
 
             )
 
-        for product in self.builder.products:
+        for product in self.project.products:
             if product.file_format == 'OTF':
                 style = product.style
                 doc.startInstance(
                     name = 'instance ' + style.name,
                     location = {'weight': style.weight_location},
-                    familyName = self.builder.family.name,
+                    familyName = self.project.family.name,
                     styleName = style.name,
                     fileName = os.path.abspath(
                         kit.relative_to_cwd(style.path)
@@ -166,13 +156,13 @@ class DesignSpace(kit.BaseObject):
                     # styleMapStyleName = None,
                 )
                 doc.writeInfo()
-                if self.builder.options['prepare_kerning']:
+                if self.project.options['prepare_kerning']:
                     doc.writeKerning()
                 doc.endInstance()
         doc.save()
 
 
-class Fmndb(kit.BaseObject):
+class Fmndb(kit.BaseFile):
 
     LINES_HEAD = [
         '# [PostScriptName]',
@@ -182,16 +172,16 @@ class Fmndb(kit.BaseObject):
         '#   m = 1, Macintosh Compatible Full Name (Deprecated)',
     ]
 
-    def __init__(self, builder, name='FontMenuNameDB'):
-        super(Fmndb, self).__init__(name, builder=builder)
+    def __init__(self, project, name='FontMenuNameDB'):
+        super(Fmndb, self).__init__(name, project=project)
         self.lines = []
         self.lines.extend(self.LINES_HEAD)
 
     def generate(self):
 
-        f_name = self.builder.family.name
+        f_name = self.project.family.name
 
-        for product in self.builder.products:
+        for product in self.project.products:
 
             if product.file_format == 'OTF':
 
@@ -205,7 +195,7 @@ class Fmndb(kit.BaseObject):
                 l_name = style.full_name
                 comment_lines = []
 
-                if self.builder.options['do_style_linking']:
+                if self.project.options['do_style_linking']:
                     if style.name == 'Regular':
                         l_name = l_name.replace(' Regular', '')
                     else:

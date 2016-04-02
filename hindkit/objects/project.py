@@ -12,7 +12,7 @@ class Project(object):
         'masters': 'masters',
         'styles': 'styles',
         'features': 'features',
-        'temp': 'intermediates',
+        'intermediates': 'intermediates',
         'products': 'products',
         'output': '/Library/Application Support/Adobe/Fonts',
     }
@@ -25,7 +25,7 @@ class Project(object):
     ):
 
         self.family = family
-        self.family.builder = self
+        self.family.project = self
 
         self.fontrevision = fontrevision
 

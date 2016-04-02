@@ -13,7 +13,7 @@ family = kit.Family(
 family.set_masters()
 family.set_styles()
 
-builder = kit.Builder(
+project = kit.Project(
     family,
     fontrevision = '0.100',
     options = {
@@ -21,4 +21,4 @@ builder = kit.Builder(
         'do_style_linking': True,
     },
 )
-builder.build()
+project.build()

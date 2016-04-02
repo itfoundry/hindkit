@@ -33,13 +33,13 @@ def sort_names(names, order=None):
     )
     return sorted_names
 
-class Feature(kit.BaseObject):
+class Feature(kit.BaseFile):
 
-    def __init__(self, builder, name, optional_file_names=None):
-        super(Feature, self).__init__(name, builder=builder)
+    def __init__(self, project, name, optional_file_names=None):
+        super(Feature, self).__init__(name, project=project)
         self.optional_file_names = optional_file_names
         self.file_format = 'FEA'
-        self.abstract_directory = kit.Builder.directories['features']
+        self.abstract_directory = kit.Project.directories['features']
 
     def generate(self, style=None):
 
@@ -60,12 +60,12 @@ class Feature(kit.BaseObject):
 
         lines = []
 
-        if self.builder.options['prepare_mark_positioning']:
+        if self.project.options['prepare_mark_positioning']:
 
             glyph_classes = []
             glyph_classes.extend([(WriteFeaturesMarkFDK.kCombMarksClassName, glyph_filter_marks)])
 
-            if self.builder.options['match_mI_variants']:
+            if self.project.options['match_mI_variants']:
                 glyph_classes.extend([
                     ('MATRA_I_ALTS', devanagari.glyph_filter_matra_i_alts),
                     ('BASES_ALIVE', devanagari.glyph_filter_bases_alive),
@@ -73,13 +73,13 @@ class Feature(kit.BaseObject):
                     # ('BASES_FOR_WIDE_MATRA_II', devanagari.glyph_filter_bases_for_wide_matra_ii),
                 ])
 
-            style_0 = self.builder.styles_to_produce[0].open()
+            style_0 = self.project.styles_to_produce[0].open()
 
-            glyph_order = self.builder.glyph_order
+            glyph_order = self.project.glyph_order
             for class_name, filter_function in glyph_classes:
                 glyph_names = [
                     glyph.name for glyph in filter(
-                        lambda glyph: filter_function(self.builder.family, glyph),
+                        lambda glyph: filter_function(self.project.family, glyph),
                         style_0,
                     )
                 ]
@@ -90,7 +90,7 @@ class Feature(kit.BaseObject):
                 )
             style_0.save()
 
-            for style in self.builder.styles_to_produce[1:]:
+            for style in self.project.styles_to_produce[1:]:
                 font = style.open()
                 font.groups.update(style_0.groups)
                 font.save()
@@ -101,7 +101,7 @@ class Feature(kit.BaseObject):
 
     def generate_tables(self):
 
-        info = self.builder.family.info
+        info = self.project.family.info
 
         lines = []
         tables = collections.OrderedDict([
@@ -113,7 +113,7 @@ class Feature(kit.BaseObject):
 
         tables['OS/2'].extend([
             'include (weightclass.fea);',
-            'Vendor "{}";'.format(kit.Client(self.builder.family).table_OS_2['Vendor']),
+            'Vendor "{}";'.format(kit.Client(self.project.family).table_OS_2['Vendor']),
         ])
 
         set_vertical_metrics = False
@@ -170,17 +170,17 @@ class Feature(kit.BaseObject):
                 'winDescent {};'.format(info.openTypeOS2WinDescent),
             ])
 
-        # tables['OS/2'].extend(self.builder.generate_UnicodeRange)
-        # tables['OS/2'].extend(self.builder.generate_CodePageRange)
+        # tables['OS/2'].extend(self.project.generate_UnicodeRange)
+        # tables['OS/2'].extend(self.project.generate_CodePageRange)
 
-        if self.builder.options['override_GDEF']:
+        if self.project.options['override_GDEF']:
             GDEF_records = {
                 'bases': '',
                 'ligatures': '',
                 'marks': '',
                 'components': '',
             }
-            if self.builder.options['prepare_mark_positioning'] or os.path.exists(os.path.join(self.directory, 'classes.fea')):
+            if self.project.options['prepare_mark_positioning'] or os.path.exists(os.path.join(self.directory, 'classes.fea')):
                 GDEF_records['marks'] = '@{}'.format(WriteFeaturesMarkFDK.kCombMarksClassName)
             if os.path.exists(os.path.join(self.directory, 'classes_suffixing.fea')):
                 GDEF_records['marks'] = '@{}'.format('COMBINING_MARKS_GDEF')
@@ -193,7 +193,7 @@ class Feature(kit.BaseObject):
                 name_id,
                 content.encode('unicode_escape').replace('\\x', '\\00').replace('\\u', '\\')
             )
-            for name_id, content in kit.Client(self.builder.family).table_name.items()
+            for name_id, content in kit.Client(self.project.family).table_name.items()
             if content
         )
 
@@ -210,7 +210,7 @@ class Feature(kit.BaseObject):
     def generate_languagesystems(self):
 
         lines = ['languagesystem DFLT dflt;']
-        tag = kit.misc.SCRIPTS[self.builder.family.script.lower()]['tag']
+        tag = kit.misc.SCRIPTS[self.project.family.script.lower()]['tag']
         if isinstance(tag, tuple):
             lines.append('languagesystem {} dflt;'.format(tag[1]))
             lines.append('languagesystem {} dflt;'.format(tag[0]))
@@ -222,32 +222,45 @@ class Feature(kit.BaseObject):
                 f.writelines(i + '\n' for i in lines)
 
     def generate_gpos(self, style):
+
         directory = style.directory
-        if self.builder.options['prepare_kerning']:
+
+        if self.project.options['prepare_kerning']:
+
             WriteFeaturesKernFDK.KernDataClass(
                 font = style.open(),
                 folderPath = directory,
             )
-            kern_path = os.path.join(directory, WriteFeaturesKernFDK.kKernFeatureFileName)
-            if self.builder.options['postprocess_kerning'] and os.path.exists(kern_path):
-                with open(kern_path) as f:
-                    original = f.read()
-                postprocessed = self.builder.postprocess_kerning(original)
-                with open(kern_path, 'w') as f:
-                    f.write(postprocessed)
-        if self.builder.options['prepare_mark_positioning']:
+
+            try:
+                self.project.postprocess_kerning
+            except AttributeError:
+                pass
+            else:
+                kern_path = os.path.join(
+                    directory,
+                    WriteFeaturesKernFDK.kKernFeatureFileName,
+                )
+                if os.path.exists(kern_path):
+                    with open(kern_path) as f:
+                        original = f.read()
+                    postprocessed = self.project.postprocess_kerning(original)
+                    with open(kern_path, 'w') as f:
+                        f.write(postprocessed)
+
+        if self.project.options['prepare_mark_positioning']:
             WriteFeaturesMarkFDK.MarkDataClass(
                 font = style.open(),
                 folderPath = directory,
                 trimCasingTags = False,
-                genMkmkFeature = self.builder.options['prepare_mark_to_mark_positioning'],
+                genMkmkFeature = self.project.options['prepare_mark_to_mark_positioning'],
                 writeClassesFile = True,
-                indianScriptsFormat = self.builder.family.script.lower() in kit.misc.SCRIPTS,
+                indianScriptsFormat = self.project.family.script.lower() in kit.misc.SCRIPTS,
             )
-            if self.builder.options['match_mI_variants']:
+            if self.project.options['match_mI_variants']:
                 devanagari.prepare_features_devanagari(
-                    self.builder.options['position_marks_for_mI_variants'],
-                    self.builder,
+                    self.project.options['position_marks_for_mI_variants'],
+                    self.project,
                     style,
                 ) # NOTE: not pure GPOS
 
@@ -271,7 +284,7 @@ class Feature(kit.BaseObject):
                 if os.path.exists(path):
                     lines.append('include ({});'.format(os.path.relpath(path, style.directory)))
             if os.path.exists(os.path.join(style.directory, WriteFeaturesKernFDK.kKernFeatureFileName)):
-                if self.builder.family.script.lower() in kit.misc.SCRIPTS:
+                if self.project.family.script.lower() in kit.misc.SCRIPTS:
                     kerning_feature_name = 'dist'
                 else:
                     kerning_feature_name = 'kern'

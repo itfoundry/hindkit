@@ -5,7 +5,7 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import os
 import hindkit as kit
 
-class BaseObject(object):
+class Base(object):
 
     @staticmethod
     def fallback(*candidates):
@@ -15,16 +15,19 @@ class BaseObject(object):
             if i is not None:
                 return i
 
-    def __init__(self, name, builder=None):
+
+class BaseFile(Base):
+
+    def __init__(self, name, project=None):
 
         self.name = name
         self.file_format = None
         self.abstract_directory = ''
 
         self.temp = False
-        self.temp_directory = kit.Builder.directories['intermediates']
+        self.temp_directory = kit.Project.directories['intermediates']
 
-        self.builder = builder
+        self.project = project
         self.optional_file_names = []
 
         self.counter = 0
@@ -83,7 +86,7 @@ class BaseObject(object):
             path_new = self.path
             kit.copy(path_old, path_new)
             for optional_file_name in self.optional_file_names:
-                f = kit.BaseObject(optional_file_name)
+                f = kit.BaseFile(optional_file_name)
                 f.file_format = self.file_format
                 f.abstract_directory = self.abstract_directory
                 optional_path_old = f.path

@@ -50,7 +50,7 @@ def copy(src, dst):
 
 from hindkit.constants import styles, misc
 
-from hindkit.objects.base import BaseObject
+from hindkit.objects.base import Base, BaseFile
 from hindkit.objects.family import Family, DesignSpace, Fmndb
 from hindkit.objects.font import Master, Style, Product
 from hindkit.objects.glyphdata import GlyphData, Goadb

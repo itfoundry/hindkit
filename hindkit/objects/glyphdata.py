@@ -52,7 +52,7 @@ class GlyphData(object):
         self.goadb_glyph_list = agd.parsealiasfile(self.goadb)
 
 
-class Goadb(kit.BaseObject):
+class Goadb(kit.BaseFile):
 
     TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP = {
         'CR CR uni000D\n': 'CR uni000D uni000D\n',
@@ -60,12 +60,12 @@ class Goadb(kit.BaseObject):
 
     def __init__(
         self,
-        builder,
+        project,
         glyphdata,
         name = 'GlyphOrderAndAliasDB',
         for_ttf = False,
     ):
-        super(Goadb, self).__init__(name, builder=builder)
+        super(Goadb, self).__init__(name, project=project)
         self.glyphdata = glyphdata
         self.for_ttf = for_ttf
 
