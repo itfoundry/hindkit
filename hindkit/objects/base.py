@@ -28,7 +28,7 @@ class BaseFile(Base):
         self.temp_directory = kit.Project.directories['intermediates']
 
         self.project = project
-        self.optional_file_names = []
+        self.optional_filenames = []
 
         self.counter = 0
 
@@ -82,11 +82,12 @@ class BaseFile(Base):
             return
         path_old = self.path
         if os.path.exists(path_old):
+            print(path_old, 'exists.')
             self.temp = True
             path_new = self.path
             kit.copy(path_old, path_new)
-            for optional_file_name in self.optional_file_names:
-                f = kit.BaseFile(optional_file_name)
+            for optional_filename in self.optional_filenames:
+                f = kit.BaseFile(optional_filename)
                 f.file_format = self.file_format
                 f.abstract_directory = self.abstract_directory
                 optional_path_old = f.path
@@ -100,6 +101,7 @@ class BaseFile(Base):
                     else:
                         raise
         else:
+            print(path_old, 'is missing.')
             self.temp = True
             self.generate(*args, **kwargs)
 

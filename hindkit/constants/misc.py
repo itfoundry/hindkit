@@ -110,9 +110,9 @@ def get_u_scalar_to_u_name():
     return u_scalar_to_u_name
 
 @kit.memoize
-def get_glyph_list(file_name):
+def get_glyph_list(filename):
     glyph_list = collections.OrderedDict()
-    with open(kit.relative_to_package('data/' + file_name)) as f:
+    with open(kit.relative_to_package('data/' + filename)) as f:
         for line in f:
             line_without_comment = line.partition('#')[0].strip()
             if line_without_comment:

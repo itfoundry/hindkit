@@ -31,8 +31,8 @@ class Family(kit.Base):
                 self.name += ' ' + self.script
         self.name_postscript = self.name.replace(' ', '')
 
-        self.masters = []
-        self.styles = []
+        self.masters = None
+        self.styles = None
 
         self.info = defcon.Font().info
 
@@ -213,3 +213,72 @@ class Fmndb(kit.BaseFile):
 
         with open(self.path, 'w') as f:
             f.writelines(i + '\n' for i in self.lines)
+
+# makeInstancesUFO.updateInstance
+
+def _updateInstance(options, fontInstancePath):
+    if options['doOverlapRemoval']:
+        print("\tdoing overlap removal with checkOutlinesUFO %s ..." % (fontInstancePath))
+        logList = []
+        opList = ["-e", fontInstancePath]
+        if options['allowDecimalCoords']:
+            opList.insert(0, "-dec")
+        if os.name == "nt":
+            opList.insert(0, 'checkOutlinesUFO.cmd')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        else:
+            opList.insert(0, 'checkOutlinesUFO')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        while 1:
+            output = proc.stdout.readline()
+            if output:
+                print(".", end=' ')
+                logList.append(output)
+            if proc.poll() != None:
+                output = proc.stdout.readline()
+                if output:
+                    print(output, end=' ')
+                    logList.append(output)
+                break
+        log = "".join(logList)
+        if not ("Done with font" in log):
+            print()
+            print(log)
+            print("Error in checkOutlinesUFO %s" % (fontInstancePath))
+            # raise(SnapShotError)
+        else:
+            print()
+
+    if options['doAutoHint']:
+        print("\tautohinting %s ..." % (fontInstancePath))
+        logList = []
+        opList = ['-q', '-nb', fontInstancePath]
+        if options['allowDecimalCoords']:
+            opList.insert(0, "-dec")
+        if os.name == "nt":
+            opList.insert(0, 'autohint.cmd')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        else:
+            opList.insert(0, 'autohint')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        while 1:
+            output = proc.stdout.readline()
+            if output:
+                print(output, end=' ')
+                logList.append(output)
+            if proc.poll() != None:
+                output = proc.stdout.readline()
+                if output:
+                    print(output, end=' ')
+                    logList.append(output)
+                break
+        log = "".join(logList)
+        if not ("Done with font" in log):
+            print()
+            print(log)
+            print("Error in autohinting %s" % (fontInstancePath))
+            # raise(SnapShotError)
+        else:
+            print()
+
+    return

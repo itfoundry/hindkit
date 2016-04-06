@@ -35,9 +35,9 @@ def sort_names(names, order=None):
 
 class Feature(kit.BaseFile):
 
-    def __init__(self, project, name, optional_file_names=None):
+    def __init__(self, project, name, optional_filenames=None):
         super(Feature, self).__init__(name, project=project)
-        self.optional_file_names = optional_file_names
+        self.optional_filenames = optional_filenames
         self.file_format = 'FEA'
         self.abstract_directory = kit.Project.directories['features']
 
@@ -271,7 +271,7 @@ class Feature(kit.BaseFile):
     def generate_references(self, style):
         with open(os.path.join(style.directory, 'features'), 'w') as f:
             lines = ['table head { FontRevision 1.000; } head;']
-            for file_name in [
+            for filename in [
                 'classes',
                 'classes_suffixing',
                 'tables',
@@ -280,7 +280,7 @@ class Feature(kit.BaseFile):
                 'GSUB_lookups',
                 'GSUB',
             ]:
-                path = os.path.join(self.directory, file_name + '.fea')
+                path = os.path.join(self.directory, filename + '.fea')
                 if os.path.exists(path):
                     lines.append('include ({});'.format(os.path.relpath(path, style.directory)))
             if os.path.exists(os.path.join(style.directory, WriteFeaturesKernFDK.kKernFeatureFileName)):
@@ -296,12 +296,12 @@ class Feature(kit.BaseFile):
                 )
             if os.path.exists(os.path.join(style.directory, WriteFeaturesMarkFDK.kMarkClassesFileName)):
                 lines.append('include ({});'.format(WriteFeaturesMarkFDK.kMarkClassesFileName))
-            for feature_name, file_name in [
+            for feature_name, filename in [
                 ('mark', WriteFeaturesMarkFDK.kMarkFeatureFileName),
                 ('mkmk', WriteFeaturesMarkFDK.kMkmkFeatureFileName),
                 ('abvm', WriteFeaturesMarkFDK.kAbvmFeatureFileName),
                 ('blwm', WriteFeaturesMarkFDK.kBlwmFeatureFileName),
             ]:
-                if os.path.exists(os.path.join(style.directory, file_name)):
-                    lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, file_name))
+                if os.path.exists(os.path.join(style.directory, filename)):
+                    lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, filename))
             f.writelines(i + '\n' for i in lines)

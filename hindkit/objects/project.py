@@ -67,14 +67,14 @@ class Project(object):
         self.feature_classes = kit.Feature(
             self,
             'classes',
-            optional_file_names = ['classes_suffixing'],
+            optional_filenames = ['classes_suffixing'],
         )
         self.feature_tables = kit.Feature(self, 'tables')
         self.feature_languagesystems = kit.Feature(self, 'languagesystems')
         self.feature_gsub = kit.Feature(
             self,
             'GSUB',
-            optional_file_names = ['GSUB_lookups', 'GSUB_prefixing'],
+            optional_filenames = ['GSUB_lookups', 'GSUB_prefixing'],
         )
         self.feature_gpos = kit.Feature(self, 'GPOS')
         self.feature_weight_class = kit.Feature(self, 'WeightClass')
@@ -83,13 +83,11 @@ class Project(object):
         self.fmndb = kit.Fmndb(self)
         self.goadb_trimmed = kit.Goadb(
             self,
-            self.glyph_data.glyph_order_trimmed,
             'GlyphOrderAndAliasDB_trimmed',
         )
         if self.options['build_ttf']:
             self.goadb_trimmed_ttf = kit.Goadb(
                 self,
-                self.glyph_data.glyph_order_trimmed,
                 'GlyphOrderAndAliasDB_trimmed_ttf',
                 for_ttf = True,
             )
@@ -222,73 +220,3 @@ class Project(object):
             for product in self.products:
                 product.style.temp = True
                 product.prepare()
-
-
-# makeInstancesUFO.updateInstance
-
-def _updateInstance(options, fontInstancePath):
-    if options['doOverlapRemoval']:
-        print("\tdoing overlap removal with checkOutlinesUFO %s ..." % (fontInstancePath))
-        logList = []
-        opList = ["-e", fontInstancePath]
-        if options['allowDecimalCoords']:
-            opList.insert(0, "-dec")
-        if os.name == "nt":
-            opList.insert(0, 'checkOutlinesUFO.cmd')
-            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
-        else:
-            opList.insert(0, 'checkOutlinesUFO')
-            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
-        while 1:
-            output = proc.stdout.readline()
-            if output:
-                print(".", end=' ')
-                logList.append(output)
-            if proc.poll() != None:
-                output = proc.stdout.readline()
-                if output:
-                    print(output, end=' ')
-                    logList.append(output)
-                break
-        log = "".join(logList)
-        if not ("Done with font" in log):
-            print()
-            print(log)
-            print("Error in checkOutlinesUFO %s" % (fontInstancePath))
-            # raise(SnapShotError)
-        else:
-            print()
-
-    if options['doAutoHint']:
-        print("\tautohinting %s ..." % (fontInstancePath))
-        logList = []
-        opList = ['-q', '-nb', fontInstancePath]
-        if options['allowDecimalCoords']:
-            opList.insert(0, "-dec")
-        if os.name == "nt":
-            opList.insert(0, 'autohint.cmd')
-            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
-        else:
-            opList.insert(0, 'autohint')
-            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
-        while 1:
-            output = proc.stdout.readline()
-            if output:
-                print(output, end=' ')
-                logList.append(output)
-            if proc.poll() != None:
-                output = proc.stdout.readline()
-                if output:
-                    print(output, end=' ')
-                    logList.append(output)
-                break
-        log = "".join(logList)
-        if not ("Done with font" in log):
-            print()
-            print(log)
-            print("Error in autohinting %s" % (fontInstancePath))
-            # raise(SnapShotError)
-        else:
-            print()
-
-    return

@@ -72,33 +72,33 @@ class GlyphData(object):
     def generate_goadb(self, names=None):
         if names is None:
             names = self.glyph_order
-        self.goadb = self.dictionary.aliasfile(names) + '\n'
+        return StringIO.StringIO(self.dictionary.aliasfile(names) + '\n')
 
 
 class Goadb(kit.BaseFile):
 
     TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP = {
-        'CR CR uni000D\n': 'CR uni000D uni000D\n',
+        'CR\tCR\tuni000D\n': 'CR\tuni000D\tuni000D\n',
     }
 
     def __init__(
         self,
         project,
-        glyph_order_trimmed,
         name = 'GlyphOrderAndAliasDB',
         for_ttf = False,
     ):
         super(Goadb, self).__init__(name, project=project)
-        self.glyph_order_trimmed = glyph_order_trimmed
         self.for_ttf = for_ttf
 
-    def generate(self):
-        if self.project.glyph_data.goadb is None:
-            self.project.glyph_data.generate_goadb(self.glyph_order_trimmed)
+    def generate(self, names=None):
+        goadb_trimmed = self.project.glyph_data.generate_goadb(names)
         with open(self.path, 'w') as f:
-            for line in self.project.glyph_data.goadb:
+            for line in goadb_trimmed:
                 if self.for_ttf:
-                    line = self.TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP.get(line, line)
+                    line = self.TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP.get(
+                        line,
+                        line,
+                    )
                 f.write(line)
 
     def old(self):
