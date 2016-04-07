@@ -48,21 +48,21 @@ class BaseFont(kit.BaseFile):
 
     @property
     def name_postscript(self):
-        return self.fallback(self._name_postscript, self.postscript(self.name))
+        return kit.fallback(self._name_postscript, self.postscript(self.name))
     @name_postscript.setter
     def name_postscript(self, value):
         self._name_postscript = value
 
     @property
     def full_name(self):
-        return self.fallback(self._full_name, self.family.name + ' ' + self.name)
+        return kit.fallback(self._full_name, self.family.name + ' ' + self.name)
     @full_name.setter
     def full_name(self, value):
         self._full_name = value
 
     @property
     def full_name_postscript(self):
-        return self.fallback(
+        return kit.fallback(
             self._full_name_postscript,
             self.postscript(self.family.name) + '-' + self.name_postscript,
         )
@@ -99,7 +99,7 @@ class Master(BaseFont):
     @BaseFont.filename.getter
     def filename(self):
         '''According to Glyphs app's convention.'''
-        return self.fallback(self._filename, self.family.name + '-' + self.name)
+        return kit.fallback(self._filename, self.family.name + '-' + self.name)
 
     def import_glyphs_from(
         self,
@@ -213,7 +213,7 @@ class Style(BaseFont):
 
     @property
     def abstract_directory(self):
-        return self.fallback(
+        return kit.fallback(
             self._abstract_directory,
             os.path.join('styles', self.name),
         )
@@ -223,7 +223,7 @@ class Style(BaseFont):
 
     @BaseFont.filename.getter
     def filename(self):
-        return self.fallback(self._filename, 'font')
+        return kit.fallback(self._filename, 'font')
 
     def produce(self, project, file_format='OTF'):
         return Product(project, self, file_format=file_format)
@@ -240,7 +240,7 @@ class Product(BaseFont):
 
     @BaseFont.filename.getter
     def filename(self):
-        return self.fallback(self._filename, self.full_name_postscript)
+        return kit.fallback(self._filename, self.full_name_postscript)
 
     def prepare(self, project=None):
         if project:

@@ -6,7 +6,7 @@ import os, subprocess
 import defcon, mutatorMath.ufo.document
 import hindkit as kit
 
-class Family(kit.Base):
+class Family(object):
 
     def __init__(
         self,
@@ -37,14 +37,14 @@ class Family(kit.Base):
         self.info = defcon.Font().info
 
     def set_masters(self, value=None):
-        scheme = self.fallback(value, [('Light', 0), ('Bold',  100)])
+        scheme = kit.fallback(value, [('Light', 0), ('Bold',  100)])
         self.masters = [
             kit.Master(self, name, weight_location)
             for name, weight_location in scheme
         ]
 
     def set_styles(self, value=None):
-        scheme = self.fallback(value, kit.Client(self).style_scheme)
+        scheme = kit.fallback(value, kit.Client(self).style_scheme)
         self.styles = [
             kit.Style(self, name, weight_location, weight_class)
             for name, weight_location, weight_class in scheme

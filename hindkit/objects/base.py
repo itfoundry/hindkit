@@ -5,18 +5,7 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import os
 import hindkit as kit
 
-class Base(object):
-
-    @staticmethod
-    def fallback(*candidates):
-        # if len(candidates) == 1 and isinstance(candidates[0], collections.Iterable):
-        #     candidates = candidates[0]
-        for i in candidates:
-            if i is not None:
-                return i
-
-
-class BaseFile(Base):
+class BaseFile(object):
 
     def __init__(self, name, project=None):
 
@@ -39,7 +28,7 @@ class BaseFile(Base):
 
     @property
     def filename_extension(self):
-        return self.fallback(
+        return kit.fallback(
             self._filename_extension,
             self.file_format.lower() if self.file_format else None,
         )
@@ -49,7 +38,7 @@ class BaseFile(Base):
 
     @property
     def filename(self):
-        return self.fallback(self._filename, self.name)
+        return kit.fallback(self._filename, self.name)
     @filename.setter
     def filename(self, value):
         self._filename = value
@@ -59,7 +48,7 @@ class BaseFile(Base):
         directory = self.abstract_directory
         if self.temp:
             directory = os.path.join(self.temp_directory, directory)
-        return self.fallback(self._directory, directory)
+        return kit.fallback(self._directory, directory)
     @directory.setter
     def directory(self, value):
         self._directory = value
@@ -69,7 +58,7 @@ class BaseFile(Base):
         filename = self.filename
         if self.filename_extension:
             filename += '.' + self.filename_extension
-        return self.fallback(
+        return kit.fallback(
             self._path,
             os.path.join(self.directory, filename),
         )

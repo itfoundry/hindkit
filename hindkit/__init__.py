@@ -48,6 +48,13 @@ def copy(src, dst):
     else:
         shutil.copy(src, dst)
 
+def fallback(*candidates):
+    # if len(candidates) == 1 and isinstance(candidates[0], collections.Iterable):
+    #     candidates = candidates[0]
+    for i in candidates:
+        if i is not None:
+            return i
+
 from hindkit.constants import styles, misc
 
 from hindkit.objects.base import Base, BaseFile

@@ -37,7 +37,7 @@ class Feature(kit.BaseFile):
 
     def __init__(self, project, name, optional_filenames=None):
         super(Feature, self).__init__(name, project=project)
-        self.optional_filenames = self.fallback(optional_filenames, [])
+        self.optional_filenames = kit.fallback(optional_filenames, [])
         self.file_format = 'FEA'
         self.abstract_directory = kit.Project.directories['features']
 
