@@ -30,7 +30,7 @@ class Client(object):
                     (19, kit.misc.SCRIPTS[self.family.script.lower()].get('sample text')),
                 ]),
                 'table_OS_2': {
-                    'fsType': 4,
+                    'fsType': self.family.info.openTypeOS2Type if self.family.info.openTypeOS2Type is not None else 4,
                     'Vendor': 'ITFO'
                 },
             },
