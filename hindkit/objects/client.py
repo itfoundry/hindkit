@@ -18,7 +18,7 @@ class Client(object):
                 },
                 'table_name': collections.OrderedDict([
                     (0, self.family.info.copyright if self.family.info.copyright else "Copyright {} Indian Type Foundry. All Rights Reserved.".format(datetime.date.today().year)),
-                    (7, "{} is a trademark of the Indian Type Foundry.".format(self.family.trademark)),
+                    (7, "{} is a trademark of the Indian Type Foundry.".format(self.family.base_name)),
                     (8, "Indian Type Foundry"),
                     (9, self.family.info.openTypeNameDesigner),
                     (10, self.family.info.openTypeNameDescription),

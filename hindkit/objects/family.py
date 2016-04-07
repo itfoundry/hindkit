@@ -11,7 +11,7 @@ class Family(kit.Base):
     def __init__(
         self,
         client = None,
-        trademark = None,
+        base_name = None,
         script = None,
         append_script_name = False,
         name = None,
@@ -19,14 +19,14 @@ class Family(kit.Base):
 
         self.client = client
 
-        self.trademark = trademark
+        self.base_name = base_name
         self.script = script
         self.append_script_name = append_script_name
 
         if name:
             self.name = name
         else:
-            self.name = self.trademark
+            self.name = self.base_name
             if self.script and self.append_script_name:
                 self.name += ' ' + self.script
         self.name_postscript = self.name.replace(' ', '')
