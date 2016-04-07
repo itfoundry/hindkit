@@ -157,7 +157,7 @@ class Feature(kit.BaseFile):
             if info.openTypeOS2WinAscent is None:
                 info.openTypeOS2WinAscent = info.openTypeHheaAscender
             if info.openTypeOS2WinDescent is None:
-                info.openTypeOS2WinDescent = abs(info.openTypeHheaAscender)
+                info.openTypeOS2WinDescent = abs(info.openTypeHheaDescender)
 
             tables['hhea'].extend([
                 'Ascender {};'.format(info.openTypeHheaAscender),
