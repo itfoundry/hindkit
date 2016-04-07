@@ -18,7 +18,13 @@ class Client(object):
                     'vertical_metrics_strategy': 'ITF',
                 },
                 'table_name': collections.OrderedDict([
-                    (0, self.family.info.copyright if self.family.info.copyright else "Copyright {} Indian Type Foundry. All Rights Reserved.".format(datetime.date.today().year)),
+                    (
+                        0,
+                        kit.fallback(
+                            self.family.info.copyright,
+                            "Copyright {} Indian Type Foundry. All Rights Reserved.".format(datetime.date.today().year),
+                        )
+                    ),
                     (7, "{} is a trademark of the Indian Type Foundry.".format(self.family.base_name)),
                     (8, "Indian Type Foundry"),
                     (9, self.family.info.openTypeNameDesigner),
@@ -30,7 +36,7 @@ class Client(object):
                     (19, kit.misc.SCRIPTS[self.family.script.lower()].get('sample text')),
                 ]),
                 'table_OS_2': {
-                    'fsType': self.family.info.openTypeOS2Type if self.family.info.openTypeOS2Type is not None else 4,
+                    'fsType': kit.fallback(self.family.info.openTypeOS2Type, 4),
                     'Vendor': 'ITFO'
                 },
             },
@@ -40,7 +46,13 @@ class Client(object):
                     'vertical_metrics_strategy': 'Google Fonts',
                 },
                 'table_name': collections.OrderedDict([
-                    (0, self.family.info.copyright if self.family.info.copyright else "Copyright (c) {} Indian Type Foundry (info@indiantypefoundry.com)".format(datetime.date.today().year)),
+                    (
+                        0,
+                        kit.fallback(
+                            self.family.info.copyright,
+                            "Copyright (c) {} Indian Type Foundry (info@indiantypefoundry.com)".format(datetime.date.today().year),
+                        )
+                    ),
                     (7, None),
                     (11, "http://www.indiantypefoundry.com/googlefonts"),
                     (13, "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL"),

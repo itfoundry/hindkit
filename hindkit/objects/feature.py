@@ -101,7 +101,7 @@ class Feature(kit.BaseFile):
 
     def generate_tables(self):
 
-        info = self.project.family.info
+        i = self.project.family.info
         client = kit.Client(self.project.family)
 
         lines = []
@@ -120,14 +120,14 @@ class Feature(kit.BaseFile):
 
         set_vertical_metrics = False
         for field in (
-            info.openTypeHheaAscender,
-            info.openTypeHheaDescender,
-            info.openTypeHheaLineGap,
-            info.openTypeOS2TypoAscender,
-            info.openTypeOS2TypoDescender,
-            info.openTypeOS2TypoLineGap,
-            info.openTypeOS2WinAscent,
-            info.openTypeOS2WinDescent,
+            i.openTypeHheaAscender,
+            i.openTypeHheaDescender,
+            i.openTypeHheaLineGap,
+            i.openTypeOS2TypoAscender,
+            i.openTypeOS2TypoDescender,
+            i.openTypeOS2TypoLineGap,
+            i.openTypeOS2WinAscent,
+            i.openTypeOS2WinDescent,
         ):
             if field is not None:
                 set_vertical_metrics = True
@@ -135,48 +135,37 @@ class Feature(kit.BaseFile):
 
         if set_vertical_metrics:
 
-            if info.unitsPerEm is None:
-                raise SystemExit("`family.info.unitsPerEm` is unavailable.")
+            if i.unitsPerEm is None:
+                raise SystemExit("`family.i.unitsPerEm` is unavailable.")
 
-            if info.openTypeHheaAscender is None:
-                info.openTypeHheaAscender = 800
-            if info.openTypeHheaDescender is None:
-                info.openTypeHheaDescender = -200
-            if info.openTypeHheaLineGap is None:
-                info.openTypeHheaLineGap = 0
+            kit.set_default(i.openTypeHheaAscender, 800)
+            kit.set_default(i.openTypeHheaDescender, -200)
+            kit.set_default(i.openTypeHheaLineGap, 0)
 
             if client.vertical_metrics_strategy == 'Google Fonts':
-                if info.openTypeOS2TypoAscender is None:
-                    info.openTypeOS2TypoAscender = info.openTypeHheaAscender
-                if info.openTypeOS2TypoDescender is None:
-                    info.openTypeOS2TypoDescender = info.openTypeHheaDescender
-                if info.openTypeOS2TypoLineGap is None:
-                    info.openTypeOS2TypoLineGap = info.openTypeHheaLineGap
+                kit.set_default(i.openTypeOS2TypoAscender, i.openTypeHheaAscender)
+                kit.set_default(i.openTypeOS2TypoDescender, i.openTypeHheaDescender)
+                kit.set_default(i.openTypeOS2TypoLineGap, i.openTypeHheaLineGap)
             elif client.vertical_metrics_strategy == 'ITF':
-                extra_height = info.openTypeHheaAscender - info.openTypeHheaDescender - info.unitsPerEm
-                if info.openTypeOS2TypoAscender is None:
-                    info.openTypeOS2TypoAscender = info.openTypeHheaAscender - int(round(extra_height / 2))
-                if info.openTypeOS2TypoDescender is None:
-                    info.openTypeOS2TypoDescender = info.openTypeOS2TypoAscender - info.unitsPerEm
-                if info.openTypeOS2TypoLineGap is None:
-                    info.openTypeOS2TypoLineGap = info.openTypeHheaLineGap + extra_height
+                extra_height = i.openTypeHheaAscender - i.openTypeHheaDescender - i.unitsPerEm
+                kit.set_default(i.openTypeOS2TypoAscender, i.openTypeHheaAscender - int(round(extra_height / 2)))
+                kit.set_default(i.openTypeOS2TypoDescender, i.openTypeOS2TypoAscender - i.unitsPerEm)
+                kit.set_default(i.openTypeOS2TypoLineGap, i.openTypeHheaLineGap + extra_height)
 
-            if info.openTypeOS2WinAscent is None:
-                info.openTypeOS2WinAscent = info.openTypeHheaAscender
-            if info.openTypeOS2WinDescent is None:
-                info.openTypeOS2WinDescent = abs(info.openTypeHheaDescender)
+            kit.set_default(i.openTypeOS2WinAscent, i.openTypeHheaAscender)
+            kit.set_default(i.openTypeOS2WinDescent, abs(i.openTypeHheaDescender))
 
             tables['hhea'].extend([
-                'Ascender {};'.format(info.openTypeHheaAscender),
-                'Descender {};'.format(info.openTypeHheaDescender),
-                'LineGap {};'.format(info.openTypeHheaLineGap),
+                'Ascender {};'.format(i.openTypeHheaAscender),
+                'Descender {};'.format(i.openTypeHheaDescender),
+                'LineGap {};'.format(i.openTypeHheaLineGap),
             ])
             tables['OS/2'].extend([
-                'TypoAscender {};'.format(info.openTypeOS2TypoAscender),
-                'TypoDescender {};'.format(info.openTypeOS2TypoDescender),
-                'TypoLineGap {};'.format(info.openTypeOS2TypoLineGap),
-                'winAscent {};'.format(info.openTypeOS2WinAscent),
-                'winDescent {};'.format(info.openTypeOS2WinDescent),
+                'TypoAscender {};'.format(i.openTypeOS2TypoAscender),
+                'TypoDescender {};'.format(i.openTypeOS2TypoDescender),
+                'TypoLineGap {};'.format(i.openTypeOS2TypoLineGap),
+                'winAscent {};'.format(i.openTypeOS2WinAscent),
+                'winDescent {};'.format(i.openTypeOS2WinDescent),
             ])
 
         # tables['OS/2'].extend(self.project.generate_UnicodeRange)

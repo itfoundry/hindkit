@@ -49,11 +49,13 @@ def copy(src, dst):
         shutil.copy(src, dst)
 
 def fallback(*candidates):
-    # if len(candidates) == 1 and isinstance(candidates[0], collections.Iterable):
-    #     candidates = candidates[0]
     for i in candidates:
         if i is not None:
             return i
+
+def set_default(variable, default):
+    if variable is None:
+        variable = default
 
 from hindkit.constants import styles, misc
 

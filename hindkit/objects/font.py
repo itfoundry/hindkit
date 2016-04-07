@@ -109,10 +109,8 @@ class Master(BaseFont):
         excluding_names = None,
     ):
 
-        if importing_names is None:
-            importing_names = []
-        if excluding_names is None:
-            excluding_names = []
+        kit.set_default(importing_names, [])
+        kit.set_default(excluding_names, [])
 
         source_filename_pattern = '{}*-{}.ufo'.format(source_dir, self.name)
         source_paths = glob.glob(source_filename_pattern)
@@ -157,8 +155,7 @@ class Master(BaseFont):
 
     def derive_glyphs(self, deriving_names):
 
-        if deriving_names is None:
-            deriving_names = []
+        kit.set_default(deriving_names, [])
 
         target = self.open()
 
@@ -199,15 +196,9 @@ class Style(BaseFont):
         self.weight_location = weight_location
         self.weight_class = weight_class
 
-        self.is_bold = is_bold
-        self.is_italic = is_italic
-        self.is_oblique = is_oblique
-        if is_bold is None:
-            self.is_bold = True if 'Bold' in self.name.split() else False
-        if is_italic is None:
-            self.is_italic = True if 'Italic' in self.name.split() else False
-        if is_oblique is None:
-            self.is_oblique = True if 'Oblique' in self.name.split() else False
+        self.is_bold = kit.fallback(is_bold, 'Bold' in self.name.split())
+        self.is_italic = kit.fallback(is_italic, 'Italic' in self.name.split())
+        self.is_oblique = kit.fallback(is_oblique, 'Oblique' in self.name.split())
 
         # self.products = []
 

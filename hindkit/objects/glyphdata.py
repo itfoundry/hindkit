@@ -70,8 +70,7 @@ class GlyphData(object):
     #             self.name_order.extend(section)
 
     def generate_goadb(self, names=None):
-        if names is None:
-            names = self.glyph_order
+        kit.set_default(names, self.glyph_order)
         return StringIO.StringIO(self.dictionary.aliasfile(names) + '\n')
 
 
