@@ -39,6 +39,7 @@ class Client(object):
                 },
                 'table_name': collections.OrderedDict([
                     (0, self.family.info.copyright if self.family.info.copyright else "Copyright (c) {} Indian Type Foundry (info@indiantypefoundry.com)".format(datetime.date.today().year)),
+                    (7, None),
                     (11, "http://www.indiantypefoundry.com/googlefonts"),
                     (13, "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL"),
                     (14, "http://scripts.sil.org/OFL"),
