@@ -145,14 +145,21 @@ class Feature(kit.BaseFile):
             if info.openTypeHheaLineGap is None:
                 info.openTypeHheaLineGap = 0
 
-            extra_height = info.openTypeHheaAscender - info.openTypeHheaDescender - info.unitsPerEm
-
-            if info.openTypeOS2TypoAscender is None:
-                info.openTypeOS2TypoAscender = info.openTypeHheaAscender - int(round(extra_height / 2))
-            if info.openTypeOS2TypoDescender is None:
-                info.openTypeOS2TypoDescender = info.openTypeOS2TypoAscender - info.unitsPerEm
-            if info.openTypeOS2TypoLineGap is None:
-                info.openTypeOS2TypoLineGap = info.openTypeHheaLineGap + extra_height
+            if client.vertical_metrics_strategy == 'Google Fonts':
+                if info.openTypeOS2TypoAscender is None:
+                    info.openTypeOS2TypoAscender = info.openTypeHheaAscender
+                if info.openTypeOS2TypoDescender is None:
+                    info.openTypeOS2TypoDescender = info.openTypeHheaDescender
+                if info.openTypeOS2TypoLineGap is None:
+                    info.openTypeOS2TypoLineGap = info.openTypeHheaLineGap
+            elif client.vertical_metrics_strategy == 'ITF':
+                extra_height = info.openTypeHheaAscender - info.openTypeHheaDescender - info.unitsPerEm
+                if info.openTypeOS2TypoAscender is None:
+                    info.openTypeOS2TypoAscender = info.openTypeHheaAscender - int(round(extra_height / 2))
+                if info.openTypeOS2TypoDescender is None:
+                    info.openTypeOS2TypoDescender = info.openTypeOS2TypoAscender - info.unitsPerEm
+                if info.openTypeOS2TypoLineGap is None:
+                    info.openTypeOS2TypoLineGap = info.openTypeHheaLineGap + extra_height
 
             if info.openTypeOS2WinAscent is None:
                 info.openTypeOS2WinAscent = info.openTypeHheaAscender

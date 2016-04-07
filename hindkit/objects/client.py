@@ -15,6 +15,7 @@ class Client(object):
             'ITF': {
                 'info': {
                     'style_scheme': kit.styles.ITF,
+                    'vertical_metrics_strategy': 'ITF',
                 },
                 'table_name': collections.OrderedDict([
                     (0, self.family.info.copyright if self.family.info.copyright else "Copyright {} Indian Type Foundry. All Rights Reserved.".format(datetime.date.today().year)),
@@ -36,6 +37,7 @@ class Client(object):
             'Google Fonts': {
                 'info': {
                     'style_scheme': kit.styles.ITF_CamelCase,
+                    'vertical_metrics_strategy': 'Google Fonts',
                 },
                 'table_name': collections.OrderedDict([
                     (0, self.family.info.copyright if self.family.info.copyright else "Copyright (c) {} Indian Type Foundry (info@indiantypefoundry.com)".format(datetime.date.today().year)),
@@ -57,6 +59,7 @@ class Client(object):
         self.info.update(CURRENT.get('info', {}))
 
         self.style_scheme = self.info['style_scheme']
+        self.vertical_metrics_strategy = self.info['vertical_metrics_strategy']
 
         self.table_name = DEFAULT['table_name']
         self.table_name.update(CURRENT.get('table_name', {}))
