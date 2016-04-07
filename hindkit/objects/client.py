@@ -29,6 +29,7 @@ class Client(object):
                     (19, kit.misc.SCRIPTS[self.family.script.lower()].get('sample text')),
                 ]),
                 'table_OS_2': {
+                    'fsType': 4,
                     'Vendor': 'ITFO'
                 },
             },
@@ -42,6 +43,9 @@ class Client(object):
                     (13, "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL"),
                     (14, "http://scripts.sil.org/OFL"),
                 ]),
+                'table_OS_2': {
+                    'fsType': 0,
+                },
             },
         }
 
@@ -57,4 +61,4 @@ class Client(object):
         self.table_name.update(CURRENT.get('table_name', {}))
 
         self.table_OS_2 = DEFAULT['table_OS_2']
-        self.table_OS_2.update(CURRENT.get('table_OS/2', {}))
+        self.table_OS_2.update(CURRENT.get('table_OS_2', {}))

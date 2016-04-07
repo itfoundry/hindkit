@@ -37,7 +37,7 @@ class Feature(kit.BaseFile):
 
     def __init__(self, project, name, optional_filenames=None):
         super(Feature, self).__init__(name, project=project)
-        self.optional_filenames = optional_filenames
+        self.optional_filenames = self.fallback(optional_filenames, [])
         self.file_format = 'FEA'
         self.abstract_directory = kit.Project.directories['features']
 
@@ -102,6 +102,7 @@ class Feature(kit.BaseFile):
     def generate_tables(self):
 
         info = self.project.family.info
+        client = kit.Client(self.project.family)
 
         lines = []
         tables = collections.OrderedDict([
@@ -113,7 +114,8 @@ class Feature(kit.BaseFile):
 
         tables['OS/2'].extend([
             'include (weightclass.fea);',
-            'Vendor "{}";'.format(kit.Client(self.project.family).table_OS_2['Vendor']),
+            'fsType {};'.format(client.table_OS_2['fsType']),
+            'Vendor "{}";'.format(client.table_OS_2['Vendor']),
         ])
 
         set_vertical_metrics = False
@@ -193,7 +195,7 @@ class Feature(kit.BaseFile):
                 name_id,
                 content.encode('unicode_escape').replace('\\x', '\\00').replace('\\u', '\\')
             )
-            for name_id, content in kit.Client(self.project.family).table_name.items()
+            for name_id, content in client.table_name.items()
             if content
         )
 
