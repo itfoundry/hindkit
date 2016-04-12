@@ -109,8 +109,10 @@ class Master(BaseFont):
         excluding_names = None,
     ):
 
-        kit.set_default(importing_names, [])
-        kit.set_default(excluding_names, [])
+        if importing_names is None:
+            importing_names = []
+        if excluding_names is None:
+            excluding_names = []
 
         source_filename_pattern = '{}*-{}.ufo'.format(source_dir, self.name)
         source_paths = glob.glob(source_filename_pattern)
@@ -155,7 +157,8 @@ class Master(BaseFont):
 
     def derive_glyphs(self, deriving_names):
 
-        kit.set_default(deriving_names, [])
+        if deriving_names is None:
+            deriving_names = []
 
         target = self.open()
 

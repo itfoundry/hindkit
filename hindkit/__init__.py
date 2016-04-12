@@ -53,10 +53,6 @@ def fallback(*candidates):
         if i is not None:
             return i
 
-def set_default(variable, default):
-    if variable is None:
-        variable = default
-
 from hindkit.constants import styles, misc
 
 from hindkit.objects.base import Base, BaseFile
