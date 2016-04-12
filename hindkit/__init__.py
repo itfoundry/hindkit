@@ -55,7 +55,7 @@ def fallback(*candidates):
 
 from hindkit.constants import styles, misc
 
-from hindkit.objects.base import Base, BaseFile
+from hindkit.objects.base import BaseFile
 from hindkit.objects.family import Family, DesignSpace, Fmndb
 from hindkit.objects.font import Master, Style, Product
 from hindkit.objects.glyphdata import GlyphData, Goadb
