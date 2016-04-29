@@ -15,6 +15,7 @@ setuptools.setup(
         'hindkit.objects',
     ],
     py_modules = ['WriteFeaturesKernFDK', 'WriteFeaturesMarkFDK'],
+    package_dir = {'': 'lib'},
     package_data = {
         'hindkit': ['data/*'],
     },
