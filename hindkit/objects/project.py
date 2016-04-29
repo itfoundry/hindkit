@@ -173,6 +173,12 @@ class Project(object):
 
             for master in self.family.masters:
                 master.prepare()
+                try:
+                    master.postprocess
+                except AttributeError:
+                    pass
+                else:
+                    master.postprocess()
 
             reference_font = self.family.masters[0].open()
             self.glyph_data.glyph_order_trimmed = self.trim_glyph_names(
@@ -211,10 +217,11 @@ class Project(object):
             self.feature_gsub.prepare()
 
             for product in self.products:
-                style = product.style
-                self.feature_gpos.prepare(style=style)
-                self.feature_weight_class.prepare(style=style)
-                self.features_references.prepare(style=style)
+                if product.file_format == 'OTF':
+                    style = product.style
+                    self.feature_gpos.prepare(style=style)
+                    self.feature_weight_class.prepare(style=style)
+                    self.features_references.prepare(style=style)
 
         if self.options['compile']:
             kit.makedirs(self.directories['products'])
