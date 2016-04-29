@@ -14,6 +14,7 @@ setuptools.setup(
         'hindkit.constants',
         'hindkit.objects',
     ],
+    py_modules = ['sstruct', 'xmlWriter'],
     package_data = {
         'hindkit': ['data/*'],
     },
