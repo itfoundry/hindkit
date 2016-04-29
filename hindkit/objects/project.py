@@ -92,6 +92,8 @@ class Project(object):
                 for_ttf = True,
             )
 
+        self._finalize_options()
+
     def temp(self, abstract_path):
         return os.path.join(self.directories['intermediates'], abstract_path)
 
@@ -161,7 +163,7 @@ class Project(object):
 
         kit.makedirs(self.directories['intermediates'])
 
-        self._finalize_options()
+        # self._finalize_options()
 
         if self.options['prepare_masters']:
 
