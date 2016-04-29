@@ -11,7 +11,7 @@ class Client(object):
 
         self.family = family
 
-        DATA = {
+        self.DATA = {
             'ITF': {
                 'info': {
                     'style_scheme': kit.styles.ITF,
@@ -33,39 +33,19 @@ class Client(object):
                     (12, self.family.info.openTypeNameDesignerURL),
                     (13, "This Font Software is protected under domestic and international trademark and copyright law. You agree to identify the ITF fonts by name and credit the ITF\'s ownership of the trademarks and copyrights in any design or production credits."),
                     (14, "http://www.indiantypefoundry.com/licensing/eula/"),
-                    (19, kit.misc.SCRIPTS[self.family.script.lower()].get('sample text')),
+                    (19, kit.misc.SCRIPTS[self.family.script].get('sample text')),
                 ]),
                 'table_OS_2': {
                     'fsType': kit.fallback(self.family.info.openTypeOS2Type, 4),
                     'Vendor': 'ITFO'
                 },
             },
-            'Google Fonts': {
-                'info': {
-                    'style_scheme': kit.styles.ITF_CamelCase,
-                    'vertical_metrics_strategy': 'Google Fonts',
-                },
-                'table_name': collections.OrderedDict([
-                    (
-                        0,
-                        kit.fallback(
-                            self.family.info.copyright,
-                            "Copyright (c) {} Indian Type Foundry (info@indiantypefoundry.com)".format(datetime.date.today().year),
-                        )
-                    ),
-                    (7, None),
-                    (11, "http://www.indiantypefoundry.com/googlefonts"),
-                    (13, "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL"),
-                    (14, "http://scripts.sil.org/OFL"),
-                ]),
-                'table_OS_2': {
-                    'fsType': 0,
-                },
-            },
         }
 
-        DEFAULT = DATA['ITF']
-        CURRENT = DATA[self.family.client]
+        self.expand_data()
+
+        DEFAULT = self.DATA['ITF']
+        CURRENT = self.DATA[self.family.client]
 
         self.info = DEFAULT['info']
         self.info.update(CURRENT.get('info', {}))
@@ -78,3 +58,27 @@ class Client(object):
 
         self.table_OS_2 = DEFAULT['table_OS_2']
         self.table_OS_2.update(CURRENT.get('table_OS_2', {}))
+
+    def expand_data(self):
+        self.DATA['Google Fonts'] = {
+            'info': {
+                'style_scheme': kit.styles.ITF_CamelCase,
+                'vertical_metrics_strategy': 'Google Fonts',
+            },
+            'table_name': collections.OrderedDict([
+                (
+                    0,
+                    kit.fallback(
+                        self.family.info.copyright,
+                        "Copyright (c) {} Indian Type Foundry (info@indiantypefoundry.com)".format(datetime.date.today().year),
+                    )
+                ),
+                (7, None),
+                (11, "http://www.indiantypefoundry.com/googlefonts"),
+                (13, "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL"),
+                (14, "http://scripts.sil.org/OFL"),
+            ]),
+            'table_OS_2': {
+                'fsType': 0,
+            },
+        }
