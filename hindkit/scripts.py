@@ -46,7 +46,7 @@ ALIVE_CONSONANTS = [i + 'A' for i in kit.misc.CONSONANT_STEMS] + \
 DEAD_CONSONANTS = kit.misc.CONSONANT_STEMS
 
 def get_script_prefix(script_name):
-    return kit.misc.SCRIPTS[script_name.lower()]['abbreviation']
+    return kit.misc.SCRIPTS[script_name]['abbreviation']
 
 def glyph_filter_matra_i_alts(family, glyph):
     match = re.match(
@@ -79,7 +79,7 @@ def glyph_filter_bases_dead(family, glyph):
 def glyph_filter_bases_for_wide_matra_ii(family, glyph):
     name = glyph.name
     if name.startswith(
-        kit.misc.SCRIPTS['devanagari']['abbreviation']
+        kit.misc.SCRIPTS['Devanagari']['abbreviation']
     ):
         name = name[2:]
     return name in POTENTIAL_BASES_FOR_WIDE_MATRA_II
