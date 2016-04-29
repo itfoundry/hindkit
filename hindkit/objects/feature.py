@@ -6,17 +6,6 @@ import os, collections
 import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit as kit
 
-def compose_glyph_class_def_lines(class_name, glyph_names):
-    if glyph_names:
-        glyph_class_def_lines = (
-            ['@{} = ['.format(class_name)] +
-            ['  {}'.format(glyph_name) for glyph_name in glyph_names] +
-            ['];', '']
-        )
-    else:
-        glyph_class_def_lines = ['# @{} = [];'.format(class_name), '']
-    return glyph_class_def_lines
-
 def glyph_filter_marks(family, glyph):
     has_mark_anchor = False
     for anchor in glyph.anchors:
@@ -40,6 +29,18 @@ class Feature(kit.BaseFile):
         self.optional_filenames = kit.fallback(optional_filenames, [])
         self.file_format = 'FEA'
         self.abstract_directory = kit.Project.directories['features']
+
+    @staticmethod
+    def compose_glyph_class_def_lines(class_name, glyph_names):
+        if glyph_names:
+            glyph_class_def_lines = (
+                ['@{} = ['.format(class_name)] +
+                ['  {}'.format(glyph_name) for glyph_name in glyph_names] +
+                ['];', '']
+            )
+        else:
+            glyph_class_def_lines = ['# @{} = [];'.format(class_name), '']
+        return glyph_class_def_lines
 
     def generate(self, style=None):
 
@@ -67,15 +68,15 @@ class Feature(kit.BaseFile):
 
             if self.project.options['match_mI_variants']:
                 glyph_classes.extend([
-                    ('MATRA_I_ALTS', devanagari.glyph_filter_matra_i_alts),
-                    ('BASES_ALIVE', devanagari.glyph_filter_bases_alive),
-                    ('BASES_DEAD', devanagari.glyph_filter_bases_dead),
-                    # ('BASES_FOR_WIDE_MATRA_II', devanagari.glyph_filter_bases_for_wide_matra_ii),
+                    ('MATRA_I_ALTS', kit.scripts.glyph_filter_matra_i_alts),
+                    ('BASES_ALIVE', kit.scripts.glyph_filter_bases_alive),
+                    ('BASES_DEAD', kit.scripts.glyph_filter_bases_dead),
+                    # ('BASES_FOR_WIDE_MATRA_II', kit.scripts.glyph_filter_bases_for_wide_matra_ii),
                 ])
 
-            style_0 = self.project.styles_to_produce[0].open()
+            style_0 = self.project.products[0].style.open()
 
-            glyph_order = self.project.glyph_order
+            glyph_order = self.project.glyph_data.glyph_order
             for class_name, filter_function in glyph_classes:
                 glyph_names = [
                     glyph.name for glyph in filter(
@@ -83,14 +84,14 @@ class Feature(kit.BaseFile):
                         style_0,
                     )
                 ]
-                glyph_names = sort_names(glyph_order, glyph_names)
+                glyph_names = sort_names(glyph_names, glyph_order)
                 style_0.groups.update({class_name: glyph_names})
                 lines.extend(
-                    compose_glyph_class_def_lines(class_name, glyph_names)
+                    self.compose_glyph_class_def_lines(class_name, glyph_names)
                 )
             style_0.save()
 
-            for style in self.project.styles_to_produce[1:]:
+            for style in (product.style for product in self.project.products[1:]):
                 font = style.open()
                 font.groups.update(style_0.groups)
                 font.save()
@@ -252,10 +253,9 @@ class Feature(kit.BaseFile):
                 )
                 if os.path.exists(kern_path):
                     with open(kern_path) as f:
-                        original = f.read()
-                    postprocessed = self.project.postprocess_kerning(original)
+                        content = f.read()
                     with open(kern_path, 'w') as f:
-                        f.write(postprocessed)
+                        f.write(self.project.postprocess_kerning(content))
 
         if self.project.options['prepare_mark_positioning']:
             WriteFeaturesMarkFDK.MarkDataClass(
@@ -267,7 +267,7 @@ class Feature(kit.BaseFile):
                 indianScriptsFormat = self.project.family.script in kit.misc.INDIC_SCRIPT_NAMES,
             )
             if self.project.options['match_mI_variants']:
-                devanagari.prepare_features_devanagari(
+                kit.scripts.prepare_features_devanagari(
                     self.project.options['position_marks_for_mI_variants'],
                     self.project,
                     style,

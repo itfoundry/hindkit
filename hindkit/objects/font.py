@@ -3,7 +3,7 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import os, glob, subprocess
-import defcon
+import defcon, fontTools
 import hindkit as kit
 
 def _insertAnchor(self, index, anchor):
@@ -73,7 +73,7 @@ class BaseFont(kit.BaseFile):
     def open(self):
         if os.path.exists(self.path):
             if self.file_format == 'UFO':
-                print("Opening `{}`".format(self.path))
+                print("\nOpening `{}`".format(self.path))
                 return defcon.Font(self.path)
             else:
                 raise SystemExit("`{}` is not supported by defcon.".format(self.path))
@@ -114,7 +114,10 @@ class Master(BaseFont):
         if excluding_names is None:
             excluding_names = []
 
-        source_filename_pattern = '{}*-{}.ufo'.format(source_dir, self.name)
+        source_filename_pattern = os.path.join(
+            source_dir,
+            '*-{}.ufo'.format(self.name),
+        )
         source_paths = glob.glob(source_filename_pattern)
         if source_paths:
             source_path = source_paths[0]
@@ -149,7 +152,12 @@ class Master(BaseFont):
         print('\n[NOTE] Importing glyphs from `{}` to `{}`:'.format(source_path, self.name))
         for new_name in new_names:
             target.newGlyph(new_name)
-            target[new_name].copyDataFromGlyph(source[new_name])
+            source_glyph = source[new_name]
+            for component in source_glyph.components:
+                if component.baseGlyph not in new_names:
+                    source_glyph.decomposeComponent(component)
+                    print("(decomposed {} in {})".format(component.baseGlyph, new_name), end=' ')
+            target[new_name].copyDataFromGlyph(source_glyph)
             print(new_name, end=', ')
         print()
 

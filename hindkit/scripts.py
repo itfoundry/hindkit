@@ -131,7 +131,7 @@ def write_mI_matches_to_files(do_mark_positioning, project, directory, mI_table,
 
     if do_mark_positioning:
 
-        with open(kit.temp(directory + '/abvm.fea'), 'r') as f:
+        with open(directory + '/abvm.fea', 'r') as f:
             abvm_content = f.read()
 
         original_abvm_content = restore_abvm_content(abvm_content)
@@ -150,7 +150,7 @@ def write_mI_matches_to_files(do_mark_positioning, project, directory, mI_table,
 
     class_def_lines = []
     class_def_lines.extend(
-        kit.compose_glyph_class_def_lines('MATRA_I_BASES_TOO_LONG', long_base_names)
+        kit.Feature.compose_glyph_class_def_lines('MATRA_I_BASES_TOO_LONG', long_base_names)
     )
 
     substitute_rule_lines = []
@@ -195,7 +195,7 @@ def write_mI_matches_to_files(do_mark_positioning, project, directory, mI_table,
                 print("\t[!] `%s` doesn't have the anchor for Reph." % mI.glyph.name)
 
         class_def_lines.extend(
-            kit.compose_glyph_class_def_lines(
+            kit.Feature.compose_glyph_class_def_lines(
                 'MATRA_I_BASES_' + mI_number,
                 mI.matches
             )
@@ -221,10 +221,10 @@ def write_mI_matches_to_files(do_mark_positioning, project, directory, mI_table,
             commented_original_abvm_lookup + '\n\n\n' + modified_abvm_lookup
         )
 
-        with open(kit.temp(directory + '/abvm.fea'), 'w') as f:
+        with open(directory + '/abvm.fea', 'w') as f:
             f.write(modified_abvm_content)
 
-    with open(kit.temp(directory + '/matra_i_matching.fea'), 'w') as f:
+    with open(directory + '/matra_i_matching.fea', 'w') as f:
         result_lines = (
             ['# CLASSES', ''] + class_def_lines +
             ['# RULES', ''] + substitute_rule_lines
@@ -235,7 +235,7 @@ def match_matra_i_alts(do_mark_positioning, project, style, offset_range = (0, 0
 
     script_prefix = get_script_prefix(project.family.script)
 
-    font = style.open_font(is_temp=True)
+    font = style.open()
 
     mI_list   = [font[glyph_name] for glyph_name in sorted(font.groups['MATRA_I_ALTS'])]
     base_list = [font[glyph_name] for glyph_name in font.groups['BASES_ALIVE']]
