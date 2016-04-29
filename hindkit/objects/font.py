@@ -226,8 +226,16 @@ class Style(BaseFont):
 class Product(BaseFont):
 
     def __init__(self, project, style, file_format='OTF'):
+
         self.style = style
+        self.weight_location = self.style.weight_location
+        self.weight_class = self.style.weight_class
+        self.is_bold = self.style.is_bold
+        self.is_italic = self.style.is_italic
+        self.is_oblique = self.style.is_oblique
+
         super(Product, self).__init__(self.style.family, self.style.name)
+
         self.project = project
         self.file_format = file_format
         self.abstract_directory = kit.Project.directories['products']
@@ -246,30 +254,31 @@ class Product(BaseFont):
         style = self.style
 
         if self.file_format == 'OTF':
-            style.file_format = 'UFO'
+            self.style.file_format = 'UFO'
             goadb = self.project.goadb_trimmed
         elif self.file_format == 'TTF':
-            style.file_format = 'TTF'
+            self.style.file_format = 'TTF'
             goadb = self.project.goadb_trimmed_ttf
 
         goadb.prepare(self.project.glyph_data.glyph_order_trimmed)
 
-        while not os.path.exists(style.path):
-            print("\n[PROMPT] Input file {} is missing. Try again? [Y/n] ".format(style.path))
+        while not os.path.exists(self.style.path):
+            print(
+                "\n[PROMPT] Input file {} is missing. Try again? [Y/n]: ".format(style.path),
+                end = '',
+            )
             if raw_input().upper().startswith('N'):
                 return
 
-        # if style.filename.endswith('.ufo'):
-        #     font = style.open()
-        #     font.info.postscriptFontName = self.full_name_postscript
-        #     if font.dirty:
-        #         font.save()
-
-        path = self.path
+        if self.style.file_format == 'UFO':
+            font = self.style.open()
+            if font.info.postscriptFontName != self.full_name_postscript:
+                font.info.postscriptFontName = self.full_name_postscript
+                font.save()
 
         arguments = [
-            '-f', style.path,
-            '-o', path,
+            '-f', self.style.path,
+            '-o', self.path,
             '-mf', self.project.fmndb.path,
             '-gf', goadb.path,
             '-rev', self.project.fontrevision,
@@ -281,15 +290,15 @@ class Product(BaseFont):
         if not self.project.options['run_autohint']:
             arguments.append('-shw')
         if self.project.options['do_style_linking']:
-            if style.is_bold:
+            if self.is_bold:
                 arguments.append('-b')
-            if style.is_italic:
+            if self.is_italic:
                 arguments.append('-i')
         if self.project.options['use_os_2_version_4']:
             for digit, boolean in [
                 ('7', self.project.options['prefer_typo_metrics']),
                 ('8', self.project.options['is_width_weight_slope_only']),
-                ('9', style.is_oblique),
+                ('9', self.is_oblique),
             ]:
                 arguments.append('-osbOn' if boolean else '-osbOff')
                 arguments.append(digit)
@@ -301,11 +310,12 @@ class Product(BaseFont):
         except AttributeError:
             pass
         else:
-            if os.path.exists(path):
-                original = fontTools.ttLib.TTFont(path)
-                postprocessed = self.project.postprocess(original)
-                postprocessed.save(path, reorderTables=False)
+            if os.path.exists(self.path):
+                original = fontTools.ttLib.TTFont(self.path)
+                postprocessed = self.postprocess(original)
+                if postprocessed:
+                    postprocessed.save(self.path, reorderTables=False)
 
         destination = self.project.directories['output']
-        if os.path.exists(path) and os.path.isdir(destination):
-            kit.copy(path, destination)
+        if os.path.exists(self.path) and os.path.isdir(destination):
+            kit.copy(self.path, destination)

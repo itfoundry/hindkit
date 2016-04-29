@@ -185,24 +185,22 @@ class Fmndb(kit.BaseFile):
 
             if product.file_format == 'OTF':
 
-                style = product.style
-
                 self.lines.append('')
-                self.lines.append('[{}]'.format(style.full_name_postscript))
+                self.lines.append('[{}]'.format(product.full_name_postscript))
                 self.lines.append('  f = {}'.format(f_name))
-                self.lines.append('  s = {}'.format(style.name))
+                self.lines.append('  s = {}'.format(product.name))
 
-                l_name = style.full_name
+                l_name = product.full_name
                 comment_lines = []
 
                 if self.project.options['do_style_linking']:
-                    if style.name == 'Regular':
+                    if product.name == 'Regular':
                         l_name = l_name.replace(' Regular', '')
                     else:
-                        if style.is_bold:
+                        if product.is_bold:
                             comment_lines.append('  # IsBoldStyle')
                             l_name = l_name.replace(' Bold', '')
-                        if style.is_italic:
+                        if product.is_italic:
                             comment_lines.append('  # IsItalicStyle')
                             l_name = l_name.replace(' Italic', '')
 
