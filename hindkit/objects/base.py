@@ -70,29 +70,28 @@ class BaseFile(object):
         if self.temp == True and os.path.exists(self.path):
             return
         path_old = self.path
+        self.temp = True
         if os.path.exists(path_old):
             print(path_old, 'exists.')
-            self.temp = True
             path_new = self.path
             kit.copy(path_old, path_new)
-            for optional_filename in self.optional_filenames:
-                f = kit.BaseFile(optional_filename)
-                f.file_format = self.file_format
-                f.abstract_directory = self.abstract_directory
-                optional_path_old = f.path
-                f.temp = True
-                optional_path_new = f.path
-                try:
-                    kit.copy(optional_path_old, optional_path_new)
-                except IOError:
-                    if not os.path.exists(optional_path_old):
-                        pass
-                    else:
-                        raise
         else:
             print(path_old, 'is missing.')
-            self.temp = True
             self.generate(*args, **kwargs)
+        for optional_filename in self.optional_filenames:
+            f = kit.BaseFile(optional_filename)
+            f.file_format = self.file_format
+            f.abstract_directory = self.abstract_directory
+            optional_path_old = f.path
+            f.temp = True
+            optional_path_new = f.path
+            try:
+                kit.copy(optional_path_old, optional_path_new)
+            except IOError:
+                if not os.path.exists(optional_path_old):
+                    pass
+                else:
+                    raise
 
     def prepare(self, *args, **kwargs):
         self.check_override(*args, **kwargs)
