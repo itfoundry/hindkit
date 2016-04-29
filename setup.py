@@ -14,7 +14,7 @@ setuptools.setup(
         'hindkit.constants',
         'hindkit.objects',
     ],
-    py_modules = ['sstruct', 'xmlWriter'],
+    py_modules = ['WriteFeaturesKernFDK', 'WriteFeaturesMarkFDK'],
     package_data = {
         'hindkit': ['data/*'],
     },

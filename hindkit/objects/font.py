@@ -3,7 +3,7 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import os, glob, subprocess
-import defcon, fontTools
+import defcon, fontTools.ttLib
 import hindkit as kit
 
 def _insertAnchor(self, index, anchor):
