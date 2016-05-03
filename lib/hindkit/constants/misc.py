@@ -23,95 +23,99 @@ AA I II U UU vR vRR vL vLL
 E EE AI O OO AU
 '''.split()
 
-INDIC_SCRIPT_NAMES = [
-    'Devanagari',
-    'Gujarati',
-    'Gurmukhi',
-    'Bangla', 'Bengali',
-    'Odia', 'Oriya',
-    'Telugu',
-    'Kannada',
-    'Malayalam',
-    'Tamil',
-    'Sinhala', 'Sinhalese',
-]
-
 SCRIPTS = {
 
     'Devanagari': {
+        'is Indic': True,
         'abbreviation': 'dv',
         'tag': ('deva', 'dev2'),
         'sample text': 'सभी मनुष्यों को गौरव और अधिकारों के मामले में जन्मजात स्वतन्त्रता और समानता प्राप्त है।',
     },
 
+    'Gujarati': {
+        'is Indic': True,
+        'abbreviation': 'gj',
+        'tag': ('gujr', 'gjr2'),
+        'sample text': 'પ્રતિષ્ઠા અને અધિકારોની દૃષ્ટિએ સર્વ માનવો જન્મથી સ્વતંત્ર અને સમાન હોય છે.',
+    },
+
+    'Gurmukhi': {
+        'is Indic': True,
+        'abbreviation': 'gr',
+        'tag': ('guru', 'gur2'),
+        'sample text': 'ਸਾਰਾ ਮਨੁੱਖੀ ਪਰਿਵਾਰ ਆਪਣੀ ਮਹਿਮਾ, ਸ਼ਾਨ ਅਤੇ ਹੱਕਾਂ ਦੇ ਪੱਖੋਂ ਜਨਮ ਤੋਂ ਹੀ ਆਜ਼ਾਦ ਹੈ ਅਤੇ ਸੁਤੇ ਸਿੱਧ ਸਾਰੇ ਲੋਕ ਬਰਾਬਰ ਹਨ।',
+    },
+
     'Bangla': {
+        'is Indic': True,
         'abbreviation': 'bn',
         'tag': ('beng', 'bng2'),
         'alternative name': 'Bengali',
         'sample text': 'সমস্ত মানুষ স্বাধীনভাবে সমান মর্যাদা এবং অধিকার নিয়ে জন্মগ্রহণ করে।',
     },
 
-    'Gurmukhi': {
-        'abbreviation': 'gr',
-        'tag': ('guru', 'gur2'),
-        'sample text': 'ਸਾਰਾ ਮਨੁੱਖੀ ਪਰਿਵਾਰ ਆਪਣੀ ਮਹਿਮਾ, ਸ਼ਾਨ ਅਤੇ ਹੱਕਾਂ ਦੇ ਪੱਖੋਂ ਜਨਮ ਤੋਂ ਹੀ ਆਜ਼ਾਦ ਹੈ ਅਤੇ ਸੁਤੇ ਸਿੱਧ ਸਾਰੇ ਲੋਕ ਬਰਾਬਰ ਹਨ।',
-    },
-
-    'Gujarati': {
-        'abbreviation': 'gj',
-        'tag': ('gujr', 'gjr2'),
-        'sample text': 'પ્રતિષ્ઠા અને અધિકારોની દૃષ્ટિએ સર્વ માનવો જન્મથી સ્વતંત્ર અને સમાન હોય છે.',
-    },
-
     'Odia': {
+        'is Indic': True,
         'abbreviation': 'od',
         'tag': ('orya', 'ory2'),
         'alternative name': 'Oriya',
         'sample text': 'ସବୁ ମନୁଷ୍ଯ ଜନ୍ମକାଳରୁ ସ୍ବାଧୀନ. ସେମାନଙ୍କର ମର୍ଯ୍ଯାଦା ଓ ଅଧିକାର ସମାନ.',
     },
 
-    'Tamil': {
-        'abbreviation': 'tm',
-        'tag': ('taml', 'tml2'),
-        'sample text': 'மனிதப் பிறிவியினர் சகலரும் சுதந்திரமாகவே பிறக்கின்றனர்; அவர்கள் மதிப்பிலும், உரிமைகளிலும் சமமானவர்கள், அவர்கள் நியாயத்தையும் மனச்சாட்சியையும் இயற்பண்பாகப் பெற்றவர்கள்.',
-    },
-
     'Telugu': {
+        'is Indic': True,
         'abbreviation': 'tl',
         'tag': ('telu', 'tel2'),
         'sample text': 'ప్రతిపత్తిస్వత్వముల విషయమున మానవులెల్లరును జన్మతః స్వతంత్రులును సమానులును నగుదురు.',
     },
 
     'Kannada': {
+        'is Indic': True,
         'abbreviation': 'kn',
         'tag': ('knda', 'knd2'),
         'sample text': 'ಎಲ್ಲಾ ಮಾನವರೂ ಸ್ವತಂತ್ರರಾಗಿಯೇ ಜನಿಸಿದ್ಧಾರೆ. ಹಾಗೂ ಘನತೆ ಮತ್ತು ಹಕ್ಕುಗಳಲ್ಲಿ ಸಮಾನರಾಗಿದ್ದಾರೆ.',
     },
 
     'Malayalam': {
+        'is Indic': True,
         'abbreviation': 'ml',
         'tag': ('mlym', 'mlm2'),
         'sample text': 'മനുഷ്യരെല്ലാവരും തുല്യാവകാശങ്ങളോടും അന്തസ്സോടും സ്വാതന്ത്ര്യത്തോടുംകൂടി ജനിച്ചിട്ടുള്ളവരാണ്‌.',
     },
 
+    'Tamil': {
+        'is Indic': True,
+        'abbreviation': 'tm',
+        'tag': ('taml', 'tml2'),
+        'sample text': 'மனிதப் பிறிவியினர் சகலரும் சுதந்திரமாகவே பிறக்கின்றனர்; அவர்கள் மதிப்பிலும், உரிமைகளிலும் சமமானவர்கள், அவர்கள் நியாயத்தையும் மனச்சாட்சியையும் இயற்பண்பாகப் பெற்றவர்கள்.',
+    },
+
     'Sinhala': {
+        'is Indic': True,
         'abbreviation': 'si',
         'tag': 'sinh',
         'alternative name': 'Sinhalese',
         'sample text': 'සියලු මනුෂ්‍යයෝ නිදහස්ව උපත ලබා ඇත. ගරුත්වයෙන් හා අයිතිවාසිකම්වලින් සමාන වෙති.',
     },
 
-    'Arabic': {
-        'abbreviation': 'ar',
-        'tag': 'arab',
-        'sample text': '',
-    },
-
     'Ol Chiki': {
         'abbreviation': 'ol',
         'tag': 'olck',
     },
+
+    'Arabic': {
+        'abbreviation': 'ar',
+        'tag': 'arab',
+    },
 }
+
+INDIC_SCRIPT_NAMES = []
+for script_name, records in SCRIPTS.items():
+    if records.get('is Indic', False):
+        INDIC_SCRIPT_NAMES.append(script_name)
+        alternative_name = records.get('alternative name')
+        if alternative_name:
+            INDIC_SCRIPT_NAMES.append(alternative_name)
 
 @kit.memoize
 def get_u_scalar_to_u_name():
