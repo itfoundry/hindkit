@@ -220,11 +220,7 @@ class Feature(kit.BaseFile):
     def generate_languagesystems(self):
 
         lines = ['languagesystem DFLT dflt;']
-        tag = kit.misc.SCRIPTS[self.project.family.script]['tag']
-        if isinstance(tag, tuple):
-            lines.append('languagesystem {} dflt;'.format(tag[1]))
-            lines.append('languagesystem {} dflt;'.format(tag[0]))
-        else:
+        for tag in self.project.family.script.tags:
             lines.append('languagesystem {} dflt;'.format(tag))
 
         if lines:
@@ -264,7 +260,7 @@ class Feature(kit.BaseFile):
                 trimCasingTags = False,
                 genMkmkFeature = self.project.options['prepare_mark_to_mark_positioning'],
                 writeClassesFile = True,
-                indianScriptsFormat = self.project.family.script in kit.misc.INDIC_SCRIPT_NAMES,
+                indianScriptsFormat = self.project.family.script.is_indic,
             )
             if self.project.options['match_mI_variants']:
                 kit.scripts.prepare_features_devanagari(
@@ -293,7 +289,7 @@ class Feature(kit.BaseFile):
                 if os.path.exists(path):
                     lines.append('include ({});'.format(os.path.relpath(path, style.directory)))
             if os.path.exists(os.path.join(style.directory, WriteFeaturesKernFDK.kKernFeatureFileName)):
-                if self.project.family.script in kit.misc.SCRIPTS:
+                if self.project.family.script.is_indic:
                     kerning_feature_name = 'dist'
                 else:
                     kerning_feature_name = 'kern'

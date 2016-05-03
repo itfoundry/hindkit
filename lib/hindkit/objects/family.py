@@ -12,7 +12,7 @@ class Family(object):
         self,
         client = None,
         base_name = None,
-        script = None,
+        script_name = None,
         append_script_name = False,
         name = None,
     ):
@@ -20,15 +20,16 @@ class Family(object):
         self.client = client
 
         self.base_name = base_name
-        self.script = script
+        self.script_name = script_name
+        self.script = kit.misc.SCRIPT_NAMES_TO_SCRIPTS.get(self.script_name)
         self.append_script_name = append_script_name
 
         if name:
             self.name = name
         else:
             self.name = self.base_name
-            if self.script and self.append_script_name:
-                self.name += ' ' + self.script
+            if self.script_name and self.append_script_name:
+                self.name += ' ' + self.script_name
         self.name_postscript = self.name.replace(' ', '')
 
         self.masters = None

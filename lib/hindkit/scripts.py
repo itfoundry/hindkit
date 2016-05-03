@@ -45,12 +45,9 @@ ALIVE_CONSONANTS = [i + 'A' for i in kit.misc.CONSONANT_STEMS] + \
                    'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
 DEAD_CONSONANTS = kit.misc.CONSONANT_STEMS
 
-def get_script_prefix(script_name):
-    return kit.misc.SCRIPTS[script_name]['abbreviation']
-
 def glyph_filter_matra_i_alts(family, glyph):
     match = re.match(
-        get_script_prefix(family.script) + MATRA_I_NAME_STEM + r'\d\d$',
+        family.script.abbreviation + MATRA_I_NAME_STEM + r'\d\d$',
         glyph.name,
     )
     return bool(match)
@@ -61,7 +58,7 @@ def glyph_filter_bases_for_matra_i(family, glyph):
 def get_end(family, glyph):
     name = glyph.name
     end = ''
-    if name.startswith(get_script_prefix(family.script)):
+    if name.startswith(family.script.abbreviation):
         main, sep, suffix = name[2:].partition('.')
         end = main.split('_')[-1]
         if end.endswith('xA'):
@@ -79,7 +76,7 @@ def glyph_filter_bases_dead(family, glyph):
 def glyph_filter_bases_for_wide_matra_ii(family, glyph):
     name = glyph.name
     if name.startswith(
-        kit.misc.SCRIPTS['Devanagari']['abbreviation']
+        kit.misc.SCRIPT_NAMES_TO_SCRIPTS['Devanagari'].abbreviation
     ):
         name = name[2:]
     return name in POTENTIAL_BASES_FOR_WIDE_MATRA_II
@@ -127,7 +124,7 @@ def restore_abvm_content(abvm_content):
 
 def write_mI_matches_to_files(do_mark_positioning, project, directory, mI_table, long_base_names):
 
-    script_prefix = get_script_prefix(project.family.script)
+    script_prefix = project.family.script.abbreviation
 
     if do_mark_positioning:
 
@@ -233,7 +230,7 @@ def write_mI_matches_to_files(do_mark_positioning, project, directory, mI_table,
 
 def match_matra_i_alts(do_mark_positioning, project, style, offset_range = (0, 0)):
 
-    script_prefix = get_script_prefix(project.family.script)
+    script_prefix = project.family.script.abbreviation
 
     font = style.open()
 

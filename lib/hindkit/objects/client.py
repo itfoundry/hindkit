@@ -33,7 +33,7 @@ class Client(object):
                     (12, self.family.info.openTypeNameDesignerURL),
                     (13, "This Font Software is protected under domestic and international trademark and copyright law. You agree to identify the ITF fonts by name and credit the ITF\'s ownership of the trademarks and copyrights in any design or production credits."),
                     (14, "http://www.indiantypefoundry.com/licensing/eula/"),
-                    (19, kit.misc.SCRIPTS[self.family.script].get('sample text')),
+                    (19, self.family.script.sample_text),
                 ]),
                 'table_OS_2': {
                     'fsType': kit.fallback(self.family.info.openTypeOS2Type, 4),
