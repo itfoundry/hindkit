@@ -53,6 +53,8 @@ def fallback(*candidates):
         if i is not None:
             return i
 
+from hindkit.objects.script import Script
+
 from hindkit.constants import styles, misc
 
 from hindkit.objects.base import BaseFile
