@@ -74,13 +74,13 @@ class Family(object):
 
     def prepare_styles(self):
 
-        b = self.project
-        styles = [product.style for product in b.products]
+        p = self.project
+        styles = [product.style for product in p.products]
         for style in styles:
             style.temp = True
             kit.makedirs(style.directory)
 
-        if b.options['run_makeinstances']:
+        if p.options['run_makeinstances']:
             self.generate_styles()
         else:
             for master, style in zip(self.masters, styles):
@@ -89,23 +89,23 @@ class Family(object):
                 font.info.postscriptFontName = style.full_name_postscript
                 if font.dirty:
                     font.save()
-                if b.options['run_checkoutlines'] or b.options['run_autohint']:
+                if p.options['run_checkoutlines'] or p.options['run_autohint']:
                     options = {
-                        'doOverlapRemoval': b.options['run_checkoutlines'],
-                        'doAutoHint': b.options['run_autohint'],
+                        'doOverlapRemoval': p.options['run_checkoutlines'],
+                        'doAutoHint': p.options['run_autohint'],
                         'allowDecimalCoords': False,
                     }
                     _updateInstance(options, style.path)
 
     def generate_styles(self):
 
-        b = self.project
-        b.designspace.prepare()
+        p = self.project
+        p.designspace.prepare()
 
-        arguments = ['-d', b.designspace.path]
-        if not b.options['run_checkoutlines']:
+        arguments = ['-d', p.designspace.path]
+        if not p.options['run_checkoutlines']:
             arguments.append('-c')
-        if not b.options['run_autohint']:
+        if not p.options['run_autohint']:
             arguments.append('-a')
 
         subprocess.call(['makeInstancesUFO'] + arguments)
