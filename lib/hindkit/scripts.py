@@ -6,14 +6,14 @@ import re, collections
 
 import hindkit as kit
 
-def prepare_features_devanagari(do_mark_positioning, project, style):
+def prepare_features_devanagari(style):
 
-    light, bold = project.devanagari_offset_matrix
+    light, bold = style.family.project.devanagari_offset_matrix
     light_min, light_max = light
     bold_min, bold_max = bold
 
-    axis_start = project.family.masters[0].weight_location
-    axis_end = project.family.masters[-1].weight_location
+    axis_start = style.family.masters[0].weight_location
+    axis_end = style.family.masters[-1].weight_location
     axis_range = axis_end - axis_start
     if axis_range == 0:
         ratio = 1
@@ -24,12 +24,7 @@ def prepare_features_devanagari(do_mark_positioning, project, style):
         light_max + (bold_max - light_max) * ratio,
     )
 
-    match_matra_i_alts(
-        do_mark_positioning,
-        project,
-        style,
-        offset_range = offset_tuple
-    )
+    match_matra_i_alts(style, offset_range=offset_tuple)
 
 def match_mI():
     pass
@@ -122,9 +117,11 @@ def restore_abvm_content(abvm_content):
 
     return original_abvm_content
 
-def write_mI_matches_to_files(do_mark_positioning, project, directory, mI_table, long_base_names):
+def write_mI_matches_to_files(style, mI_table, long_base_names):
 
-    script_prefix = project.family.script.abbreviation
+    do_mark_positioning = style.family.project.options['position_marks_for_mI_variants']
+    directory = style.directory
+    script_prefix = style.family.script.abbreviation
 
     if do_mark_positioning:
 
@@ -228,9 +225,9 @@ def write_mI_matches_to_files(do_mark_positioning, project, directory, mI_table,
         )
         f.write('\n'.join(result_lines) + '\n')
 
-def match_matra_i_alts(do_mark_positioning, project, style, offset_range = (0, 0)):
+def match_matra_i_alts(style, offset_range=(0, 0)):
 
-    script_prefix = project.family.script.abbreviation
+    script_prefix = style.family.script.abbreviation
 
     font = style.open()
 
@@ -291,7 +288,7 @@ def match_matra_i_alts(do_mark_positioning, project, style, offset_range = (0, 0
                         mI_table[index - 1].matches.append(base_name)
                     break
 
-    write_mI_matches_to_files(do_mark_positioning, project, style.directory, mI_table, long_base_names)
+    write_mI_matches_to_files(style, mI_table, long_base_names)
 
 POTENTIAL_BASES_FOR_WIDE_MATRA_II = '''
 KA PHA KxA PHxA K_RA PH_RA Kx_RA PHx_RA

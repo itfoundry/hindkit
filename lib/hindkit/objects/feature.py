@@ -263,11 +263,8 @@ class Feature(kit.BaseFile):
                 indianScriptsFormat = self.project.family.script.is_indic,
             )
             if self.project.options['match_mI_variants']:
-                kit.scripts.prepare_features_devanagari(
-                    self.project.options['position_marks_for_mI_variants'],
-                    self.project,
-                    style,
-                ) # NOTE: not pure GPOS
+                kit.scripts.prepare_features_devanagari(style)
+                # NOTE: not pure GPOS
 
     def generate_weight_class(self, style):
         with open(os.path.join(style.directory, 'WeightClass.fea'), 'w') as f:
