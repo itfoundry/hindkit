@@ -14,7 +14,7 @@ class Client(object):
         self.DATA = {
             'ITF': {
                 'info': {
-                    'style_scheme': kit.styles.ITF,
+                    'style_scheme': kit.constants.STYLE_ITF,
                     'vertical_metrics_strategy': 'ITF',
                 },
                 'table_name': collections.OrderedDict([
@@ -62,7 +62,7 @@ class Client(object):
     def expand_data(self):
         self.DATA['Google Fonts'] = {
             'info': {
-                'style_scheme': kit.styles.ITF_CamelCase,
+                'style_scheme': kit.constants.STYLE_ITF_CamelCase,
                 'vertical_metrics_strategy': 'Google Fonts',
             },
             'table_name': collections.OrderedDict([

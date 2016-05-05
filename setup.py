@@ -1,7 +1,5 @@
 #!/usr/bin/env AFDKOPython
-
 import setuptools
-
 setuptools.setup(
     name = 'hindkit',
     version = '1.0.0',
@@ -9,14 +7,14 @@ setuptools.setup(
     author = 'Liang Hai',
     author_email = 'lianghai@gmail.com',
     license='MIT',
+    package_dir = {'': 'lib'},
+    py_modules = [
+        'WriteFeaturesKernFDK',
+        'WriteFeaturesMarkFDK',
+    ],
     packages = [
         'hindkit',
-        'hindkit.constants',
         'hindkit.objects',
     ],
-    py_modules = ['WriteFeaturesKernFDK', 'WriteFeaturesMarkFDK'],
-    package_dir = {'': 'lib'},
-    package_data = {
-        'hindkit': ['data/*'],
-    },
+    include_package_data = True,
 )

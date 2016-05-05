@@ -21,7 +21,7 @@ class Family(object):
 
         self.base_name = base_name
         self.script_name = script_name
-        self.script = kit.misc.SCRIPT_NAMES_TO_SCRIPTS.get(self.script_name)
+        self.script = kit.constants.SCRIPT_NAMES_TO_SCRIPTS.get(self.script_name)
         self.append_script_name = append_script_name
 
         if name:
