@@ -63,4 +63,4 @@ from hindkit.objects.client import Client
 from hindkit.objects.feature import Feature
 from hindkit.objects.project import Project
 
-from hindkit import scripts
+from hindkit import misc

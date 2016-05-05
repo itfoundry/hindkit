@@ -68,10 +68,10 @@ class Feature(kit.BaseFile):
 
             if self.project.options['match_mI_variants']:
                 glyph_classes.extend([
-                    ('MATRA_I_ALTS', kit.scripts.glyph_filter_matra_i_alts),
-                    ('BASES_ALIVE', kit.scripts.glyph_filter_bases_alive),
-                    ('BASES_DEAD', kit.scripts.glyph_filter_bases_dead),
-                    # ('BASES_FOR_WIDE_MATRA_II', kit.scripts.glyph_filter_bases_for_wide_matra_ii),
+                    ('MATRA_I_ALTS', kit.misc.glyph_filter_matra_i_alts),
+                    ('BASES_ALIVE', kit.misc.glyph_filter_bases_alive),
+                    ('BASES_DEAD', kit.misc.glyph_filter_bases_dead),
+                    # ('BASES_FOR_WIDE_MATRA_II', kit.misc.glyph_filter_bases_for_wide_matra_ii),
                 ])
 
             style_0 = self.project.products[0].style.open()
@@ -263,7 +263,7 @@ class Feature(kit.BaseFile):
                 indianScriptsFormat = self.project.family.script.is_indic,
             )
             if self.project.options['match_mI_variants']:
-                kit.scripts.prepare_features_devanagari(style)
+                kit.misc.prepare_features_devanagari(style)
                 # NOTE: not pure GPOS
 
     def generate_weight_class(self, style):

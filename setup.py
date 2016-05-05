@@ -16,5 +16,11 @@ setuptools.setup(
         'hindkit',
         'hindkit.objects',
     ],
-    include_package_data = True,
+    package_data = {
+        'hindkit': [
+            'data/*.txt',
+            'data/premade/*/GlyphOrderAndAliasDB',
+            'data/premade/*/features/*.fea',
+        ],
+    },
 )
