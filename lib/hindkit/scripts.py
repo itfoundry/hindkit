@@ -19,12 +19,13 @@ def prepare_features_devanagari(style):
         ratio = 1
     else:
         ratio = (style.weight_location - axis_start) / axis_range
-    offset_tuple = (
+
+    offset_range = (
         light_min + (bold_min - light_min) * ratio,
         light_max + (bold_max - light_max) * ratio,
     )
 
-    match_matra_i_alts(style, offset_range=offset_tuple)
+    match_matra_i_alts(style, offset_range)
 
 def match_mI():
     pass
