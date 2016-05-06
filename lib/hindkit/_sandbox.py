@@ -9,7 +9,7 @@ consonant_name_sequences = [
     'G GA',
 ]
 
-glyph_name_sequences = [
+base_name_sequences = [
     'K_KA',
     'G GA',
 ]
@@ -21,17 +21,44 @@ class Glyph(object):
         self.object = font[name]
         self.alive = is_alive(self.name)
         self.width = self.object.width
-        self.abvm_position = get_stem_position(glyph, style.abvm_right_margin)
+        self.abvm_position = get_stem_position(
+            self.object, style.abvm_right_margin
+        )
 
-for glyph_name_sequence in glyph_name_sequences:
+mI_table = []
+matches_too_long = []
 
-    glyph_sequence = [
-        Glyph(font, name) for glyph_name in glyph_name_sequence.split()
+for base_name_sequence in base_name_sequences:
+
+    base = [
+        Glyph(font, name) for base_name in base_name_sequence.split()
     ]
 
-    position_base = 0
-    for glyph in glyph_sequence:
-        if glyph.alive:
-            position_base += glyph.abvm_position
+    base.position = 0
+    for glyph in base:
+        if base.alive:
+            base.position += glyph.abvm_position
         else:
-            position_base += glyph.width
+            base.position += glyph.width
+
+    if base.position <= mI_table[0].position:
+        decision = mI_table[0]
+    elif base.position < mI_table[-1].position:
+        i = 0
+        while mI_table[i].position < base.position:
+            mI_short = mI_table[i]
+            i += 1
+        mI_enough = mI_table[i]
+        if (
+            abs(mI_enough.position - base.position) <=
+            abs(mI_short.position - base.position)
+        ):
+            decision = mI_enough
+        else:
+            decision = mI_short
+    elif base.position <= mI_table[-1].position + tolerance:
+        decision = mI_table[-1]
+    else:
+        decision = matches_too_long
+
+    decision.matches.append(base)
