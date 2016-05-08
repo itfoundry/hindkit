@@ -263,8 +263,33 @@ class Feature(kit.BaseFile):
                 indianScriptsFormat = self.project.family.script.is_indic,
             )
             if self.project.options['match_mI_variants']:
-                kit.misc.prepare_features_devanagari(style)
-                # NOTE: not pure GPOS
+                adjustment_extremes = self.get_adjustment_extremes(style)
+                matches, bases_ignored = kit.misc.match_mI_variants(
+                    style,
+                    adjustment_extremes,
+                )
+                output_mI_variant_matches(style, matches, bases_ignored)
+
+    def get_adjustment_extremes(self, style):
+        try:
+            light, bold = self.project.adjustment_for_matching_mI_variants
+        except AttributeError:
+            return None
+        else:
+            light_min, light_max = light
+            bold_min, bold_max = bold
+            axis_start = self.project.family.masters[0].weight_location
+            axis_end = self.project.family.masters[-1].weight_location
+            axis_range = axis_end - axis_start
+            if axis_range == 0:
+                ratio = 1
+            else:
+                ratio = (style.weight_location - axis_start) / axis_range
+            return (
+                light_min + (bold_min - light_min) * ratio,
+                light_max + (bold_max - light_max) * ratio,
+            )
+
 
     def generate_weight_class(self, style):
         with open(os.path.join(style.directory, 'WeightClass.fea'), 'w') as f:

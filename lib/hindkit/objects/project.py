@@ -29,7 +29,8 @@ class Project(object):
 
         self.fontrevision = fontrevision
 
-        self.devanagari_offset_matrix = ((0, 0), (0, 0))
+        # (light_min, light_max), (bold_min, bold_max)
+        # self.adjustment_for_matching_mI_variants = (0, 0), (0, 0)
 
         self.options = {
 
@@ -174,11 +175,9 @@ class Project(object):
             for master in self.family.masters:
                 master.prepare()
                 try:
-                    master.postprocess
+                    master.postprocess()
                 except AttributeError:
                     pass
-                else:
-                    master.postprocess()
 
             reference_font = self.family.masters[0].open()
             self.glyph_data.glyph_order_trimmed = self.trim_glyph_names(
