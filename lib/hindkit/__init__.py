@@ -54,6 +54,7 @@ def fallback(*candidates):
             return i
 
 from hindkit import constants
+from hindkit import filters
 
 from hindkit.objects.base import BaseFile
 from hindkit.objects.family import Family, DesignSpace, Fmndb
@@ -62,6 +63,3 @@ from hindkit.objects.glyphdata import GlyphData, Goadb
 from hindkit.objects.client import Client
 from hindkit.objects.feature import Feature
 from hindkit.objects.project import Project
-
-from hindkit import filters
-from hindkit import misc
