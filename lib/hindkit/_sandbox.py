@@ -106,7 +106,6 @@ mI_ANCHOR_NAME = 'abvm.i'
 def output_mI_variant_matches(style, matches, bases_ignored):
 
     lookup_name = 'matra_i_matching'
-
     do_position_marks = style.family.project.options[
         'position_marks_for_mI_variants'
     ]
@@ -122,6 +121,8 @@ def output_mI_variant_matches(style, matches, bases_ignored):
         style.directory,
         lookup_name + '.fea',
     )
+    def apply_mark_positioning_offset(value):
+        return str(int(value) - matches[0].mI_variant.width)
 
     if do_position_marks:
 
@@ -144,42 +145,54 @@ def output_mI_variant_matches(style, matches, bases_ignored):
         print('abvm_lookup:', abvm_lookup)
 
         abvm_lookup_modified = abvm_lookup.replace(
-            'pos base %s%s' % (style.family.script.abbreviation, mI_NAME_STEM),
+            'pos base {}{}'.format(
+                style.family.script.abbreviation,
+                mI_NAME_STEM,
+            ),
             'pos base @MATRA_I_BASES_',
         )
 
-    mark_positioning_offset = matches.mI_variant.width
-
-    # class_def_lines = []
-    # class_def_lines.extend(
-    #     kit.Feature.compose_glyph_class_def_lines(
-    #         'MATRA_I_BASES_TOO_LONG',
-    #         [base.name for base in bases_ignored]
-    #     )
-    # )
+    class_def_lines = []
+    class_def_lines.extend(
+        kit.Feature.compose_glyph_class_def_lines(
+            'MATRA_I_BASES_TOO_LONG',
+            [base.name for base in bases_ignored]
+        )
+    )
 
     substitute_rule_lines = []
-
     substitute_rule_lines.append('lookup %s {' % lookup_name)
-
     for match in matches:
-
-        do_comment_substitute_rule = False
-
-        if not match.bases:
+        if match.bases:
+            if do_position_marks:
+                abvm_lookup_modified = re.sub(
+                    r'(?<=@MATRA_I_BASES_{} <anchor )-?\d+'.format(
+                        match.number,
+                    ),
+                    apply_mark_positioning_offset,
+                    abvm_lookup_modified,
+                )
+        else:
             print('\t\t`{}` is not used.'.format(match.name))
-            do_comment_substitute_rule = True
-
             if do_position_marks:
                 abvm_lookup_modified = abvm_lookup_modified.replace(
                     '\tpos base @MATRA_I_BASES_' + match.number,
-                    '#\tpos base @MATRA_I_BASES_' + match.number
+                    '\t# pos base @MATRA_I_BASES_' + match.number
                 )
-
-        if do_position_marks:
-            pass
-
-
+        class_def_lines.extend(
+            kit.Feature.compose_glyph_class_def_lines(
+                'MATRA_I_BASES_' + match.number,
+                match.bases,
+            )
+        )
+        substitute_rule_lines.append(
+            "  {}sub {}mI' @MATRA_I_BASES_{} by {};".format(
+                '' if match.bases else '# ',
+                style.family.script.abbreviation,
+                match.number,
+                match.name,
+            )
+        )
     substitute_rule_lines.append('} %s;' % lookup_name)
 
     if do_position_marks:
@@ -203,10 +216,8 @@ class Base(object):
         for glyph in base:
             if is_alive(glyph):
                 self.target += get_stem_position(glyph, abvm_right_margin)
-            elif is_dead(glyph):
+            else:
                 self.target += glyph.width
-            else: # is mark, etc.
-                pass
 
 class Match(object):
     def __init__(self, font, mI_variant_name):
