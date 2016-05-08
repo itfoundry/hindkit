@@ -63,4 +63,5 @@ from hindkit.objects.client import Client
 from hindkit.objects.feature import Feature
 from hindkit.objects.project import Project
 
+from hindkit import filters
 from hindkit import misc
