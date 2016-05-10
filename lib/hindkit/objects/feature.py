@@ -8,16 +8,10 @@ import hindkit as kit
 
 class Feature(kit.BaseFile):
 
-    CONSONANTS_ALIVE = [i + 'A' for i in kit.constants.CONSONANT_STEMS] + \
-                       'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
-    CONSONANTS_DEAD = kit.constants.CONSONANT_STEMS
-
     CLASS_NAME_mI_VARIANTS = 'mI_VARIANTS'
     CLASS_NAME_BASES_ALIVE = 'BASES_ALIVE'
     CLASS_NAME_BASES_DEAD = 'BASES_DEAD'
-
-    mI_NAME_STEM = 'mI.'
-    mI_ANCHOR_NAME = 'abvm.i'
+    CLASS_NAME_BASES_FOR_LONG_mI = 'BASES_FOR_LONG_mI'
 
     def __init__(self, project, name, optional_filenames=None):
         super(Feature, self).__init__(name, project=project)
@@ -59,7 +53,9 @@ class Feature(kit.BaseFile):
         elif self.name == 'features':
             self.generate_references(style)
 
-    def generate_classes(self):
+class FeatureClasses(Feature):
+
+    def generate(self):
 
         lines = []
 
@@ -73,7 +69,7 @@ class Feature(kit.BaseFile):
                     (self.CLASS_NAME_mI_VARIANTS, kit.filters.mI_variants),
                     (self.CLASS_NAME_BASES_ALIVE, kit.filters.bases_alive),
                     (self.CLASS_NAME_BASES_DEAD, kit.filters.bases_dead),
-                    # ('BASES_FOR_LONG_mII', kit.filters.bases_for_long_mII),
+                    (self.CLASS_NAME_BASES_FOR_LONG_mI, kit.filters.bases_for_long_mII),
                 ])
 
             style_0 = self.project.products[0].style.open()
@@ -102,7 +98,9 @@ class Feature(kit.BaseFile):
             with open(self.path, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-    def generate_tables(self):
+class FeatureTables(Feature):
+
+    def generate(self):
 
         info = self.project.family.info
         client = kit.Client(self.project.family)
@@ -219,7 +217,9 @@ class Feature(kit.BaseFile):
             with open(self.path, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-    def generate_languagesystems(self):
+class FeatureLanguagesystems(Feature):
+
+    def generate(self):
 
         lines = ['languagesystem DFLT dflt;']
         for tag in self.project.family.script.tags:
@@ -229,7 +229,9 @@ class Feature(kit.BaseFile):
             with open(self.path, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-    def generate_gpos(self, style):
+class FeatureGPOS(Feature):
+
+    def generate(self, style):
 
         directory = style.directory
 
@@ -265,34 +267,18 @@ class Feature(kit.BaseFile):
                 indianScriptsFormat = self.project.family.script.is_indic,
             )
             if self.project.options['match_mI_variants']:
-                matches, bases_ignored = self.match_mI_variants(style)
-                self.output_mI_variant_matches(matches, bases_ignored)
+                self.match_mI_variants()
+                self.output_mI_variant_matches()
 
-    def get_adjustment_extremes(self):
-        try:
-            light, bold = self.project.adjustment_for_matching_mI_variants
-        except AttributeError:
-            return None
-        else:
-            light_min, light_max = light
-            bold_min, bold_max = bold
-            axis_start = self.project.family.masters[0].weight_location
-            axis_end = self.project.family.masters[-1].weight_location
-            axis_range = axis_end - axis_start
-            if axis_range == 0:
-                ratio = 1
-            else:
-                ratio = (self.style.weight_location - axis_start) / axis_range
-            return (
-                light_min + (bold_min - light_min) * ratio,
-                light_max + (bold_max - light_max) * ratio,
-            )
+class FeatureWeightClass(Feature):
 
-    def generate_weight_class(self, style):
+    def generate(self, style):
         with open(os.path.join(style.directory, 'WeightClass.fea'), 'w') as f:
             f.write('WeightClass {};\n'.format(str(style.weight_class)))
 
-    def generate_references(self, style):
+class FeatureReferences(Feature):
+
+    def generate(self, style):
         with open(os.path.join(style.directory, 'features'), 'w') as f:
             lines = ['table head { FontRevision 1.000; } head;']
             for filename in [
@@ -330,21 +316,19 @@ class Feature(kit.BaseFile):
                     lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, filename))
             f.writelines(i + '\n' for i in lines)
 
-    def get_abvm_position(self, glyph_name, in_base=True):
-        glyph = self.font[self.style.family.script.abbr + glyph_name]
-        anchor_name_prefix = '' if in_base else '_'
-        for potential_anchor_name in ['abvm.e', 'abvm']:
-            for anchor in glyph.anchors:
-                if anchor.name == anchor_name_prefix + potential_anchor_name:
-                    return anchor.x
+class FeatureMatches(Feature):
 
-    def get_stem_position(self, glyph_name):
-        abvm_position = self.get_abvm_position(glyph_name)
-        if abvm_position is None:
-            glyph = self.font[self.style.family.script.abbr + glyph_name]
-            return glyph.width - self.abvm_right_margin
-        else:
-            return abvm_position
+    CONSONANTS_ALIVE = [i + 'A' for i in kit.constants.CONSONANT_STEMS] + \
+                       'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
+    CONSONANTS_DEAD = kit.constants.CONSONANT_STEMS
+
+    mI_NAME_STEM = 'mI.'
+    mI_ANCHOR_NAME = 'abvm.i'
+
+    def generate(self, style):
+        self.style = style
+        self.match_mI_variants()
+        self.output_mI_variant_matches()
 
     class Base(object):
         def __init__(self, feature, name_sequence):
@@ -364,6 +348,42 @@ class Feature(kit.BaseFile):
             self.overhanging = abs(self.mI_variant.rightMargin)
             self.bases = []
 
+    def get_adjustment_extremes(self):
+        try:
+            light, bold = self.project.adjustment_for_matching_mI_variants
+        except AttributeError:
+            return None
+        else:
+            light_min, light_max = light
+            bold_min, bold_max = bold
+            axis_start = self.project.family.masters[0].weight_location
+            axis_end = self.project.family.masters[-1].weight_location
+            axis_range = axis_end - axis_start
+            if axis_range == 0:
+                ratio = 1
+            else:
+                ratio = (self.style.weight_location - axis_start) / axis_range
+            return (
+                light_min + (bold_min - light_min) * ratio,
+                light_max + (bold_max - light_max) * ratio,
+            )
+
+    def get_abvm_position(self, glyph_name, in_base=True):
+        glyph = self.font[self.style.family.script.abbr + glyph_name]
+        anchor_name_prefix = '' if in_base else '_'
+        for potential_anchor_name in ['abvm.e', 'abvm']:
+            for anchor in glyph.anchors:
+                if anchor.name == anchor_name_prefix + potential_anchor_name:
+                    return anchor.x
+
+    def get_stem_position(self, glyph_name):
+        abvm_position = self.get_abvm_position(glyph_name)
+        if abvm_position is None:
+            glyph = self.font[self.style.family.script.abbr + glyph_name]
+            return glyph.width - self.abvm_right_margin
+        else:
+            return abvm_position
+
     def get_base_name_sequences(self):
         consonant_name_sequences = [
             'K KA',
@@ -377,7 +397,6 @@ class Feature(kit.BaseFile):
 
     def match_mI_variants(self, style):
 
-        self.style = style
         self.font = self.style.open()
         self.adjustment_extremes = self.get_adjustment_extremes()
 
@@ -416,21 +435,21 @@ class Feature(kit.BaseFile):
                 print('New:', target, end='; ')
             print()
 
-        matches = [
+        self.matches = [
             self.Match(self, mI_variant_name=name)
             for name in self.font.groups[self.CLASS_NAME_mI_VARIANTS]
         ]
-        bases_ignored = []
+        self.bases_ignored = []
 
         for base in bases:
-            if base.target <= matches[0].overhanging:
-                match = matches[0]
-            elif base.target < matches[-1].overhanging:
+            if base.target <= self.matches[0].overhanging:
+                match = self.matches[0]
+            elif base.target < self.matches[-1].overhanging:
                 i = 0
-                while matches[i].overhanging < base.target:
-                    candidate_short = matches[i]
+                while self.matches[i].overhanging < base.target:
+                    candidate_short = self.matches[i]
                     i += 1
-                candidate_enough = matches[i]
+                candidate_enough = self.matches[i]
                 if (
                     abs(candidate_enough.overhanging - base.target) <
                     abs(candidate_short.overhanging - base.target)
@@ -438,15 +457,13 @@ class Feature(kit.BaseFile):
                     match = candidate_enough
                 else:
                     match = candidate_short
-            elif base.target <= matches[-1].overhanging + tolerance:
-                match = matches[-1]
+            elif base.target <= self.matches[-1].overhanging + tolerance:
+                match = self.matches[-1]
             else:
-                match = bases_ignored
+                match = self.bases_ignored
             match.bases.append(base)
 
-        return matches, bases_ignored
-
-    def output_mI_variant_matches(self, matches, bases_ignored):
+    def output_mI_variant_matches(self):
 
         lookup_name = 'matra_i_matching'
         do_position_marks = self.style.family.project.options[
@@ -501,7 +518,7 @@ class Feature(kit.BaseFile):
         class_def_lines.extend(
             self.compose_glyph_class_def_lines(
                 'MATRA_I_BASES_TOO_LONG',
-                [base.name for base in bases_ignored]
+                [base.name for base in self.bases_ignored]
             )
         )
 
