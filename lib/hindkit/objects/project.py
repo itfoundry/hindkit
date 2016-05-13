@@ -2,7 +2,7 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, argparse, subprocess, collections
+import os, argparse, subprocess
 import fontTools.ttLib
 import hindkit as kit
 
@@ -132,6 +132,7 @@ class Project(object):
             self.options['run_makeinstances'] = False
             self.options['run_checkoutlines'] = False
             self.options['run_autohint'] = False
+            self.options['build_ttf'] = False
 
         if self.options['run_makeinstances']:
             styles = self.family.styles
@@ -227,4 +228,7 @@ class Project(object):
             self.fmndb.prepare()
             for product in self.products:
                 product.style.temp = True
+                if product.file_format == 'TTF':
+                    subprocess.call(['open', product.style.path])
+            for product in self.products:
                 product.prepare()
