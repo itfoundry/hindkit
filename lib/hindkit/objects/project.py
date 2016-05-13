@@ -66,31 +66,22 @@ class Project(object):
 
         self.designspace = kit.DesignSpace(self)
         self.feature_classes = kit.Feature(
-            self,
-            'classes',
-            optional_filenames = ['classes_suffixing'],
+            self, 'classes', ['classes_suffixing'],
         )
         self.feature_tables = kit.Feature(self, 'tables')
         self.feature_languagesystems = kit.Feature(self, 'languagesystems')
         self.feature_gsub = kit.Feature(
-            self,
-            'GSUB',
-            optional_filenames = ['GSUB_lookups', 'GSUB_prefixing'],
+            self, 'GSUB', ['GSUB_lookups', 'GSUB_prefixing'],
         )
         self.feature_gpos = kit.Feature(self, 'GPOS')
         self.feature_weight_class = kit.Feature(self, 'WeightClass')
         self.features_references = kit.Feature(self, 'features')
         self.features_references.filename_extension = None
         self.fmndb = kit.Fmndb(self)
-        self.goadb_trimmed = kit.Goadb(
-            self,
-            'GlyphOrderAndAliasDB_trimmed',
-        )
+        self.goadb_trimmed = kit.Goadb(self, 'GlyphOrderAndAliasDB_trimmed')
         if self.options['build_ttf']:
             self.goadb_trimmed_ttf = kit.Goadb(
-                self,
-                'GlyphOrderAndAliasDB_trimmed_ttf',
-                for_ttf = True,
+                self, 'GlyphOrderAndAliasDB_trimmed_ttf', for_ttf = True,
             )
 
         self._finalize_options()

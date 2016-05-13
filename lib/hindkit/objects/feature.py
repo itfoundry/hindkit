@@ -6,15 +6,15 @@ import os, collections
 import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit as kit
 
-class Feature(kit.BaseFile):
+class BaseFeature(kit.BaseFile):
 
     CLASS_NAME_mI_VARIANTS = 'mI_VARIANTS'
     CLASS_NAME_BASES_ALIVE = 'BASES_ALIVE'
     CLASS_NAME_BASES_DEAD = 'BASES_DEAD'
     CLASS_NAME_BASES_FOR_LONG_mI = 'BASES_FOR_LONG_mI'
 
-    def __init__(self, project, name, optional_filenames=None):
-        super(Feature, self).__init__(name, project=project)
+    def __init__(self, project, name, optional_filenames):
+        super(BaseFeature, self).__init__(name, project=project)
         self.optional_filenames = kit.fallback(optional_filenames, [])
         self.file_format = 'FEA'
         self.abstract_directory = kit.Project.directories['features']
@@ -38,22 +38,8 @@ class Feature(kit.BaseFile):
             glyph_class_def_lines = ['# @{} = [];'.format(class_name), '']
         return glyph_class_def_lines
 
-    def generate(self, style=None):
 
-        if self.name == 'classes':
-            self.generate_classes()
-        elif self.name == 'tables':
-            self.generate_tables()
-        elif self.name == 'languagesystems':
-            self.generate_languagesystems()
-        elif self.name == 'GPOS':
-            self.generate_gpos(style)
-        elif self.name == 'WeightClass':
-            self.generate_weight_class(style)
-        elif self.name == 'features':
-            self.generate_references(style)
-
-class FeatureClasses(Feature):
+class FeatureClasses(BaseFeature):
 
     def generate(self):
 
@@ -98,7 +84,8 @@ class FeatureClasses(Feature):
             with open(self.path, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-class FeatureTables(Feature):
+
+class FeatureTables(BaseFeature):
 
     def generate(self):
 
@@ -217,19 +204,18 @@ class FeatureTables(Feature):
             with open(self.path, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-class FeatureLanguagesystems(Feature):
 
+class FeatureLanguagesystems(BaseFeature):
     def generate(self):
-
         lines = ['languagesystem DFLT dflt;']
         for tag in self.project.family.script.tags:
             lines.append('languagesystem {} dflt;'.format(tag))
-
         if lines:
             with open(self.path, 'w') as f:
                 f.writelines(i + '\n' for i in lines)
 
-class FeatureGPOS(Feature):
+
+class FeatureGPOS(BaseFeature):
 
     def generate(self, style):
 
@@ -270,14 +256,14 @@ class FeatureGPOS(Feature):
                 self.match_mI_variants()
                 self.output_mI_variant_matches()
 
-class FeatureWeightClass(Feature):
 
+class FeatureWeightClass(BaseFeature):
     def generate(self, style):
         with open(os.path.join(style.directory, 'WeightClass.fea'), 'w') as f:
             f.write('WeightClass {};\n'.format(str(style.weight_class)))
 
-class FeatureReferences(Feature):
 
+class FeatureReferences(BaseFeature):
     def generate(self, style):
         with open(os.path.join(style.directory, 'features'), 'w') as f:
             lines = ['table head { FontRevision 1.000; } head;']
@@ -316,7 +302,8 @@ class FeatureReferences(Feature):
                     lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, filename))
             f.writelines(i + '\n' for i in lines)
 
-class FeatureMatches(Feature):
+
+class FeatureMatches(BaseFeature):
 
     CONSONANTS_ALIVE = [i + 'A' for i in kit.constants.CONSONANT_STEMS] + \
                        'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
@@ -575,3 +562,17 @@ class FeatureMatches(Feature):
                 line + '\n'
                 for line in class_def_lines + substitute_rule_lines
             )
+
+
+class Feature(object):
+    NAME_TO_CLASS_MAP = {
+        'classes': FeatureClasses,
+        'tables': FeatureTables,
+        'languagesystems': FeatureLanguagesystems,
+        'GPOS': FeatureGPOS,
+        'WeightClass': FeatureWeightClass,
+        'features': FeatureReferences,
+    }
+    def __new__(cls, project, name, optional_filenames=None):
+        FeatureMatched = cls.NAME_TO_CLASS_MAP.get(name, BaseFeature)
+        return FeatureMatched(project, name, optional_filenames)
