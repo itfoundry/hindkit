@@ -90,7 +90,7 @@ class FeatureTables(BaseFeature):
     def generate(self):
 
         info = self.project.family.info
-        client = kit.Client(self.project.family)
+        client = self.project.family.client
 
         lines = []
         tables = collections.OrderedDict([
@@ -102,8 +102,8 @@ class FeatureTables(BaseFeature):
 
         tables['OS/2'].extend([
             'include (weightclass.fea);',
-            'fsType {};'.format(client.table_OS_2['fsType']),
-            'Vendor "{}";'.format(client.table_OS_2['Vendor']),
+            'fsType {};'.format(client.tables['OS/2']['fsType']),
+            'Vendor "{}";'.format(client.tables['OS/2']['Vendor']),
         ])
 
         set_vertical_metrics = False
@@ -190,7 +190,7 @@ class FeatureTables(BaseFeature):
                 name_id,
                 content.encode('unicode_escape').replace('\\x', '\\00').replace('\\u', '\\')
             )
-            for name_id, content in client.table_name.items()
+            for name_id, content in sorted(client.tables['name'].items())
             if content
         )
 

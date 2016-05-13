@@ -10,26 +10,23 @@ class Family(object):
 
     def __init__(
         self,
-        client = None,
+        client_name = None,
         base_name = None,
         script_name = None,
         append_script_name = False,
         name = None,
     ):
 
-        self.client = client
-
+        self.client = kit.Client(self, client_name)
         self.base_name = base_name
-        self.script_name = script_name
-        self.script = kit.constants.SCRIPT_NAMES_TO_SCRIPTS.get(self.script_name)
-        self.append_script_name = append_script_name
+        self.script = kit.constants.SCRIPT_NAMES_TO_SCRIPTS.get(script_name)
 
         if name:
             self.name = name
         else:
             self.name = self.base_name
-            if self.script_name and self.append_script_name:
-                self.name += ' ' + self.script_name
+            if script_name and append_script_name:
+                self.name += ' ' + script_name
         self.name_postscript = self.name.replace(' ', '')
 
         self.masters = None
@@ -45,7 +42,7 @@ class Family(object):
         ]
 
     def set_styles(self, value=None):
-        scheme = kit.fallback(value, kit.Client(self).style_scheme)
+        scheme = kit.fallback(value, self.client.style_scheme)
         self.styles = [
             kit.Style(self, name, weight_location, weight_class)
             for name, weight_location, weight_class in scheme
