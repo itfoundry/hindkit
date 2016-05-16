@@ -414,34 +414,12 @@ class FeatureMatches(BaseFeature):
 
     def output_mI_variant_matches(self):
 
-        class_def_lines = []
-        class_def_lines.extend(
-            self.compose_glyph_class_def_lines(
-                'BASES_TOO_LONG',
-                [
-                    glyph.name
-                    for base in self.bases_ignored
-                    for glyph in base.glyphs
-                ]
-            )
-        )
-
         substitute_rule_lines = []
         substitute_rule_lines.append('lookup %s {' % self.name)
         for match in self.matches:
             if match.bases:
             else:
                 print('\t\t`{}` is not used.'.format(match.name))
-            class_def_lines.extend(
-                self.compose_glyph_class_def_lines(
-                    'BASES_' + match.number,
-                    [
-                        glyph.name
-                        for base in match.bases
-                        for glyph in base.glyphs
-                    ],
-                )
-            )
             substitute_rule_lines.append(
                 "  {}sub {}mI' @BASES_{} by {};".format(
                     '' if match.bases else '# ',
@@ -453,10 +431,7 @@ class FeatureMatches(BaseFeature):
         substitute_rule_lines.append('} %s;' % self.name)
 
         with open(self.path, 'w') as f:
-            f.writelines(
-                line + '\n'
-                for line in class_def_lines + substitute_rule_lines
-            )
+            f.writelines(line + '\n' for line in substitute_rule_lines)
 
 
 class FeatureReferences(BaseFeature):
