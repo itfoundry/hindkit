@@ -414,49 +414,50 @@ class FeatureMatches(BaseFeature):
 
     def output_mI_variant_matches(self):
 
-        do_position_marks = self.style.family.project.options[
-            'position_marks_for_mI_variants'
-        ]
-        abvm_backup_path = os.path.join(
-            self.style.directory,
-            'backup--' + WriteFeaturesMarkFDK.kAbvmFeatureFileName,
-        )
-        abvm_path = os.path.join(
-            self.style.directory,
-            WriteFeaturesMarkFDK.kAbvmFeatureFileName,
-        )
+        # do_position_marks = self.style.family.project.options[
+        #     'position_marks_for_mI_variants'
+        # ]
 
-        def apply_mark_positioning_offset(value):
-            return str(int(value) - matches[0].mI_variant.width)
-
-        if do_position_marks:
-
-            if os.path.exists(abvm_path_backup):
-                kit.copy(abvm_backup_path, abvm_path)
-            else:
-                kit.copy(abvm_path, abvm_backup_path)
-            with open(abvm_path, 'r') as f:
-                abvm_content = f.read()
-
-            abvm_lookup = re.search(
-                r'''
-                    (?mx)
-                    lookup \s (MARK_BASE_%s) \s \{ \n
-                    ( .+ \n )+
-                    \} \s \1 ; \n
-                ''' % self.mI_ANCHOR_NAME,
-                abvm_content,
-            ).group(0)
-            print('abvm_lookup:', abvm_lookup)
-
-            abvm_lookup_modified = re.sub(
-                '(?<=pos base ){}{}.'.format(
-                    self.style.family.script.abbr,
-                    self.mI_NAME_STEM,
-                ),
-                '@{}_'.format(self.CLASS_NAME_BASES_ALIVE),
-                abvm_lookup,
-            )
+        # if do_position_marks:
+        #
+        #     def apply_mark_positioning_offset(value):
+        #         return str(int(value) - matches[0].mI_variant.width)
+        #
+        #     abvm_backup_path = os.path.join(
+        #         self.style.directory,
+        #         'backup--' + WriteFeaturesMarkFDK.kAbvmFeatureFileName,
+        #     )
+        #     abvm_path = os.path.join(
+        #         self.style.directory,
+        #         WriteFeaturesMarkFDK.kAbvmFeatureFileName,
+        #     )
+        #
+        #     if os.path.exists(abvm_path_backup):
+        #         kit.copy(abvm_backup_path, abvm_path)
+        #     else:
+        #         kit.copy(abvm_path, abvm_backup_path)
+        #     with open(abvm_path, 'r') as f:
+        #         abvm_content = f.read()
+        #
+        #     abvm_lookup = re.search(
+        #         r'''
+        #             (?mx)
+        #             lookup \s (MARK_BASE_%s) \s \{ \n
+        #             ( .+ \n )+
+        #             \} \s \1 ; \n
+        #         ''' % self.mI_ANCHOR_NAME,
+        #         abvm_content,
+        #     ).group(0)
+        #     print('abvm_lookup:', abvm_lookup)
+        #
+        #     abvm_lookup_modified = re.sub(
+        #         '(?<=pos base ){}{}.'.format(
+        #             self.style.family.script.abbr,
+        #             self.mI_NAME_STEM,
+        #         ),
+        #         '@{}_'.format(self.CLASS_NAME_BASES_ALIVE),
+        #         abvm_lookup,
+        #     )
 
         class_def_lines = []
         class_def_lines.extend(
@@ -474,26 +475,26 @@ class FeatureMatches(BaseFeature):
         substitute_rule_lines.append('lookup %s {' % self.name)
         for match in self.matches:
             if match.bases:
-                if do_position_marks:
-                    abvm_lookup_modified = re.sub(
-                        r'(?<=@{}_{} <anchor )-?\d+'.format(
-                            self.CLASS_NAME_BASES_ALIVE,
-                            match.number,
-                        ),
-                        apply_mark_positioning_offset,
-                        abvm_lookup_modified,
-                    )
+                # if do_position_marks:
+                #     abvm_lookup_modified = re.sub(
+                #         r'(?<=@{}_{} <anchor )-?\d+'.format(
+                #             self.CLASS_NAME_BASES_ALIVE,
+                #             match.number,
+                #         ),
+                #         apply_mark_positioning_offset,
+                #         abvm_lookup_modified,
+                #     )
             else:
                 print('\t\t`{}` is not used.'.format(match.name))
-                if do_position_marks:
-                    abvm_lookup_modified = re.sub(
-                        r'\t(?=pos base @{}_{})'.format(
-                            self.CLASS_NAME_BASES_ALIVE,
-                            match.number,
-                        ),
-                        '\t# ',
-                        abvm_lookup_modified,
-                    )
+                # if do_position_marks:
+                #     abvm_lookup_modified = re.sub(
+                #         r'\t(?=pos base @{}_{})'.format(
+                #             self.CLASS_NAME_BASES_ALIVE,
+                #             match.number,
+                #         ),
+                #         '\t# ',
+                #         abvm_lookup_modified,
+                #     )
             class_def_lines.extend(
                 self.compose_glyph_class_def_lines(
                     'BASES_' + match.number,
@@ -514,13 +515,13 @@ class FeatureMatches(BaseFeature):
             )
         substitute_rule_lines.append('} %s;' % self.name)
 
-        if do_position_marks:
-            abvm_content_modified = abvm_content.replace(
-                abvm_lookup,
-                abvm_lookup_modified,
-            )
-            with open(abvm_path, 'w') as f:
-                f.write(abvm_content_modified)
+        # if do_position_marks:
+        #     abvm_content_modified = abvm_content.replace(
+        #         abvm_lookup,
+        #         abvm_lookup_modified,
+        #     )
+        #     with open(abvm_path, 'w') as f:
+        #         f.write(abvm_content_modified)
 
         with open(self.path, 'w') as f:
             f.writelines(
