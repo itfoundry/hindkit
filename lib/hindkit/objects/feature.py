@@ -281,8 +281,11 @@ class FeatureMatches(BaseFeature):
         def __init__(self, feature, name_sequence):
             self.name_sequence = name_sequence
             self.target = 0
-            for glyph_name in name_sequence.split():
-                glyph = feature.font[feature.style.family.script.abbr + glyph_name]
+            self.glyphs = [
+                feature.font[feature.style.family.script.abbr + glyph_name]
+                for glyph_name in self.name_sequence.split()
+            ]
+            for glyph in self.glyphs:
                 if kit.filters.bases_alive(feature.style.family, glyph):
                     self.target += feature.get_stem_position(glyph)
                 else:
@@ -458,8 +461,12 @@ class FeatureMatches(BaseFeature):
         class_def_lines = []
         class_def_lines.extend(
             self.compose_glyph_class_def_lines(
-                'MATRA_I_BASES_TOO_LONG',
-                [base.name_sequence for base in self.bases_ignored]
+                'BASES_TOO_LONG',
+                [
+                    glyph.name
+                    for base in self.bases_ignored
+                    for glyph in base.glyphs
+                ]
             )
         )
 
@@ -489,12 +496,16 @@ class FeatureMatches(BaseFeature):
                     )
             class_def_lines.extend(
                 self.compose_glyph_class_def_lines(
-                    'MATRA_I_BASES_' + match.number,
-                    [base.name_sequence for base in match.bases],
+                    'BASES_' + match.number,
+                    [
+                        glyph.name
+                        for base in match.bases
+                        for glyph in base.glyphs
+                    ],
                 )
             )
             substitute_rule_lines.append(
-                "  {}sub {}mI' @MATRA_I_BASES_{} by {};".format(
+                "  {}sub {}mI' @BASES_{} by {};".format(
                     '' if match.bases else '# ',
                     self.style.family.script.abbr,
                     match.number,
