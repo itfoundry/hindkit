@@ -192,7 +192,7 @@ class Project(object):
 
             self.feature_classes = kit.Feature(
                 self, 'classes',
-                optional_filenames = ['classes_suffixing'],
+                subsidiary_filenames = ['classes_suffixing'],
             )
             self.feature_tables = kit.Feature(
                 self, 'tables',
@@ -202,7 +202,7 @@ class Project(object):
             )
             self.feature_gsub = kit.Feature(
                 self, 'GSUB',
-                optional_filenames = ['GSUB_lookups', 'GSUB_prefixing'],
+                subsidiary_filenames = ['GSUB_lookups', 'GSUB_prefixing'],
             )
 
             self.feature_classes.prepare()

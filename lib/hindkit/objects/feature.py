@@ -8,10 +8,13 @@ import hindkit as kit
 
 class BaseFeature(kit.BaseFile):
 
-    def __init__(self, project, name, style, optional_filenames):
-        super(BaseFeature, self).__init__(name, project=project)
+    def __init__(self, project, name, style, subsidiary_filenames):
+        super(BaseFeature, self).__init__(
+            name,
+            project = project,
+            subsidiary_filenames = subsidiary_filenames,
+        )
         self.style = style
-        self.optional_filenames = kit.fallback(optional_filenames, [])
         self.file_format = 'FEA'
         if self.style:
             self.abstract_directory = self.style.abstract_directory
@@ -569,6 +572,6 @@ class Feature(object):
         'WeightClass': FeatureWeightClass,
         'features': FeatureReferences,
     }
-    def __new__(cls, project, name, style=None, optional_filenames=None):
+    def __new__(cls, project, name, style=None, subsidiary_filenames=None):
         F = cls.NAME_TO_CLASS_MAP.get(name, BaseFeature)
-        return F(project, name, style, optional_filenames)
+        return F(project, name, style, subsidiary_filenames)

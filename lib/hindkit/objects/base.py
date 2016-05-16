@@ -7,7 +7,7 @@ import hindkit as kit
 
 class BaseFile(object):
 
-    def __init__(self, name, project=None):
+    def __init__(self, name, project=None, subsidiary_filenames=None):
 
         self.name = name
         self.file_format = None
@@ -17,7 +17,13 @@ class BaseFile(object):
         self.temp_directory = kit.Project.directories['intermediates']
 
         self.project = project
-        self.optional_filenames = []
+
+        self.subsidiary_files = []
+        for filename in kit.fallback(subsidiary_filenames, []):
+            f = kit.BaseFile(filename)
+            f.file_format = self.file_format
+            f.abstract_directory = self.abstract_directory
+            self.subsidiary_files.append(f)
 
         self.counter = 0
 
@@ -75,29 +81,22 @@ class BaseFile(object):
         self._path = value
 
     def check_override(self, *args, **kwargs):
-        if self.temp == True and os.path.exists(self.path):
-            return
-        path_old = self.path
-        self.temp = True
-        if os.path.exists(path_old):
-            print(path_old, 'exists.')
-            path_new = self.path
-            kit.copy(path_old, path_new)
-        else:
-            print(path_old, 'is missing.')
-            self.generate(*args, **kwargs)
-        for optional_filename in self.optional_filenames:
-            f = kit.BaseFile(optional_filename)
-            f.file_format = self.file_format
-            f.abstract_directory = self.abstract_directory
-            optional_path_old = f.path
+        for f in [self] + self.subsidiary_files:
+            if f.temp and os.path.exists(f.path):
+                continue
+            path_original = f.path
             f.temp = True
-            optional_path_new = f.path
+            path_temp = f.path
             try:
-                kit.copy(optional_path_old, optional_path_new)
+                kit.copy(path_original, path_temp)
+                print('[COPIED]', path_original)
             except IOError:
-                if not os.path.exists(optional_path_old):
-                    pass
+                if not os.path.exists(path_original):
+                    if f is self:
+                        f.generate(*args, **kwargs)
+                        print('[GENERATED]', path_original)
+                    else:
+                        pass
                 else:
                     raise
 
