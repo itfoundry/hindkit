@@ -268,6 +268,8 @@ class FeatureMatches(BaseFeature):
                        'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
     CONSONANTS_DEAD = kit.constants.CONSONANT_STEMS
 
+    mI_NAME_STEM = 'mI.'
+
     def generate(self):
 
         self.font = self.style.open()
@@ -316,7 +318,7 @@ class FeatureMatches(BaseFeature):
         ) * 0.5
 
         for base in self.bases:
-            match = self.match_mI_variants(base)
+            match = self.match_mI_variants(base, tolerance)
             match.bases.append(base)
 
         self.output_mI_variant_matches()
@@ -381,20 +383,22 @@ class FeatureMatches(BaseFeature):
         else:
             return abvm_position
 
-    def get_base_name_sequences(self):
+    def get_base_name_sequences(self): # TODO
         consonant_name_sequences = [
             'K KA',
             'G GA',
         ]
         base_name_sequences = [
+            'TTA'
             'K_KA',
             'G GA',
             'TTA Virama KA',
             'S TTA RAc2',
+            'S TTA',
         ]
         return base_name_sequences
 
-    def match_mI_variants(self, base):
+    def match_mI_variants(self, base, tolerance):
         if base.target <= self.matches[0].overhanging:
             return self.matches[0]
         elif base.target < self.matches[-1].overhanging:
