@@ -8,16 +8,15 @@ import hindkit as kit
 
 class BaseFeature(kit.BaseFile):
 
-    CLASS_NAME_mI_VARIANTS = 'mI_VARIANTS'
-    CLASS_NAME_BASES_ALIVE = 'BASES_ALIVE'
-    CLASS_NAME_BASES_DEAD = 'BASES_DEAD'
-    CLASS_NAME_BASES_FOR_LONG_mI = 'BASES_FOR_LONG_mI'
-
-    def __init__(self, project, name, optional_filenames):
+    def __init__(self, project, name, style, optional_filenames):
         super(BaseFeature, self).__init__(name, project=project)
+        self.style = style
         self.optional_filenames = kit.fallback(optional_filenames, [])
         self.file_format = 'FEA'
-        self.abstract_directory = kit.Project.directories['features']
+        if self.style:
+            self.abstract_directory = self.style.abstract_directory
+        else:
+            self.abstract_directory = kit.Project.directories['features']
 
     @staticmethod
     def sort_names(names, order):
@@ -52,32 +51,32 @@ class FeatureClasses(BaseFeature):
 
             if self.project.options['match_mI_variants']:
                 glyph_classes.extend([
-                    (self.CLASS_NAME_mI_VARIANTS, kit.filters.mI_variants),
-                    (self.CLASS_NAME_BASES_ALIVE, kit.filters.bases_alive),
-                    (self.CLASS_NAME_BASES_DEAD, kit.filters.bases_dead),
-                    (self.CLASS_NAME_BASES_FOR_LONG_mI, kit.filters.bases_for_long_mII),
+                    (FeatureMatches.CLASS_NAME_mI_VARIANTS, kit.filters.mI_variants),
+                    (FeatureMatches.CLASS_NAME_BASES_ALIVE, kit.filters.bases_alive),
+                    (FeatureMatches.CLASS_NAME_BASES_DEAD, kit.filters.bases_dead),
+                    (FeatureMatches.CLASS_NAME_BASES_FOR_LONG_mI, kit.filters.bases_for_long_mII),
                 ])
 
-            style_0 = self.project.products[0].style.open()
+            font_0 = self.project.products[0].style.open()
 
             glyph_order = self.project.glyph_data.glyph_order
             for class_name, filter_function in glyph_classes:
                 glyph_names = [
                     glyph.name for glyph in filter(
                         lambda glyph: filter_function(self.project.family, glyph),
-                        style_0,
+                        font_0,
                     )
                 ]
                 glyph_names = self.sort_names(glyph_names, glyph_order)
-                style_0.groups.update({class_name: glyph_names})
+                font_0.groups.update({class_name: glyph_names})
                 lines.extend(
                     self.compose_glyph_class_def_lines(class_name, glyph_names)
                 )
-            style_0.save()
+            font_0.save()
 
-            for style in (product.style for product in self.project.products[1:]):
+            for style in (i.style for i in self.project.products[1:]):
                 font = style.open()
-                font.groups.update(style_0.groups)
+                font.groups.update(font_0.groups)
                 font.save()
 
         if lines:
@@ -101,7 +100,7 @@ class FeatureTables(BaseFeature):
         ])
 
         tables['OS/2'].extend([
-            'include (weightclass.fea);',
+            'include (WeightClass.fea);',
             'fsType {};'.format(client.tables['OS/2']['fsType']),
             'Vendor "{}";'.format(client.tables['OS/2']['Vendor']),
         ])
@@ -215,95 +214,51 @@ class FeatureLanguagesystems(BaseFeature):
                 f.writelines(i + '\n' for i in lines)
 
 
-class FeatureGPOS(BaseFeature):
+class FeatureMark(BaseFeature):
+    def generate(self):
+        WriteFeaturesMarkFDK.kMarkFeatureFileName = self.filename_with_extension
+        WriteFeaturesMarkFDK.MarkDataClass(
+            font = self.style.open(),
+            folderPath = self.style.directory,
+            trimCasingTags = False,
+            genMkmkFeature = self.project.options['prepare_mark_to_mark_positioning'],
+            writeClassesFile = True,
+            indianScriptsFormat = self.project.family.script.is_indic,
+        )
 
-    def generate(self, style):
 
-        directory = style.directory
-
-        if self.project.options['prepare_kerning']:
-
-            WriteFeaturesKernFDK.KernDataClass(
-                font = style.open(),
-                folderPath = directory,
-            )
-
-            try:
-                self.project.postprocess_kerning
-            except AttributeError:
-                pass
-            else:
-                kern_path = os.path.join(
-                    directory,
-                    WriteFeaturesKernFDK.kKernFeatureFileName,
-                )
-                if os.path.exists(kern_path):
-                    with open(kern_path) as f:
-                        content = f.read()
-                    with open(kern_path, 'w') as f:
-                        f.write(self.project.postprocess_kerning(content))
-
-        if self.project.options['prepare_mark_positioning']:
-            WriteFeaturesMarkFDK.MarkDataClass(
-                font = style.open(),
-                folderPath = directory,
-                trimCasingTags = False,
-                genMkmkFeature = self.project.options['prepare_mark_to_mark_positioning'],
-                writeClassesFile = True,
-                indianScriptsFormat = self.project.family.script.is_indic,
-            )
-            if self.project.options['match_mI_variants']:
-                self.match_mI_variants()
-                self.output_mI_variant_matches()
+class FeatureKern(BaseFeature):
+    def generate(self):
+        WriteFeaturesKernFDK.kKernFeatureFileName = self.filename_with_extension
+        WriteFeaturesKernFDK.KernDataClass(
+            font = self.style.open(),
+            folderPath = self.style.directory,
+        )
+        try:
+            self.project.postprocess_kerning
+        except AttributeError:
+            pass
+        else:
+            kern_path = self.path
+            if os.path.exists(kern_path):
+                with open(kern_path) as f:
+                    content = f.read()
+                with open(kern_path, 'w') as f:
+                    f.write(self.project.postprocess_kerning(content))
 
 
 class FeatureWeightClass(BaseFeature):
-    def generate(self, style):
-        with open(os.path.join(style.directory, 'WeightClass.fea'), 'w') as f:
-            f.write('WeightClass {};\n'.format(str(style.weight_class)))
-
-
-class FeatureReferences(BaseFeature):
-    def generate(self, style):
-        with open(os.path.join(style.directory, 'features'), 'w') as f:
-            lines = ['table head { FontRevision 1.000; } head;']
-            for filename in [
-                'classes',
-                'classes_suffixing',
-                'tables',
-                'languagesystems',
-                'GSUB_prefixing',
-                'GSUB_lookups',
-                'GSUB',
-            ]:
-                path = os.path.join(self.directory, filename + '.fea')
-                if os.path.exists(path):
-                    lines.append('include ({});'.format(os.path.relpath(path, style.directory)))
-            if os.path.exists(os.path.join(style.directory, WriteFeaturesKernFDK.kKernFeatureFileName)):
-                if self.project.family.script.is_indic:
-                    kerning_feature_name = 'dist'
-                else:
-                    kerning_feature_name = 'kern'
-                lines.append(
-                    'feature {0} {{ include ({1}); }} {0};'.format(
-                        kerning_feature_name,
-                        WriteFeaturesKernFDK.kKernFeatureFileName,
-                    )
-                )
-            if os.path.exists(os.path.join(style.directory, WriteFeaturesMarkFDK.kMarkClassesFileName)):
-                lines.append('include ({});'.format(WriteFeaturesMarkFDK.kMarkClassesFileName))
-            for feature_name, filename in [
-                ('mark', WriteFeaturesMarkFDK.kMarkFeatureFileName),
-                ('mkmk', WriteFeaturesMarkFDK.kMkmkFeatureFileName),
-                ('abvm', WriteFeaturesMarkFDK.kAbvmFeatureFileName),
-                ('blwm', WriteFeaturesMarkFDK.kBlwmFeatureFileName),
-            ]:
-                if os.path.exists(os.path.join(style.directory, filename)):
-                    lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, filename))
-            f.writelines(i + '\n' for i in lines)
+    def generate(self):
+        with open(self.path, 'w') as f:
+            f.write('WeightClass {};\n'.format(str(self.style.weight_class)))
 
 
 class FeatureMatches(BaseFeature):
+
+    CLASS_NAME_mI_VARIANTS = 'mI_VARIANTS'
+    CLASS_NAME_BASES_ALIVE = 'BASES_ALIVE'
+    CLASS_NAME_BASES_DEAD = 'BASES_DEAD'
+    CLASS_NAME_BASES_FOR_LONG_mI = 'BASES_FOR_LONG_mI'
 
     CONSONANTS_ALIVE = [i + 'A' for i in kit.constants.CONSONANT_STEMS] + \
                        'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
@@ -312,8 +267,9 @@ class FeatureMatches(BaseFeature):
     mI_NAME_STEM = 'mI.'
     mI_ANCHOR_NAME = 'abvm.i'
 
-    def generate(self, style):
-        self.style = style
+    def generate(self):
+        self.font = self.style.open()
+        self.adjustment_extremes = self.get_adjustment_extremes()
         self.match_mI_variants()
         self.output_mI_variant_matches()
 
@@ -322,8 +278,9 @@ class FeatureMatches(BaseFeature):
             self.name_sequence = name_sequence
             self.target = 0
             for glyph_name in name_sequence.split():
-                if is_alive(glyph_name):
-                    self.target += feature.get_stem_position(glyph_name)
+                glyph = feature.font[feature.style.family.script.abbr + glyph_name]
+                if kit.filters.bases_alive(feature.style.family, glyph):
+                    self.target += feature.get_stem_position(glyph)
                 else:
                     self.target += glyph.width
 
@@ -355,18 +312,16 @@ class FeatureMatches(BaseFeature):
                 light_max + (bold_max - light_max) * ratio,
             )
 
-    def get_abvm_position(self, glyph_name, in_base=True):
-        glyph = self.font[self.style.family.script.abbr + glyph_name]
+    def get_abvm_position(self, glyph, in_base=True):
         anchor_name_prefix = '' if in_base else '_'
         for potential_anchor_name in ['abvm.e', 'abvm']:
             for anchor in glyph.anchors:
                 if anchor.name == anchor_name_prefix + potential_anchor_name:
                     return anchor.x
 
-    def get_stem_position(self, glyph_name):
-        abvm_position = self.get_abvm_position(glyph_name)
+    def get_stem_position(self, glyph):
+        abvm_position = self.get_abvm_position(glyph)
         if abvm_position is None:
-            glyph = self.font[self.style.family.script.abbr + glyph_name]
             return glyph.width - self.abvm_right_margin
         else:
             return abvm_position
@@ -382,14 +337,14 @@ class FeatureMatches(BaseFeature):
         ]
         return base_name_sequences
 
-    def match_mI_variants(self, style):
-
-        self.font = self.style.open()
-        self.adjustment_extremes = self.get_adjustment_extremes()
+    def match_mI_variants(self):
 
         # get abvm_right_margin
 
-        abvm_position_in_mE = self.get_abvm_position('mE', in_base=False)
+        abvm_position_in_mE = self.get_abvm_position(
+            self.font[self.style.family.script.abbr + 'mE'],
+            in_base = False,
+        )
         if abvm_position_in_mE is None:
             raise SystemExit(
                 "[WARNING] Can't find the abvm anchor in glyph `mE`!"
@@ -405,7 +360,7 @@ class FeatureMatches(BaseFeature):
 
         # prepare bases and matches
 
-        bases = [
+        self.bases = [
             self.Base(self, name_sequence=name_sequence)
             for name_sequence in self.get_base_name_sequences()
         ]
@@ -428,7 +383,7 @@ class FeatureMatches(BaseFeature):
         ]
         self.bases_ignored = []
 
-        for base in bases:
+        for base in self.bases:
             if base.target <= self.matches[0].overhanging:
                 match = self.matches[0]
             elif base.target < self.matches[-1].overhanging:
@@ -452,7 +407,6 @@ class FeatureMatches(BaseFeature):
 
     def output_mI_variant_matches(self):
 
-        lookup_name = 'matra_i_matching'
         do_position_marks = self.style.family.project.options[
             'position_marks_for_mI_variants'
         ]
@@ -463,10 +417,6 @@ class FeatureMatches(BaseFeature):
         abvm_path = os.path.join(
             self.style.directory,
             WriteFeaturesMarkFDK.kAbvmFeatureFileName,
-        )
-        matches_path = os.path.join(
-            self.style.directory,
-            lookup_name + '.fea',
         )
 
         def apply_mark_positioning_offset(value):
@@ -505,13 +455,13 @@ class FeatureMatches(BaseFeature):
         class_def_lines.extend(
             self.compose_glyph_class_def_lines(
                 'MATRA_I_BASES_TOO_LONG',
-                [base.name for base in self.bases_ignored]
+                [base.name_sequence for base in self.bases_ignored]
             )
         )
 
         substitute_rule_lines = []
-        substitute_rule_lines.append('lookup %s {' % lookup_name)
-        for match in matches:
+        substitute_rule_lines.append('lookup %s {' % self.name)
+        for match in self.matches:
             if match.bases:
                 if do_position_marks:
                     abvm_lookup_modified = re.sub(
@@ -536,7 +486,7 @@ class FeatureMatches(BaseFeature):
             class_def_lines.extend(
                 self.compose_glyph_class_def_lines(
                     'MATRA_I_BASES_' + match.number,
-                    match.bases,
+                    [base.name_sequence for base in match.bases],
                 )
             )
             substitute_rule_lines.append(
@@ -547,7 +497,7 @@ class FeatureMatches(BaseFeature):
                     match.name,
                 )
             )
-        substitute_rule_lines.append('} %s;' % lookup_name)
+        substitute_rule_lines.append('} %s;' % self.name)
 
         if do_position_marks:
             abvm_content_modified = abvm_content.replace(
@@ -557,11 +507,55 @@ class FeatureMatches(BaseFeature):
             with open(abvm_path, 'w') as f:
                 f.write(abvm_content_modified)
 
-        with open(matches_path, 'w') as f:
-            f.write(
+        with open(self.path, 'w') as f:
+            f.writelines(
                 line + '\n'
                 for line in class_def_lines + substitute_rule_lines
             )
+
+
+class FeatureReferences(BaseFeature):
+    def generate(self):
+        with open(self.path, 'w') as f:
+            lines = ['table head { FontRevision 1.000; } head;']
+            for filename in [
+                'classes',
+                'classes_suffixing',
+                'tables',
+                'languagesystems',
+                'GSUB_prefixing',
+                'GSUB_lookups',
+                'GSUB',
+            ]:
+                path = os.path.join(self.directory, filename + '.fea')
+                if os.path.exists(path):
+                    lines.append(
+                        'include ({});'.format(
+                            os.path.relpath(path, self.style.directory)
+                        )
+                    )
+            if os.path.exists(self.project.feature_kern.path):
+                if self.project.family.script.is_indic:
+                    tag = 'dist'
+                else:
+                    tag = 'kern'
+                lines.append(
+                    'feature {0} {{ include ({1}); }} {0};'.format(
+                        tag,
+                        os.path.relpath(self.project.feature_kern.path, self.style.directory),
+                    )
+                )
+            if os.path.exists(os.path.join(self.style.directory, WriteFeaturesMarkFDK.kMarkClassesFileName)):
+                lines.append('include ({});'.format(WriteFeaturesMarkFDK.kMarkClassesFileName))
+            for feature_name, filename in [
+                ('mark', WriteFeaturesMarkFDK.kMarkFeatureFileName),
+                ('mkmk', WriteFeaturesMarkFDK.kMkmkFeatureFileName),
+                ('abvm', WriteFeaturesMarkFDK.kAbvmFeatureFileName),
+                ('blwm', WriteFeaturesMarkFDK.kBlwmFeatureFileName),
+            ]:
+                if os.path.exists(os.path.join(self.style.directory, filename)):
+                    lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, filename))
+            f.writelines(i + '\n' for i in lines)
 
 
 class Feature(object):
@@ -569,10 +563,12 @@ class Feature(object):
         'classes': FeatureClasses,
         'tables': FeatureTables,
         'languagesystems': FeatureLanguagesystems,
-        'GPOS': FeatureGPOS,
+        'kern': FeatureKern,
+        'mark': FeatureMark,
+        'mI_variant_matches': FeatureMatches,
         'WeightClass': FeatureWeightClass,
         'features': FeatureReferences,
     }
-    def __new__(cls, project, name, optional_filenames=None):
-        FeatureMatched = cls.NAME_TO_CLASS_MAP.get(name, BaseFeature)
-        return FeatureMatched(project, name, optional_filenames)
+    def __new__(cls, project, name, style=None, optional_filenames=None):
+        F = cls.NAME_TO_CLASS_MAP.get(name, BaseFeature)
+        return F(project, name, style, optional_filenames)

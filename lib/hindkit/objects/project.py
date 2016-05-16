@@ -65,18 +65,6 @@ class Project(object):
         self.glyph_data = kit.GlyphData()
 
         self.designspace = kit.DesignSpace(self)
-        self.feature_classes = kit.Feature(
-            self, 'classes', ['classes_suffixing'],
-        )
-        self.feature_tables = kit.Feature(self, 'tables')
-        self.feature_languagesystems = kit.Feature(self, 'languagesystems')
-        self.feature_gsub = kit.Feature(
-            self, 'GSUB', ['GSUB_lookups', 'GSUB_prefixing'],
-        )
-        self.feature_gpos = kit.Feature(self, 'GPOS')
-        self.feature_weight_class = kit.Feature(self, 'WeightClass')
-        self.features_references = kit.Feature(self, 'features')
-        self.features_references.filename_extension = None
         self.fmndb = kit.Fmndb(self)
         self.goadb_trimmed = kit.Goadb(self, 'GlyphOrderAndAliasDB_trimmed')
         if self.options['build_ttf']:
@@ -202,17 +190,53 @@ class Project(object):
             reference_font = self.products[0].style.open()
             self.family.info.unitsPerEm = reference_font.info.unitsPerEm
 
+            self.feature_classes = kit.Feature(
+                self, 'classes',
+                optional_filenames = ['classes_suffixing'],
+            )
+            self.feature_tables = kit.Feature(
+                self, 'tables',
+            )
+            self.feature_languagesystems = kit.Feature(
+                self, 'languagesystems',
+            )
+            self.feature_gsub = kit.Feature(
+                self, 'GSUB',
+                optional_filenames = ['GSUB_lookups', 'GSUB_prefixing'],
+            )
+
             self.feature_classes.prepare()
             self.feature_tables.prepare()
             self.feature_languagesystems.prepare()
             self.feature_gsub.prepare()
 
-            for product in self.products:
-                if product.file_format == 'OTF':
-                    style = product.style
-                    self.feature_gpos.prepare(style=style)
-                    self.feature_weight_class.prepare(style=style)
-                    self.features_references.prepare(style=style)
+            for product in (i for i in self.products if i.file_format == 'OTF'):
+
+                self.feature_kern = kit.Feature(
+                    self, 'kern', product.style,
+                )
+                self.feature_mark = kit.Feature(
+                    self, 'mark', product.style,
+                )
+                self.feature_matches = kit.Feature(
+                    self, 'mI_variant_matches', product.style,
+                )
+                self.feature_weight_class = kit.Feature(
+                    self, 'WeightClass', product.style,
+                )
+                self.features_references = kit.Feature(
+                    self, 'features', product.style,
+                )
+                self.features_references.extension = ''
+
+                if self.options['prepare_kerning']:
+                    self.feature_kern.prepare()
+                if self.options['prepare_mark_positioning']:
+                    self.feature_mark.prepare()
+                if self.options['match_mI_variants']:
+                    self.feature_matches.prepare()
+                self.feature_weight_class.prepare()
+                self.features_references.prepare()
 
         if self.options['compile']:
             kit.makedirs(self.directories['products'])

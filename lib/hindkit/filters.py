@@ -2,6 +2,7 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
+import re
 import hindkit as kit
 
 def marks(family, glyph):
@@ -15,7 +16,7 @@ def marks(family, glyph):
 
 def mI_variants(family, glyph):
     match = re.match(
-        family.script.abbr + MATRA_I_NAME_STEM + r'\d\d$',
+        family.script.abbr + kit.FeatureMatches.mI_NAME_STEM + r'\d\d$',
         glyph.name,
     )
     return bool(match)
@@ -33,10 +34,10 @@ def get_end(family, glyph):
     return end
 
 def bases_alive(family, glyph):
-    return get_end(family, glyph) in ALIVE_CONSONANTS
+    return get_end(family, glyph) in kit.FeatureMatches.CONSONANTS_ALIVE
 
 def bases_dead(family, glyph):
-    return get_end(family, glyph) in DEAD_CONSONANTS
+    return get_end(family, glyph) in kit.FeatureMatches.CONSONANTS_DEAD
 
 POTENTIAL_BASES_FOR_LONG_mII = '''
 KA PHA KxA PHxA K_RA PH_RA Kx_RA PHx_RA
