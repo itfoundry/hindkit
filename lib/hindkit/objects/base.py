@@ -21,20 +21,11 @@ class BaseFile(object):
 
         self.counter = 0
 
-        self._filename_extension = None
         self._filename = None
+        self._extension = None
+        self._filename_with_extension = None
         self._directory = None
         self._path = None
-
-    @property
-    def filename_extension(self):
-        return kit.fallback(
-            self._filename_extension,
-            self.file_format.lower() if self.file_format else None,
-        )
-    @filename_extension.setter
-    def filename_extension(self, value):
-        self._filename_extension = value
 
     @property
     def filename(self):
@@ -42,6 +33,26 @@ class BaseFile(object):
     @filename.setter
     def filename(self, value):
         self._filename = value
+
+    @property
+    def extension(self):
+        return kit.fallback(
+            self._extension,
+            self.file_format.lower() if self.file_format else None,
+        )
+    @extension.setter
+    def extension(self, value):
+        self._extension = value
+
+    @property
+    def filename_with_extension(self):
+        return kit.fallback(
+            self._filename_with_extension,
+            self.filename + (('.' + self.extension) if self.extension else ''),
+        )
+    @filename_with_extension.setter
+    def filename_with_extension(self, value):
+        self._filename_with_extension = value
 
     @property
     def directory(self):
@@ -55,12 +66,9 @@ class BaseFile(object):
 
     @property
     def path(self):
-        filename = self.filename
-        if self.filename_extension:
-            filename += '.' + self.filename_extension
         return kit.fallback(
             self._path,
-            os.path.join(self.directory, filename),
+            os.path.join(self.directory, self.filename_with_extension),
         )
     @path.setter
     def path(self, value):
