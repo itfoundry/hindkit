@@ -8,18 +8,19 @@ import hindkit as kit
 
 class BaseFeature(kit.BaseFile):
 
-    def __init__(self, project, name, style, subsidiary_filenames):
+    def __init__(self, project, name, style, filename_group):
+        if style:
+            abstract_directory = style.abstract_directory
+        else:
+            abstract_directory = kit.Project.directories['features']
         super(BaseFeature, self).__init__(
             name,
+            file_format = 'FEA',
             project = project,
-            subsidiary_filenames = subsidiary_filenames,
+            filename_group = filename_group,
+            abstract_directory = abstract_directory,
         )
         self.style = style
-        self.file_format = 'FEA'
-        if self.style:
-            self.abstract_directory = self.style.abstract_directory
-        else:
-            self.abstract_directory = kit.Project.directories['features']
 
     @staticmethod
     def sort_names(names, order):
@@ -521,22 +522,19 @@ class FeatureReferences(BaseFeature):
     def generate(self):
         with open(self.path, 'w') as f:
             lines = ['table head { FontRevision 1.000; } head;']
-            for filename in [
-                'classes',
-                'classes_suffixing',
-                'tables',
-                'languagesystems',
-                'GSUB_prefixing',
-                'GSUB_lookups',
-                'GSUB',
+            for feature in [
+                self.project.feature_classes,
+                self.project.feature_tables,
+                self.project.feature_languagesystems,
+                self.project.feature_gsub,
             ]:
-                path = os.path.join(self.directory, filename + '.fea')
-                if os.path.exists(path):
-                    lines.append(
-                        'include ({});'.format(
-                            os.path.relpath(path, self.style.directory)
+                for i in feature.file_group:
+                    if os.path.exists(i.path):
+                        lines.append(
+                            'include ({});'.format(
+                                os.path.relpath(i.path, self.style.directory)
+                            )
                         )
-                    )
             if os.path.exists(self.project.feature_kern.path):
                 if self.project.family.script.is_indic:
                     tag = 'dist'
@@ -572,6 +570,6 @@ class Feature(object):
         'WeightClass': FeatureWeightClass,
         'features': FeatureReferences,
     }
-    def __new__(cls, project, name, style=None, subsidiary_filenames=None):
+    def __new__(cls, project, name, style=None, filename_group=None):
         F = cls.NAME_TO_CLASS_MAP.get(name, BaseFeature)
-        return F(project, name, style, subsidiary_filenames)
+        return F(project, name, style, filename_group)

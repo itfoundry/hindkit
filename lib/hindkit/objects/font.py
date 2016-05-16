@@ -34,13 +34,15 @@ class BaseFont(kit.BaseFile):
     def postscript(name):
         return name.replace(' ', '')
 
-    def __init__(self, family, name):
+    def __init__(self, family, name, file_format='UFO', abstract_directory=''):
 
-        super(BaseFont, self).__init__(name)
+        super(BaseFont, self).__init__(
+            name,
+            file_format = file_format,
+            abstract_directory = abstract_directory,
+        )
 
         self.family = family
-
-        self.file_format = 'UFO'
 
         self._name_postscript = None
         self._full_name = None
@@ -92,8 +94,11 @@ class Master(BaseFont):
 
     def __init__(self, family, name, weight_location=0):
 
-        super(Master, self).__init__(family, name)
-        self.abstract_directory = kit.Project.directories['masters']
+        super(Master, self).__init__(
+            family,
+            name,
+            abstract_directory = kit.Project.directories['masters'],
+        )
         self.weight_location = weight_location
 
     @BaseFont.filename.getter
@@ -242,11 +247,14 @@ class Product(BaseFont):
         self.is_italic = self.style.is_italic
         self.is_oblique = self.style.is_oblique
 
-        super(Product, self).__init__(self.style.family, self.style.name)
+        super(Product, self).__init__(
+            self.style.family,
+            self.style.name,
+            file_format = file_format,
+            abstract_directory = kit.Project.directories['products'],
+        )
 
         self.project = project
-        self.file_format = file_format
-        self.abstract_directory = kit.Project.directories['products']
 
     @BaseFont.filename.getter
     def filename(self):

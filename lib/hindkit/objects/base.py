@@ -7,23 +7,35 @@ import hindkit as kit
 
 class BaseFile(object):
 
-    def __init__(self, name, project=None, subsidiary_filenames=None):
+    def __init__(
+        self,
+        name,
+        file_format = None,
+        abstract_directory = '',
+        project = None,
+        filename_group = None,
+    ):
 
         self.name = name
-        self.file_format = None
-        self.abstract_directory = ''
+        self.file_format = file_format
+        self.abstract_directory = abstract_directory
 
         self.temp = False
         self.temp_directory = kit.Project.directories['intermediates']
 
         self.project = project
 
-        self.subsidiary_files = []
-        for filename in kit.fallback(subsidiary_filenames, []):
-            f = kit.BaseFile(filename)
-            f.file_format = self.file_format
-            f.abstract_directory = self.abstract_directory
-            self.subsidiary_files.append(f)
+        self.file_group = []
+        for filename in kit.fallback(filename_group, [self.name]):
+            if filename == self.name:
+                self.file_group.append(self)
+            else:
+                f = kit.BaseFile(
+                    filename,
+                    file_format = self.file_format,
+                    abstract_directory = self.abstract_directory,
+                )
+                self.file_group.append(f)
 
         self.counter = 0
 
@@ -81,13 +93,14 @@ class BaseFile(object):
         self._path = value
 
     def check_override(self, *args, **kwargs):
-        for f in [self] + self.subsidiary_files:
+        for f in self.file_group:
             if f.temp and os.path.exists(f.path):
                 continue
             path_original = f.path
             f.temp = True
             path_temp = f.path
             try:
+                print(path_original, path_temp)
                 kit.copy(path_original, path_temp)
                 print('[COPIED]', path_original)
             except IOError:

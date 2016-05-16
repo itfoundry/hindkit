@@ -112,8 +112,11 @@ class Family(object):
 class DesignSpace(kit.BaseFile):
 
     def __init__(self, project, name='font'):
-        super(DesignSpace, self).__init__(name, project=project)
-        self.file_format = 'DesignSpace'
+        super(DesignSpace, self).__init__(
+            name,
+            project = project,
+            file_format = 'DesignSpace',
+        )
 
     def generate(self):
 
