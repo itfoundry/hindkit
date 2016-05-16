@@ -10,14 +10,13 @@ class Family(object):
 
     def __init__(
         self,
-        client_name = None,
+        name = None,
         base_name = None,
         script_name = None,
         append_script_name = False,
-        name = None,
+        client_name = None,
     ):
 
-        self.client = kit.Client(self, client_name)
         self.base_name = base_name
         self.script = kit.constants.SCRIPT_NAMES_TO_SCRIPTS.get(script_name)
 
@@ -33,6 +32,8 @@ class Family(object):
         self.styles = None
 
         self.info = defcon.Font().info
+
+        self.client = kit.Client(self, client_name)
 
     def set_masters(self, value=None):
         scheme = kit.fallback(value, [('Light', 0), ('Bold',  100)])

@@ -12,7 +12,7 @@ class Client(object):
         self.family = family
         self.name = name
 
-        self.style_scheme = kit.constants.STYLE_ITF
+        self.style_scheme = kit.constants.STYLES_ITF
         self.vertical_metrics_strategy = 'ITF'
 
         self.tables = {}
@@ -30,17 +30,17 @@ class Client(object):
             13: "This Font Software is protected under domestic and international trademark and copyright law. You agree to identify the ITF fonts by name and credit the ITF's ownership of the trademarks and copyrights in any design or production credits.",
             14: "http://www.indiantypefoundry.com/licensing/eula/",
             19: self.family.script.sample_text,
-        },
+        }
         self.tables['OS/2'] = {
             'fsType': kit.fallback(self.family.info.openTypeOS2Type, 4),
             'Vendor': 'ITFO',
-        },
+        }
 
         self.override()
 
     def override(self):
         if self.name == 'Google Fonts':
-            self.style_scheme = kit.constants.STYLE_ITF_CamelCase
+            self.style_scheme = kit.constants.STYLES_ITF_CamelCase
             self.vertical_metrics_strategy = 'Google Fonts'
             self.tables['name'].update({
                 0: kit.fallback(

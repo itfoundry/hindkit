@@ -6,16 +6,16 @@ import os, collections
 
 import hindkit as kit
 
-STYLE_SINGLE = [
+STYLES_SINGLE = [
     ('Regular', 0, 400),
 ]
 
-STYLE_DUAL = [
+STYLES_DUAL = [
     ('Regular', 0, 400),
     ('Bold',  100, 700),
 ]
 
-STYLE_ITF = [
+STYLES_ITF = [
     ('Light',     0, 300),
     ('Regular',  21, 400),
     ('Medium',   44, 500),
@@ -23,7 +23,7 @@ STYLE_ITF = [
     ('Bold',    100, 700),
 ]
 
-STYLE_ITF_CamelCase = [
+STYLES_ITF_CamelCase = [
     ('Light',     0, 300),
     ('Regular',  21, 400),
     ('Medium',   44, 500),
