@@ -270,6 +270,9 @@ class FeatureMatches(BaseFeature):
 
     mI_NAME_STEM = 'mI.'
 
+    base_names_alive = []
+    base_names_dead = []
+
     def generate(self):
 
         self.font = self.style.open()
@@ -296,7 +299,7 @@ class FeatureMatches(BaseFeature):
 
         self.bases = [
             self.Base(self, name_sequence=name_sequence)
-            for name_sequence in self.get_base_name_sequences()
+            for name_sequence in self.base_name_sequences()
         ]
 
         self.adjustment_extremes = self.get_adjustment_extremes()
@@ -313,15 +316,25 @@ class FeatureMatches(BaseFeature):
                 print('New:', target, end='; ')
             print()
 
-        tolerance = self.get_stem_position(
+        self.tolerance = self.get_stem_position(
             self.font[self.style.family.script.abbr + 'VA']
         ) * 0.5
 
         for base in self.bases:
-            match = self.match_mI_variants(base, tolerance)
+            match = self.match_mI_variants(base)
             match.bases.append(base)
 
-        self.output_mI_variant_matches()
+        self.name_default = self.matches[0].name.partition('.')[0]
+        self.substitute_rule_lines = [
+            "lookup %s {" % self.name,
+            "  lookupflag IgnoreMarks;",
+            "  lookupflag 0;",
+            "} %s;" % self.name,
+        ]
+        for match in self.matches:
+            self.output_mI_variant_matches(match)
+        with open(self.path, 'w') as f:
+            f.writelines(line + '\n' for line in self.substitute_rule_lines)
 
     class Base(object):
         def __init__(self, feature, name_sequence):
@@ -383,22 +396,30 @@ class FeatureMatches(BaseFeature):
         else:
             return abvm_position
 
-    def get_base_name_sequences(self): # TODO
-        consonant_name_sequences = [
-            'K KA',
-            'G GA',
-        ]
-        base_name_sequences = [
-            'TTA'
-            'K_KA',
-            'G GA',
-            'TTA Virama KA',
-            'S TTA RAc2',
-            'S TTA',
-        ]
-        return base_name_sequences
+    def base_name_sequences(self): # TODO
+        # consonant_name_sequences = [
+        #     'K KA',
+        #     'G GA',
+        # ]
+        # base_name_sequences = [
+        #     'TTA', 'K_KA', 'G GA', 'TTA KA', 'S TTA', 'TTA SA',
+        #     'G NA', 'G YA', 'DD_YA',
+        #     'SH_CA', 'TTA YA',
+        # ]
 
-    def match_mI_variants(self, base, tolerance):
+        def transform(names):
+            for name in names:
+                if all(['x' not in name, '_' not in name]):
+                    yield name
+
+        for alive in self.base_names_alive:
+            if self.style.family.script.abbr + alive in self.font:
+                yield alive
+        # for dead in transform(self.base_names_dead):
+        #     for alive in transform(self.base_names_alive):
+        #         yield dead + ' ' + alive
+
+    def match_mI_variants(self, base):
         if base.target <= self.matches[0].overhanging:
             return self.matches[0]
         elif base.target < self.matches[-1].overhanging:
@@ -414,34 +435,24 @@ class FeatureMatches(BaseFeature):
                 return candidate_enough
             else:
                 return candidate_short
-        elif base.target <= self.matches[-1].overhanging + tolerance:
+        elif base.target <= self.matches[-1].overhanging + self.tolerance:
             return self.matches[-1]
         else:
             return self.not_matched
 
-    def output_mI_variant_matches(self):
-
-        name_default = self.matches[0].name.partition('.')[0]
-
-        substitute_rule_lines = []
-        substitute_rule_lines.append('lookup %s {' % self.name)
-        # TODO: ignore marks (Virama, RAc2...)
-        for match in self.matches:
-            if not match.bases:
-                print('\t\t`{}` is not used.'.format(match.name))
-                continue
-            for base in match.bases:
-                substitute_rule_lines.append(
-                    "  sub {}' {} by {};".format(
-                        name_default,
-                        ' '.join(g.name for g in base.glyphs),
-                        match.name,
-                    )
-                )
-        substitute_rule_lines.append('} %s;' % self.name)
-
-        with open(self.path, 'w') as f:
-            f.writelines(line + '\n' for line in substitute_rule_lines)
+    def output_mI_variant_matches(self, match):
+        if not match.bases:
+            print('\t\t`{}` is not used.'.format(match.name))
+            return
+        for base in match.bases:
+            self.substitute_rule_lines.insert(
+                -2,
+                "  sub {}' {} by {};".format(
+                    self.name_default,
+                    ' '.join(g.name for g in base.glyphs),
+                    match.name,
+                ),
+            )
 
 
 class FeatureReferences(BaseFeature):
