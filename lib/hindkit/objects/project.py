@@ -245,5 +245,4 @@ class Project(object):
                 product.style.temp = True
                 if product.file_format == 'TTF':
                     subprocess.call(['open', product.style.path])
-            for product in self.products:
                 product.prepare()
