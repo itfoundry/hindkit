@@ -259,6 +259,11 @@ class FeatureWeightClass(BaseFeature):
 
 class FeatureMatches(BaseFeature):
 
+    POTENTIAL_MODES = [
+        'single glyph', 'glyph sequence',
+        'position marks', 'ligate marks',
+    ]
+
     CLASS_NAME_mI_VARIANTS = 'mI_VARIANTS'
     CLASS_NAME_BASES_ALIVE = 'BASES_ALIVE'
     CLASS_NAME_BASES_DEAD = 'BASES_DEAD'
@@ -335,6 +340,72 @@ class FeatureMatches(BaseFeature):
             self.output_mI_variant_matches(match)
         with open(self.path, 'w') as f:
             f.writelines(line + '\n' for line in self.substitute_rule_lines)
+
+        if self.style.family.project.options['position_marks_for_mI_variants']:
+
+            def apply_mark_positioning_offset(value):
+                return str(int(value) - matches[0].mI_variant.width)
+
+            abvm_backup_path = os.path.join(
+                self.style.directory,
+                'backup--' + WriteFeaturesMarkFDK.kAbvmFeatureFileName,
+            )
+            abvm_path = os.path.join(
+                self.style.directory,
+                WriteFeaturesMarkFDK.kAbvmFeatureFileName,
+            )
+
+            if os.path.exists(abvm_path_backup):
+                kit.copy(abvm_backup_path, abvm_path)
+            else:
+                kit.copy(abvm_path, abvm_backup_path)
+            with open(abvm_path, 'r') as f:
+                abvm_content = f.read()
+
+            abvm_lookup = re.search(
+                r'''
+                    (?mx)
+                    lookup \s (MARK_BASE_%s) \s \{ \n
+                    ( .+ \n )+
+                    \} \s \1 ; \n
+                ''' % self.mI_ANCHOR_NAME,
+                abvm_content,
+            ).group(0)
+            print('abvm_lookup:', abvm_lookup)
+
+            abvm_lookup_modified = re.sub(
+                '(?<=pos base ){}{}.'.format(
+                    self.style.family.script.abbr,
+                    self.mI_NAME_STEM,
+                ),
+                '@{}_'.format(self.CLASS_NAME_BASES_ALIVE),
+                abvm_lookup,
+            )
+            for match in self.matches:
+                if match.bases:
+                    abvm_lookup_modified = re.sub(
+                        r'(?<=@{}_{} <anchor )-?\d+'.format(
+                            self.CLASS_NAME_BASES_ALIVE,
+                            match.number,
+                        ),
+                        apply_mark_positioning_offset,
+                        abvm_lookup_modified,
+                    )
+                else:
+                    abvm_lookup_modified = re.sub(
+                        r'\t(?=pos base @{}_{})'.format(
+                            self.CLASS_NAME_BASES_ALIVE,
+                            match.number,
+                        ),
+                        '\t# ',
+                        abvm_lookup_modified,
+                    )
+            abvm_content_modified = abvm_content.replace(
+                abvm_lookup,
+                abvm_lookup_modified,
+            )
+            with open(abvm_path, 'w') as f:
+                f.write(abvm_content_modified)
 
     class Base(object):
         def __init__(self, feature, name_sequence):
@@ -444,7 +515,23 @@ class FeatureMatches(BaseFeature):
         if not match.bases:
             print('\t\t`{}` is not used.'.format(match.name))
             return
+        single_glyph_bases = []
+        multiple_glyph_bases = []
         for base in match.bases:
+            if len(base.glyphs) == 1:
+                single_glyph_bases.append(base)
+            else:
+                multiple_glyph_bases.append(base)
+        if single_glyph_bases:
+            self.substitute_rule_lines.insert(
+                -2,
+                "  sub {}' [{}] by {};".format(
+                    self.name_default,
+                    ' '.join(base.glyphs[0].name for base in single_glyph_bases),
+                    match.name,
+                ),
+            )
+        for base in multiple_glyph_bases:
             self.substitute_rule_lines.insert(
                 -2,
                 "  sub {}' {} by {};".format(
