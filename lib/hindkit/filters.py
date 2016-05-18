@@ -16,7 +16,7 @@ def marks(family, glyph):
 
 def mI_variants(family, glyph):
     match = re.match(
-        family.script.abbr + kit.FeatureMatches.mI_NAME_STEM + r'\d\d$',
+        family.script.abbr + kit.FeatureMatches.mI_NAME_STEM + r'\.\d\d$',
         glyph.name,
     )
     return bool(match)

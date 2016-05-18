@@ -273,139 +273,10 @@ class FeatureMatches(BaseFeature):
                        'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
     CONSONANTS_DEAD = kit.constants.CONSONANT_STEMS
 
-    mI_NAME_STEM = 'mI.'
+    mI_NAME_STEM = 'mI'
 
     base_names_alive = []
     base_names_dead = []
-
-    def generate(self):
-
-        self.font = self.style.open()
-
-        self.matches = [
-            self.Match(self, mI_variant_name=name)
-            for name in self.font.groups[self.CLASS_NAME_mI_VARIANTS]
-        ]
-        if not self.matches:
-            return
-
-        self.not_matched = self.Match(self, mI_variant_name=None)
-
-        abvm_position_in_mE = self.get_abvm_position(
-            self.font[self.style.family.script.abbr + 'mE'],
-            in_base = False,
-        )
-        if abvm_position_in_mE is None:
-            raise SystemExit(
-                "[WARNING] Can't find the abvm anchor in glyph `mE`!"
-            )
-        else:
-            self.abvm_right_margin = abs(abvm_position_in_mE)
-
-        self.bases = [
-            self.Base(self, name_sequence=name_sequence)
-            for name_sequence in self.base_name_sequences()
-        ]
-
-        self.adjustment_extremes = self.get_adjustment_extremes()
-        if self.adjustment_extremes:
-            targets = [base.target for base in self.bases]
-            target_min = min(targets)
-            target_max = max(targets)
-            for target in targets:
-                print('Old:', target, end=', ')
-                ratio = (target - target_min) / (target_max - target_min)
-                ae = self.adjustment_extremes
-                adjustment = ae[0] + (ae[-1] - ae[0]) * ratio
-                target += adjustment
-                print('New:', target, end='; ')
-            print()
-
-        self.tolerance = self.get_stem_position(
-            self.font[self.style.family.script.abbr + 'VA']
-        ) * 0.5
-
-        for base in self.bases:
-            match = self.match_mI_variants(base)
-            match.bases.append(base)
-
-        self.name_default = self.matches[0].name.partition('.')[0]
-        self.substitute_rule_lines = [
-            "lookup %s {" % self.name,
-            "  lookupflag IgnoreMarks;",
-            "  lookupflag 0;",
-            "} %s;" % self.name,
-        ]
-        for match in self.matches:
-            self.output_mI_variant_matches(match)
-        with open(self.path, 'w') as f:
-            f.writelines(line + '\n' for line in self.substitute_rule_lines)
-
-        if self.style.family.project.options['position_marks_for_mI_variants']:
-
-            def apply_mark_positioning_offset(value):
-                return str(int(value) - matches[0].mI_variant.width)
-
-            abvm_backup_path = os.path.join(
-                self.style.directory,
-                'backup--' + WriteFeaturesMarkFDK.kAbvmFeatureFileName,
-            )
-            abvm_path = os.path.join(
-                self.style.directory,
-                WriteFeaturesMarkFDK.kAbvmFeatureFileName,
-            )
-
-            if os.path.exists(abvm_path_backup):
-                kit.copy(abvm_backup_path, abvm_path)
-            else:
-                kit.copy(abvm_path, abvm_backup_path)
-            with open(abvm_path, 'r') as f:
-                abvm_content = f.read()
-
-            abvm_lookup = re.search(
-                r'''
-                    (?mx)
-                    lookup \s (MARK_BASE_%s) \s \{ \n
-                    ( .+ \n )+
-                    \} \s \1 ; \n
-                ''' % self.mI_ANCHOR_NAME,
-                abvm_content,
-            ).group(0)
-            print('abvm_lookup:', abvm_lookup)
-
-            abvm_lookup_modified = re.sub(
-                '(?<=pos base ){}{}.'.format(
-                    self.style.family.script.abbr,
-                    self.mI_NAME_STEM,
-                ),
-                '@{}_'.format(self.CLASS_NAME_BASES_ALIVE),
-                abvm_lookup,
-            )
-            for match in self.matches:
-                if match.bases:
-                    abvm_lookup_modified = re.sub(
-                        r'(?<=@{}_{} <anchor )-?\d+'.format(
-                            self.CLASS_NAME_BASES_ALIVE,
-                            match.number,
-                        ),
-                        apply_mark_positioning_offset,
-                        abvm_lookup_modified,
-                    )
-                else:
-                    abvm_lookup_modified = re.sub(
-                        r'\t(?=pos base @{}_{})'.format(
-                            self.CLASS_NAME_BASES_ALIVE,
-                            match.number,
-                        ),
-                        '\t# ',
-                        abvm_lookup_modified,
-                    )
-            abvm_content_modified = abvm_content.replace(
-                abvm_lookup,
-                abvm_lookup_modified,
-            )
-            with open(abvm_path, 'w') as f:
-                f.write(abvm_content_modified)
 
     class Base(object):
         def __init__(self, feature, name_sequence):
@@ -432,6 +303,82 @@ class FeatureMatches(BaseFeature):
                 self.number = self.mI_variant.name.partition('.')[2]
                 self.overhanging = abs(self.mI_variant.rightMargin)
             self.bases = []
+
+    def generate(self):
+
+        self.font = self.style.open()
+
+        mI_variant_names = self.font.groups[self.CLASS_NAME_mI_VARIANTS]
+        if mI_variant_names:
+            self.matches = [self.Match(self, name) for name in mI_variant_names]
+        else:
+            return
+
+        self.not_matched = self.Match(self, None)
+
+        abvm_position_in_mE = self.get_abvm_position(
+            self.font[self.style.family.script.abbr + 'mE'],
+            in_base = False,
+        )
+        if abvm_position_in_mE is None:
+            raise SystemExit(
+                "[WARNING] Can't find the abvm anchor in glyph `mE`!"
+            )
+        else:
+            self.abvm_right_margin = abs(abvm_position_in_mE)
+
+        self.bases = [
+            self.Base(self, name_sequence)
+            for name_sequence in self.base_name_sequences()
+        ]
+
+        self.adjustment_extremes = self.get_adjustment_extremes()
+        if self.adjustment_extremes:
+            targets = [base.target for base in self.bases]
+            target_min = min(targets)
+            target_max = max(targets)
+            for i, target in enumerate(targets):
+                print('Old:', target, end=', ')
+                ratio = (target - target_min) / (target_max - target_min)
+                ae = self.adjustment_extremes
+                adjustment = ae[0] + (ae[-1] - ae[0]) * ratio
+                targets[i] += adjustment
+                print('New:', targets[i], end='; ')
+            print()
+
+        self.tolerance = self.get_stem_position(
+            self.font[self.style.family.script.abbr + 'VA']
+        ) * 0.5
+
+        for base in self.bases:
+            match = self.match_mI_variants(base)
+            match.bases.append(base)
+
+        self.name_default = self.style.family.script.abbr + self.mI_NAME_STEM
+
+        self.substitute_rule_lines = []
+        for match in self.matches:
+            self.output_mI_variant_matches(match)
+
+        with open(self.path, 'w') as f:
+            f.writelines(
+                line + '\n' for line in
+                [
+                    "lookup %s {" % self.name,
+                    "  lookupflag IgnoreMarks;",
+                ] +
+                [
+                    "  " + rule_line
+                    for rule_line in self.substitute_rule_lines
+                ] +
+                [
+                    "  lookupflag 0;",
+                    "} %s;" % self.name,
+                ]
+            )
+
+        if self.style.family.project.options['position_marks_for_mI_variants']:
+            self.output_mark_positioning_for_mI_variants(match)
 
     def get_adjustment_extremes(self):
         try:
@@ -512,9 +459,11 @@ class FeatureMatches(BaseFeature):
             return self.not_matched
 
     def output_mI_variant_matches(self, match):
+
         if not match.bases:
             print('\t\t`{}` is not used.'.format(match.name))
             return
+
         single_glyph_bases = []
         multiple_glyph_bases = []
         for base in match.bases:
@@ -522,24 +471,81 @@ class FeatureMatches(BaseFeature):
                 single_glyph_bases.append(base)
             else:
                 multiple_glyph_bases.append(base)
+
         if single_glyph_bases:
-            self.substitute_rule_lines.insert(
-                -2,
-                "  sub {}' [{}] by {};".format(
+            self.substitute_rule_lines.append(
+                "sub {}' [{}] by {};".format(
                     self.name_default,
                     ' '.join(base.glyphs[0].name for base in single_glyph_bases),
                     match.name,
                 ),
             )
         for base in multiple_glyph_bases:
-            self.substitute_rule_lines.insert(
-                -2,
-                "  sub {}' {} by {};".format(
+            self.substitute_rule_lines.append(
+                "sub {}' {} by {};".format(
                     self.name_default,
                     ' '.join(g.name for g in base.glyphs),
                     match.name,
                 ),
             )
+
+    def output_mark_positioning_for_mI_variants(self):
+
+        abvm_backup_path = os.path.join(
+            self.style.directory,
+            'backup--' + WriteFeaturesMarkFDK.kAbvmFeatureFileName,
+        )
+        abvm_path = os.path.join(
+            self.style.directory,
+            WriteFeaturesMarkFDK.kAbvmFeatureFileName,
+        )
+        if os.path.exists(abvm_path_backup):
+            kit.copy(abvm_backup_path, abvm_path)
+        else:
+            kit.copy(abvm_path, abvm_backup_path)
+
+        pattern_begin = re.compile(
+            r"lookup MARK_BASE_%s \{\n" % self.mI_ANCHOR_NAME,
+        )
+        pattern_end = re.compile(
+            r"\} MARK_BASE_%s;\n" % self.mI_ANCHOR_NAME,
+        )
+
+        match_dict = {match.number: match for match in self.matches}
+        def modify(matchobj):
+            match = match_dict[matchobj.group(1)]
+            modified = "pos base [{}] <anchor {}".format(
+                ' '.join(base.glyphs[0].name for base in match.bases),
+                int(matchobj.group(2)) - self.font[self.name_default].width,
+            )
+            if not match.bases:
+                modified = '# ' + modified
+            return modified
+
+        with open(abvm_path, 'r') as f:
+            lines_modified = []
+            is_inside_the_lookup = False
+            for line in f:
+                if is_inside_the_lookup:
+                    if pattern_end.match(line):
+                        is_inside_the_lookup = False
+                        line_modified = line
+                    else:
+                        line_modified = re.sub(
+                            r"pos base {}\.(\d\d) <anchor (-?\d+)".format(self.name_default),
+                            modify,
+                            line,
+                        )
+                else:
+                    if pattern_begin.match(line):
+                        is_inside_the_lookup = True
+                        line_modified = line
+                    else:
+                        line_modified = line
+                lines_modified.append(line_modified)
+
+        with open(abvm_path, 'w') as f:
+            f.writelines(lines_modified)
 
 
 class FeatureReferences(BaseFeature):
