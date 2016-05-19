@@ -259,25 +259,6 @@ class FeatureWeightClass(BaseFeature):
 
 class FeatureMatches(BaseFeature):
 
-    POTENTIAL_MODES = [
-        'single glyph', 'glyph sequence',
-        'position marks', 'ligate marks',
-    ]
-
-    CLASS_NAME_mI_VARIANTS = 'mI_VARIANTS'
-    CLASS_NAME_BASES_ALIVE = 'BASES_ALIVE'
-    CLASS_NAME_BASES_DEAD = 'BASES_DEAD'
-    CLASS_NAME_BASES_FOR_LONG_mI = 'BASES_FOR_LONG_mI'
-
-    CONSONANTS_ALIVE = [i + 'A' for i in kit.constants.CONSONANT_STEMS] + \
-                       'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
-    CONSONANTS_DEAD = kit.constants.CONSONANT_STEMS
-
-    mI_NAME_STEM = 'mI'
-
-    base_names_alive = []
-    base_names_dead = []
-
     class Base(object):
         def __init__(self, feature, name_sequence):
             self.name_sequence = name_sequence
@@ -291,7 +272,7 @@ class FeatureMatches(BaseFeature):
                 for name, glyph in zip(self.names, self.glyphs)
                 if name not in ['Virama', 'Nukta', 'RAc2']
             ]
-            self.target = feature.get_stem_position(considered_glyphs[-1])
+            self.target = feature._get_stem_position(considered_glyphs[-1])
             for glyph in considered_glyphs[:-1]:
                 self.target += glyph.width
 
@@ -303,6 +284,26 @@ class FeatureMatches(BaseFeature):
                 self.number = self.mI_variant.name.partition('.')[2]
                 self.overhanging = abs(self.mI_variant.rightMargin)
             self.bases = []
+
+    POTENTIAL_MODES = [
+        'single glyph', 'glyph sequence',
+        'position marks', 'ligate marks',
+    ]
+
+    CLASS_NAME_mI_VARIANTS = 'mI_VARIANTS'
+    CLASS_NAME_BASES_ALIVE = 'BASES_ALIVE'
+    CLASS_NAME_BASES_DEAD = 'BASES_DEAD'
+    CLASS_NAME_BASES_FOR_LONG_mI = 'BASES_FOR_LONG_mI'
+
+    CONSONANTS_ALIVE = [
+        i + 'A' for i in kit.constants.CONSONANT_STEMS
+    ] + 'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
+    CONSONANTS_DEAD = kit.constants.CONSONANT_STEMS
+
+    mI_NAME_STEM = 'mI'
+
+    base_names_alive = []
+    base_names_dead = []
 
     def generate(self):
 
@@ -316,23 +317,21 @@ class FeatureMatches(BaseFeature):
 
         self.not_matched = self.Match(self, None)
 
-        abvm_position_in_mE = self.get_abvm_position(
+        abvm_position_in_mE = self._get_abvm_position(
             self.font[self.style.family.script.abbr + 'mE'],
             in_base = False,
         )
         if abvm_position_in_mE is None:
-            raise SystemExit(
-                "[WARNING] Can't find the abvm anchor in glyph `mE`!"
-            )
+            raise SystemExit("[WARNING] Can't find the abvm anchor in glyph `mE`!")
         else:
             self.abvm_right_margin = abs(abvm_position_in_mE)
 
         self.bases = [
             self.Base(self, name_sequence)
-            for name_sequence in self.base_name_sequences()
+            for name_sequence in self._get_base_name_sequences()
         ]
 
-        self.adjustment_extremes = self.get_adjustment_extremes()
+        self.adjustment_extremes = self._get_adjustment_extremes()
         if self.adjustment_extremes:
             targets = [base.target for base in self.bases]
             target_min = min(targets)
@@ -346,7 +345,7 @@ class FeatureMatches(BaseFeature):
                 print('New:', targets[i], end='; ')
             print()
 
-        self.tolerance = self.get_stem_position(
+        self.tolerance = self._get_stem_position(
             self.font[self.style.family.script.abbr + 'VA']
         ) * 0.5
 
@@ -359,28 +358,23 @@ class FeatureMatches(BaseFeature):
         self.substitute_rule_lines = []
         for match in self.matches:
             self.output_mI_variant_matches(match)
-
         with open(self.path, 'w') as f:
             f.writelines(
-                line + '\n' for line in
-                [
+                line + '\n' for line in [
                     "lookup %s {" % self.name,
                     "  lookupflag IgnoreMarks;",
-                ] +
-                [
-                    "  " + rule_line
-                    for rule_line in self.substitute_rule_lines
-                ] +
-                [
+                ] + [
+                    "  " + rule_line for rule_line in self.substitute_rule_lines
+                ] + [
                     "  lookupflag 0;",
                     "} %s;" % self.name,
                 ]
             )
 
         if self.style.family.project.options['position_marks_for_mI_variants']:
-            self.output_mark_positioning_for_mI_variants(match)
+            self.output_mark_positioning_for_mI_variants()
 
-    def get_adjustment_extremes(self):
+    def _get_adjustment_extremes(self):
         try:
             light, bold = self.project.adjustment_for_matching_mI_variants
         except AttributeError:
@@ -400,21 +394,26 @@ class FeatureMatches(BaseFeature):
                 light_max + (bold_max - light_max) * ratio,
             )
 
-    def get_abvm_position(self, glyph, in_base=True):
+    def _get_abvm_position(self, glyph, in_base=True):
         anchor_name_prefix = '' if in_base else '_'
         for potential_anchor_name in ['abvm.candra', 'abvm.e', 'abvm']:
             for anchor in glyph.anchors:
                 if anchor.name == anchor_name_prefix + potential_anchor_name:
                     return anchor.x
 
-    def get_stem_position(self, glyph):
-        abvm_position = self.get_abvm_position(glyph)
+    def _get_stem_position(self, glyph):
+        abvm_position = self._get_abvm_position(glyph)
         if abvm_position is None:
             return glyph.width - self.abvm_right_margin
         else:
             return abvm_position
 
-    def base_name_sequences(self): # TODO
+    def _transform(names):
+        for name in names:
+            if all(['x' not in name, '_' not in name]):
+                yield name
+
+    def _get_base_name_sequences(self): # TODO
         # consonant_name_sequences = [
         #     'K KA',
         #     'G GA',
@@ -425,16 +424,11 @@ class FeatureMatches(BaseFeature):
         #     'SH_CA', 'TTA YA',
         # ]
 
-        def transform(names):
-            for name in names:
-                if all(['x' not in name, '_' not in name]):
-                    yield name
-
         for alive in self.base_names_alive:
             if self.style.family.script.abbr + alive in self.font:
                 yield alive
-        # for dead in transform(self.base_names_dead):
-        #     for alive in transform(self.base_names_alive):
+        # for dead in self._transform(self.base_names_dead):
+        #     for alive in self._transform(self.base_names_alive):
         #         yield dead + ' ' + alive
 
     def match_mI_variants(self, base):
@@ -489,6 +483,16 @@ class FeatureMatches(BaseFeature):
                 ),
             )
 
+    def _modify(matchobj):
+        match = match_dict[matchobj.group(1)]
+        modified = "pos base [{}] <anchor {}".format(
+            ' '.join(base.glyphs[0].name for base in match.bases),
+            int(matchobj.group(2)) - self.font[self.name_default].width,
+        )
+        if not match.bases:
+            modified = '# ' + modified
+        return modified
+
     def output_mark_positioning_for_mI_variants(self):
 
         abvm_backup_path = os.path.join(
@@ -504,24 +508,9 @@ class FeatureMatches(BaseFeature):
         else:
             kit.copy(abvm_path, abvm_backup_path)
 
-        pattern_begin = re.compile(
-            r"lookup MARK_BASE_%s \{\n" % self.mI_ANCHOR_NAME,
-        )
-        pattern_end = re.compile(
-            r"\} MARK_BASE_%s;\n" % self.mI_ANCHOR_NAME,
-        )
-
+        pattern_begin = re.compile(r"lookup MARK_BASE_%s \{$" % self.mI_ANCHOR_NAME)
+        pattern_end = re.compile(r"\} MARK_BASE_%s;$" % self.mI_ANCHOR_NAME)
         match_dict = {match.number: match for match in self.matches}
-        def modify(matchobj):
-            match = match_dict[matchobj.group(1)]
-            modified = "pos base [{}] <anchor {}".format(
-                ' '.join(base.glyphs[0].name for base in match.bases),
-                int(matchobj.group(2)) - self.font[self.name_default].width,
-            )
-            if not match.bases:
-                modified = '# ' + modified
-            return modified
-
         with open(abvm_path, 'r') as f:
             lines_modified = []
             is_inside_the_lookup = False
@@ -533,7 +522,7 @@ class FeatureMatches(BaseFeature):
                     else:
                         line_modified = re.sub(
                             r"pos base {}\.(\d\d) <anchor (-?\d+)".format(self.name_default),
-                            modify,
+                            self._modify,
                             line,
                         )
                 else:
