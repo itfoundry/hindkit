@@ -262,19 +262,16 @@ class FeatureMatches(BaseFeature):
     class Base(object):
         def __init__(self, feature, name_sequence):
             self.name_sequence = name_sequence
-            self.names = self.name_sequence.split()
-            self.glyphs = [
-                feature.font[feature.style.family.script.abbr + name]
-                for name in self.names
-            ]
-            considered_glyphs = [
-                glyph
-                for name, glyph in zip(self.names, self.glyphs)
-                if name not in ['Virama', 'Nukta', 'RAc2']
-            ]
-            self.target = feature._get_stem_position(considered_glyphs[-1])
-            for glyph in considered_glyphs[:-1]:
-                self.target += glyph.width
+            self.glyphs = [feature.font[name] for name in self.name_sequence.split()]
+            self.target = None
+            for glyph in reversed(
+                g for g in self.glyphs
+                if g.name[2:] not in ['Virama', 'Nukta', 'RAc2']
+            ):
+                if self.target is None:
+                    self.target = feature._get_stem_position(glyph)
+                else:
+                    self.target += glyph.width
 
     class Match(object):
         def __init__(self, feature, mI_variant_name):
@@ -302,12 +299,10 @@ class FeatureMatches(BaseFeature):
 
     mI_NAME_STEM = 'mI'
 
-    base_names_alive = []
-    base_names_dead = []
-
     def generate(self):
 
         self.font = self.style.open()
+        self.options = self.style.family.project.options
 
         mI_variant_names = self.font.groups[self.CLASS_NAME_mI_VARIANTS]
         if mI_variant_names:
@@ -371,7 +366,8 @@ class FeatureMatches(BaseFeature):
                 ]
             )
 
-        if self.style.family.project.options['position_marks_for_mI_variants']:
+        if self.options['position_marks_for_mI_variants'] and \
+        self.options["match_mI_variants"] != "sequence":
             self.output_mark_positioning_for_mI_variants()
 
     def _get_adjustment_extremes(self):
@@ -408,28 +404,21 @@ class FeatureMatches(BaseFeature):
         else:
             return abvm_position
 
-    def _transform(names):
-        for name in names:
-            if all(['x' not in name, '_' not in name]):
-                yield name
+    base_names_alive = None
+    base_names_dead = None
 
-    def _get_base_name_sequences(self): # TODO
-        # consonant_name_sequences = [
-        #     'K KA',
-        #     'G GA',
-        # ]
-        # base_name_sequences = [
-        #     'TTA', 'K_KA', 'G GA', 'TTA KA', 'S TTA', 'TTA SA',
-        #     'G NA', 'G YA', 'DD_YA',
-        #     'SH_CA', 'TTA YA',
-        # ]
-
+    def _get_base_name_sequences(self):
+        if self.base_names_alive is None:
+            self.base_names_alive = self.font.groups[self.CLASS_NAME_BASES_ALIVE]
         for alive in self.base_names_alive:
-            if self.style.family.script.abbr + alive in self.font:
+            if alive in self.font:
                 yield alive
-        # for dead in self._transform(self.base_names_dead):
-        #     for alive in self._transform(self.base_names_alive):
-        #         yield dead + ' ' + alive
+        if self.options["match_mI_variants"] == "sequence":
+            if self.base_names_dead is None:
+                self.base_names_dead = self.font.groups[self.CLASS_NAME_BASES_DEAD]
+            for dead in self.base_names_dead:
+                for alive in self.base_names_alive:
+                    yield dead + ' ' + alive
 
     def match_mI_variants(self, base):
         if base.target <= self.matches[0].overhanging:
@@ -476,11 +465,7 @@ class FeatureMatches(BaseFeature):
             )
         for base in multiple_glyph_bases:
             self.substitute_rule_lines.append(
-                "sub {}' {} by {};".format(
-                    self.name_default,
-                    ' '.join(g.name for g in base.glyphs),
-                    match.name,
-                ),
+                "sub {}' {} by {};".format(self.name_default, base.name_sequence, match.name),
             )
 
     def _modify(matchobj):

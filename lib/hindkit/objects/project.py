@@ -41,9 +41,10 @@ class Project(object):
 
             'prepare_kerning': False,
             'prepare_mark_positioning': False,
-            'prepare_mark_to_mark_positioning': True,
-            'match_mI_variants': False,
-            'position_marks_for_mI_variants': False,
+                'prepare_mark_to_mark_positioning': True,
+
+            'match_mI_variants': False, # 'single' or 'sequence'
+                'position_marks_for_mI_variants': False,
 
             'run_makeinstances': len(self.family.styles) > len(self.family.masters),
             'run_checkoutlines': True,
@@ -55,8 +56,8 @@ class Project(object):
             'do_style_linking': False,
 
             'use_os_2_version_4': False,
-            'prefer_typo_metrics': False,
-            'is_width_weight_slope_only': False,
+                'prefer_typo_metrics': False,
+                'is_width_weight_slope_only': False,
 
         }
 
