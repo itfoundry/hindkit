@@ -12,10 +12,10 @@ class BaseFeature(kit.BaseFile):
         if style:
             abstract_directory = style.abstract_directory
         else:
-            abstract_directory = kit.Project.directories['features']
+            abstract_directory = kit.Project.directories["features"]
         super(BaseFeature, self).__init__(
             name,
-            file_format = 'FEA',
+            file_format = "FEA",
             project = project,
             filename_group = filename_group,
             abstract_directory = abstract_directory,
@@ -33,12 +33,12 @@ class BaseFeature(kit.BaseFile):
     def compose_glyph_class_def_lines(class_name, glyph_names):
         if glyph_names:
             glyph_class_def_lines = (
-                ['@{} = ['.format(class_name)] +
-                ['  {}'.format(glyph_name) for glyph_name in glyph_names] +
-                ['];', '']
+                ["@{} = [".format(class_name)] +
+                ["  {}".format(glyph_name) for glyph_name in glyph_names] +
+                ["];", ""]
             )
         else:
-            glyph_class_def_lines = ['# @{} = [];'.format(class_name), '']
+            glyph_class_def_lines = ["# @{} = [];".format(class_name), ""]
         return glyph_class_def_lines
 
 
@@ -48,12 +48,12 @@ class FeatureClasses(BaseFeature):
 
         lines = []
 
-        if self.project.options['prepare_mark_positioning']:
+        if self.project.options["prepare_mark_positioning"]:
 
             glyph_classes = []
             glyph_classes.extend([(WriteFeaturesMarkFDK.kCombMarksClassName, kit.filters.marks)])
 
-            if self.project.options['match_mI_variants']:
+            if self.project.options["match_mI_variants"]:
                 glyph_classes.extend([
                     (FeatureMatches.CLASS_NAME_mI_VARIANTS, kit.filters.mI_variants),
                     (FeatureMatches.CLASS_NAME_BASES_ALIVE, kit.filters.bases_alive),
@@ -84,8 +84,8 @@ class FeatureClasses(BaseFeature):
                 font.save()
 
         if lines:
-            with open(self.path, 'w') as f:
-                f.writelines(i + '\n' for i in lines)
+            with open(self.path, "w") as f:
+                f.writelines(i + "\n" for i in lines)
 
 
 class FeatureTables(BaseFeature):
@@ -97,16 +97,16 @@ class FeatureTables(BaseFeature):
 
         lines = []
         tables = collections.OrderedDict([
-            ('hhea', []),
-            ('OS/2', []),
-            ('GDEF', []),
-            ('name', []),
+            ("hhea", []),
+            ("OS/2", []),
+            ("GDEF", []),
+            ("name", []),
         ])
 
-        tables['OS/2'].extend([
-            'include (WeightClass.fea);',
-            'fsType {};'.format(client.tables['OS/2']['fsType']),
-            'Vendor "{}";'.format(client.tables['OS/2']['Vendor']),
+        tables["OS/2"].extend([
+            "include (WeightClass.fea);",
+            "fsType {};".format(client.tables["OS/2"]["fsType"]),
+            "Vendor "{}";".format(client.tables["OS/2"]["Vendor"]),
         ])
 
         set_vertical_metrics = False
@@ -136,14 +136,14 @@ class FeatureTables(BaseFeature):
             if info.openTypeHheaLineGap is None:
                 info.openTypeHheaLineGap = 0
 
-            if client.vertical_metrics_strategy == 'Google Fonts':
+            if client.vertical_metrics_strategy == "Google Fonts":
                 if info.openTypeOS2TypoAscender is None:
                     info.openTypeOS2TypoAscender = info.openTypeHheaAscender
                 if info.openTypeOS2TypoDescender is None:
                     info.openTypeOS2TypoDescender = info.openTypeHheaDescender
                 if info.openTypeOS2TypoLineGap is None:
                     info.openTypeOS2TypoLineGap = info.openTypeHheaLineGap
-            elif client.vertical_metrics_strategy == 'ITF':
+            elif client.vertical_metrics_strategy == "ITF":
                 extra_height = info.openTypeHheaAscender - info.openTypeHheaDescender - info.unitsPerEm
                 if info.openTypeOS2TypoAscender is None:
                     info.openTypeOS2TypoAscender = info.openTypeHheaAscender - int(round(extra_height / 2))
@@ -157,65 +157,65 @@ class FeatureTables(BaseFeature):
             if info.openTypeOS2WinDescent is None:
                 info.openTypeOS2WinDescent = abs(info.openTypeHheaDescender)
 
-            tables['hhea'].extend([
-                'Ascender {};'.format(info.openTypeHheaAscender),
-                'Descender {};'.format(info.openTypeHheaDescender),
-                'LineGap {};'.format(info.openTypeHheaLineGap),
+            tables["hhea"].extend([
+                "Ascender {};".format(info.openTypeHheaAscender),
+                "Descender {};".format(info.openTypeHheaDescender),
+                "LineGap {};".format(info.openTypeHheaLineGap),
             ])
-            tables['OS/2'].extend([
-                'TypoAscender {};'.format(info.openTypeOS2TypoAscender),
-                'TypoDescender {};'.format(info.openTypeOS2TypoDescender),
-                'TypoLineGap {};'.format(info.openTypeOS2TypoLineGap),
-                'winAscent {};'.format(info.openTypeOS2WinAscent),
-                'winDescent {};'.format(info.openTypeOS2WinDescent),
+            tables["OS/2"].extend([
+                "TypoAscender {};".format(info.openTypeOS2TypoAscender),
+                "TypoDescender {};".format(info.openTypeOS2TypoDescender),
+                "TypoLineGap {};".format(info.openTypeOS2TypoLineGap),
+                "winAscent {};".format(info.openTypeOS2WinAscent),
+                "winDescent {};".format(info.openTypeOS2WinDescent),
             ])
 
-        # tables['OS/2'].extend(self.project.generate_UnicodeRange)
-        # tables['OS/2'].extend(self.project.generate_CodePageRange)
+        # tables["OS/2"].extend(self.project.generate_UnicodeRange)
+        # tables["OS/2"].extend(self.project.generate_CodePageRange)
 
-        if self.project.options['override_GDEF']:
+        if self.project.options["override_GDEF"]:
             GDEF_records = {
-                'bases': '',
-                'ligatures': '',
-                'marks': '',
-                'components': '',
+                "bases": "",
+                "ligatures": "",
+                "marks": "",
+                "components": "",
             }
-            if self.project.options['prepare_mark_positioning'] or os.path.exists(os.path.join(self.directory, 'classes.fea')):
-                GDEF_records['marks'] = '@{}'.format(WriteFeaturesMarkFDK.kCombMarksClassName)
-            if os.path.exists(os.path.join(self.directory, 'classes_suffixing.fea')):
-                GDEF_records['marks'] = '@{}'.format('COMBINING_MARKS_GDEF')
-            tables['GDEF'].extend([
-                'GlyphClassDef {bases}, {ligatures}, {marks}, {components};'.format(**GDEF_records)
+            if self.project.options["prepare_mark_positioning"] or os.path.exists(os.path.join(self.directory, "classes.fea")):
+                GDEF_records["marks"] = "@{}".format(WriteFeaturesMarkFDK.kCombMarksClassName)
+            if os.path.exists(os.path.join(self.directory, "classes_suffixing.fea")):
+                GDEF_records["marks"] = "@{}".format("COMBINING_MARKS_GDEF")
+            tables["GDEF"].extend([
+                "GlyphClassDef {bases}, {ligatures}, {marks}, {components};".format(**GDEF_records)
             ])
 
-        tables['name'].extend(
-            'nameid {} "{}";'.format(
+        tables["name"].extend(
+            "nameid {} \"{}\";".format(
                 name_id,
-                content.encode('unicode_escape').replace('\\x', '\\00').replace('\\u', '\\')
+                content.encode("unicode_escape").replace("\\x", "\\00").replace("\\u", "\\")
             )
-            for name_id, content in sorted(client.tables['name'].items())
+            for name_id, content in sorted(client.tables["name"].items())
             if content
         )
 
         for name, entries in tables.items():
             if entries:
-                lines.append('table {} {{'.format(name))
-                lines.extend('  ' + i for i in entries)
-                lines.append('}} {};'.format(name))
+                lines.append("table %s {" % name)
+                lines.extend("  " + i for i in entries)
+                lines.append("} %s;" % name)
 
         if lines:
-            with open(self.path, 'w') as f:
-                f.writelines(i + '\n' for i in lines)
+            with open(self.path, "w") as f:
+                f.writelines(i + "\n" for i in lines)
 
 
 class FeatureLanguagesystems(BaseFeature):
     def generate(self):
-        lines = ['languagesystem DFLT dflt;']
+        lines = ["languagesystem DFLT dflt;"]
         for tag in self.project.family.script.tags:
-            lines.append('languagesystem {} dflt;'.format(tag))
+            lines.append("languagesystem {} dflt;".format(tag))
         if lines:
-            with open(self.path, 'w') as f:
-                f.writelines(i + '\n' for i in lines)
+            with open(self.path, "w") as f:
+                f.writelines(i + "\n" for i in lines)
 
 
 class FeatureMark(BaseFeature):
@@ -225,7 +225,7 @@ class FeatureMark(BaseFeature):
             font = self.style.open(),
             folderPath = self.style.directory,
             trimCasingTags = False,
-            genMkmkFeature = self.project.options['prepare_mark_to_mark_positioning'],
+            genMkmkFeature = self.project.options["prepare_mark_to_mark_positioning"],
             writeClassesFile = True,
             indianScriptsFormat = self.project.family.script.is_indic,
         )
@@ -247,14 +247,14 @@ class FeatureKern(BaseFeature):
             if os.path.exists(kern_path):
                 with open(kern_path) as f:
                     content = f.read()
-                with open(kern_path, 'w') as f:
+                with open(kern_path, "w") as f:
                     f.write(self.project.postprocess_kerning(content))
 
 
 class FeatureWeightClass(BaseFeature):
     def generate(self):
-        with open(self.path, 'w') as f:
-            f.write('WeightClass {};\n'.format(str(self.style.weight_class)))
+        with open(self.path, "w") as f:
+            f.write("WeightClass {};\n".format(str(self.style.weight_class)))
 
 
 class FeatureMatches(BaseFeature):
@@ -266,7 +266,7 @@ class FeatureMatches(BaseFeature):
             self.target = None
             for glyph in reversed(
                 g for g in self.glyphs
-                if g.name[2:] not in ['Virama', 'Nukta', 'RAc2']
+                if g.name[2:] not in ["Virama", "Nukta", "RAc2"]
             ):
                 if self.target is None:
                     self.target = feature._get_stem_position(glyph)
@@ -278,31 +278,30 @@ class FeatureMatches(BaseFeature):
             self.name = mI_variant_name
             if self.name:
                 self.mI_variant = feature.font[self.name]
-                self.number = self.mI_variant.name.partition('.')[2]
+                self.number = self.mI_variant.name.partition(".")[2]
                 self.overhanging = abs(self.mI_variant.rightMargin)
             self.bases = []
 
-    POTENTIAL_MODES = [
-        'single glyph', 'glyph sequence',
-        'position marks', 'ligate marks',
-    ]
+    # POTENTIAL_MODES = [
+    #     "single glyph", "glyph sequence",
+    #     "position marks", "ligate marks",
+    # ]
 
-    CLASS_NAME_mI_VARIANTS = 'mI_VARIANTS'
-    CLASS_NAME_BASES_ALIVE = 'BASES_ALIVE'
-    CLASS_NAME_BASES_DEAD = 'BASES_DEAD'
-    CLASS_NAME_BASES_FOR_LONG_mI = 'BASES_FOR_LONG_mI'
+    CLASS_NAME_mI_VARIANTS = "mI_VARIANTS"
+    CLASS_NAME_BASES_ALIVE = "BASES_ALIVE"
+    CLASS_NAME_BASES_DEAD = "BASES_DEAD"
+    CLASS_NAME_BASES_FOR_LONG_mI = "BASES_FOR_LONG_mI"
 
     CONSONANTS_ALIVE = [
-        i + 'A' for i in kit.constants.CONSONANT_STEMS
-    ] + 'GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari'.split()
+        i + "A" for i in kit.constants.CONSONANT_STEMS
+    ] + "GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari".split()
     CONSONANTS_DEAD = kit.constants.CONSONANT_STEMS
 
-    mI_NAME_STEM = 'mI'
+    mI_NAME_STEM = "mI"
 
     def generate(self):
 
         self.font = self.style.open()
-        self.options = self.style.family.project.options
 
         mI_variant_names = self.font.groups[self.CLASS_NAME_mI_VARIANTS]
         if mI_variant_names:
@@ -313,7 +312,7 @@ class FeatureMatches(BaseFeature):
         self.not_matched = self.Match(self, None)
 
         abvm_position_in_mE = self._get_abvm_position(
-            self.font[self.style.family.script.abbr + 'mE'],
+            self.font[self.style.family.script.abbr + "mE"],
             in_base = False,
         )
         if abvm_position_in_mE is None:
@@ -332,16 +331,16 @@ class FeatureMatches(BaseFeature):
             target_min = min(targets)
             target_max = max(targets)
             for i, target in enumerate(targets):
-                print('Old:', target, end=', ')
+                print("Old:", target, end=", ")
                 ratio = (target - target_min) / (target_max - target_min)
                 ae = self.adjustment_extremes
                 adjustment = ae[0] + (ae[-1] - ae[0]) * ratio
                 targets[i] += adjustment
-                print('New:', targets[i], end='; ')
+                print("New:", targets[i], end="; ")
             print()
 
         self.tolerance = self._get_stem_position(
-            self.font[self.style.family.script.abbr + 'VA']
+            self.font[self.style.family.script.abbr + "VA"]
         ) * 0.5
 
         for base in self.bases:
@@ -353,21 +352,19 @@ class FeatureMatches(BaseFeature):
         self.substitute_rule_lines = []
         for match in self.matches:
             self.output_mI_variant_matches(match)
-        with open(self.path, 'w') as f:
-            f.writelines(
-                line + '\n' for line in [
-                    "lookup %s {" % self.name,
-                    "  lookupflag IgnoreMarks;",
-                ] + [
-                    "  " + rule_line for rule_line in self.substitute_rule_lines
-                ] + [
-                    "  lookupflag 0;",
-                    "} %s;" % self.name,
-                ]
-            )
+        with open(self.path, "w") as f:
+            f.writelines([
+                "lookup %s {\n" % self.name,
+                # "  lookupflag IgnoreMarks;\n",
+            ])
+            f.writelines("  " + l + "\n" for l in self.substitute_rule_lines)
+            f.writelines([
+                # "  lookupflag 0;\n",
+                "} %s;\n" % self.name,
+            ])
 
-        if self.options['position_marks_for_mI_variants'] and \
-        self.options["match_mI_variants"] != "sequence":
+        if self.project.options["position_marks_for_mI_variants"] and \
+        self.project.options["match_mI_variants"] != "sequence":
             self.output_mark_positioning_for_mI_variants()
 
     def _get_adjustment_extremes(self):
@@ -391,8 +388,8 @@ class FeatureMatches(BaseFeature):
             )
 
     def _get_abvm_position(self, glyph, in_base=True):
-        anchor_name_prefix = '' if in_base else '_'
-        for potential_anchor_name in ['abvm.candra', 'abvm.e', 'abvm']:
+        anchor_name_prefix = "" if in_base else "_"
+        for potential_anchor_name in ["abvm.candra", "abvm.e", "abvm"]:
             for anchor in glyph.anchors:
                 if anchor.name == anchor_name_prefix + potential_anchor_name:
                     return anchor.x
@@ -413,12 +410,12 @@ class FeatureMatches(BaseFeature):
         for alive in self.base_names_alive:
             if alive in self.font:
                 yield alive
-        if self.options["match_mI_variants"] == "sequence":
+        if self.project.options["match_mI_variants"] == "sequence":
             if self.base_names_dead is None:
                 self.base_names_dead = self.font.groups[self.CLASS_NAME_BASES_DEAD]
             for dead in self.base_names_dead:
                 for alive in self.base_names_alive:
-                    yield dead + ' ' + alive
+                    yield dead + " " + alive
 
     def match_mI_variants(self, base):
         if base.target <= self.matches[0].overhanging:
@@ -444,7 +441,7 @@ class FeatureMatches(BaseFeature):
     def output_mI_variant_matches(self, match):
 
         if not match.bases:
-            print('\t\t`{}` is not used.'.format(match.name))
+            print("\t\t`{}` is not used.".format(match.name))
             return
 
         single_glyph_bases = []
@@ -459,7 +456,7 @@ class FeatureMatches(BaseFeature):
             self.substitute_rule_lines.append(
                 "sub {}' [{}] by {};".format(
                     self.name_default,
-                    ' '.join(base.glyphs[0].name for base in single_glyph_bases),
+                    " ".join(base.glyphs[0].name for base in single_glyph_bases),
                     match.name,
                 ),
             )
@@ -471,18 +468,18 @@ class FeatureMatches(BaseFeature):
     def _modify(matchobj):
         match = match_dict[matchobj.group(1)]
         modified = "pos base [{}] <anchor {}".format(
-            ' '.join(base.glyphs[0].name for base in match.bases),
+            " ".join(base.glyphs[0].name for base in match.bases),
             int(matchobj.group(2)) - self.font[self.name_default].width,
         )
         if not match.bases:
-            modified = '# ' + modified
+            modified = "# " + modified
         return modified
 
     def output_mark_positioning_for_mI_variants(self):
 
         abvm_backup_path = os.path.join(
             self.style.directory,
-            'backup--' + WriteFeaturesMarkFDK.kAbvmFeatureFileName,
+            "backup--" + WriteFeaturesMarkFDK.kAbvmFeatureFileName,
         )
         abvm_path = os.path.join(
             self.style.directory,
@@ -496,7 +493,7 @@ class FeatureMatches(BaseFeature):
         pattern_begin = re.compile(r"lookup MARK_BASE_%s \{$" % self.mI_ANCHOR_NAME)
         pattern_end = re.compile(r"\} MARK_BASE_%s;$" % self.mI_ANCHOR_NAME)
         match_dict = {match.number: match for match in self.matches}
-        with open(abvm_path, 'r') as f:
+        with open(abvm_path, "r") as f:
             lines_modified = []
             is_inside_the_lookup = False
             for line in f:
@@ -518,14 +515,14 @@ class FeatureMatches(BaseFeature):
                         line_modified = line
                 lines_modified.append(line_modified)
 
-        with open(abvm_path, 'w') as f:
+        with open(abvm_path, "w") as f:
             f.writelines(lines_modified)
 
 
 class FeatureReferences(BaseFeature):
     def generate(self):
-        with open(self.path, 'w') as f:
-            lines = ['table head { FontRevision 1.000; } head;']
+        with open(self.path, "w") as f:
+            lines = ["table head { FontRevision 1.000; } head;"]
             for feature in [
                 self.project.feature_classes,
                 self.project.feature_tables,
@@ -535,44 +532,45 @@ class FeatureReferences(BaseFeature):
                 for i in feature.file_group:
                     if os.path.exists(i.path):
                         lines.append(
-                            'include ({});'.format(
+                            "include ({});".format(
                                 os.path.relpath(i.path, self.style.directory)
                             )
                         )
             if os.path.exists(self.project.feature_kern.path):
-                if self.project.family.script.is_indic:
-                    tag = 'dist'
-                else:
-                    tag = 'kern'
                 lines.append(
-                    'feature {0} {{ include ({1}); }} {0};'.format(
-                        tag,
-                        os.path.relpath(self.project.feature_kern.path, self.style.directory),
-                    )
+                    "feature %(tag)s { include (%(path)s); } %(tag)s;" % {
+                        "tag": "dist" if self.project.family.script.is_indic else "kern",
+                        "path": os.path.relpath(self.project.feature_kern.path, self.style.directory),
+                    }
                 )
             if os.path.exists(os.path.join(self.style.directory, WriteFeaturesMarkFDK.kMarkClassesFileName)):
-                lines.append('include ({});'.format(WriteFeaturesMarkFDK.kMarkClassesFileName))
+                lines.append("include ({});".format(WriteFeaturesMarkFDK.kMarkClassesFileName))
             for feature_name, filename in [
-                ('mark', WriteFeaturesMarkFDK.kMarkFeatureFileName),
-                ('mkmk', WriteFeaturesMarkFDK.kMkmkFeatureFileName),
-                ('abvm', WriteFeaturesMarkFDK.kAbvmFeatureFileName),
-                ('blwm', WriteFeaturesMarkFDK.kBlwmFeatureFileName),
+                ("mark", WriteFeaturesMarkFDK.kMarkFeatureFileName),
+                ("mkmk", WriteFeaturesMarkFDK.kMkmkFeatureFileName),
+                ("abvm", WriteFeaturesMarkFDK.kAbvmFeatureFileName),
+                ("blwm", WriteFeaturesMarkFDK.kBlwmFeatureFileName),
             ]:
                 if os.path.exists(os.path.join(self.style.directory, filename)):
-                    lines.append('feature {0} {{ include ({1}); }} {0};'.format(feature_name, filename))
-            f.writelines(i + '\n' for i in lines)
+                    lines.append(
+                        "feature %(tag)s { include (%(path)s); } %(tag)s;" % {
+                            "tag": feature_name,
+                            "path": filename,
+                        }
+                    )
+            f.writelines(i + "\n" for i in lines)
 
 
 class Feature(object):
     NAME_TO_CLASS_MAP = {
-        'classes': FeatureClasses,
-        'tables': FeatureTables,
-        'languagesystems': FeatureLanguagesystems,
-        'kern': FeatureKern,
-        'mark': FeatureMark,
-        'mI_variant_matches': FeatureMatches,
-        'WeightClass': FeatureWeightClass,
-        'features': FeatureReferences,
+        "classes": FeatureClasses,
+        "tables": FeatureTables,
+        "languagesystems": FeatureLanguagesystems,
+        "kern": FeatureKern,
+        "mark": FeatureMark,
+        "mI_variant_matches": FeatureMatches,
+        "WeightClass": FeatureWeightClass,
+        "features": FeatureReferences,
     }
     def __new__(cls, project, name, style=None, filename_group=None):
         F = cls.NAME_TO_CLASS_MAP.get(name, BaseFeature)
