@@ -5,97 +5,105 @@ import collections
 import pytoml
 
 DATA = """
-    K:   Consonant Velar Stop Voiceless Unaspirated,
-    KH:  Consonant Velar Stop Voiceless Aspirated,
-    G:   Consonant Velar Stop Voiced Unaspirated,
-    GH:  Consonant Velar Stop Voiced Aspirated,
-    NG:  Consonant Velar Nasal Voiced Unaspirated,
+    K:   consonant+ stop  velar voiced- aspirated-,
+    KH:  consonant+ stop  velar voiced- aspirated+,
+    G:   consonant+ stop  velar voiced+ aspirated-,
+    GH:  consonant+ stop  velar voiced+ aspirated+,
+    NG:  consonant+ nasal velar voiced+ aspirated-,
 
-    C:   Consonant Palatal Stop Voiceless Unaspirated,
-    CH:  Consonant Palatal Stop Voiceless Aspirated,
-    J:   Consonant Palatal Stop Voiced Unaspirated,
-    JH:  Consonant Palatal Stop Voiced Aspirated,
-    NY:  Consonant Palatal Nasal Voiced Unaspirated,
+    C:   consonant+ stop  palatal voiced- aspirated-,
+    CH:  consonant+ stop  palatal voiced- aspirated+,
+    J:   consonant+ stop  palatal voiced+ aspirated-,
+    JH:  consonant+ stop  palatal voiced+ aspirated+,
+    NY:  consonant+ nasal palatal voiced+ aspirated-,
 
-    TT:  Consonant Retroflex Stop Voiceless Unaspirated,
-    TTH: Consonant Retroflex Stop Voiceless Aspirated,
-    DD:  Consonant Retroflex Stop Voiced Unaspirated,
-    DDH: Consonant Retroflex Stop Voiced Aspirated,
-    NN:  Consonant Retroflex Nasal Voiced Unaspirated,
+    TT:  consonant+ stop  retroflex voiced- aspirated-,
+    TTH: consonant+ stop  retroflex voiced- aspirated+,
+    DD:  consonant+ stop  retroflex voiced+ aspirated-,
+    DDH: consonant+ stop  retroflex voiced+ aspirated+,
+    NN:  consonant+ nasal retroflex voiced+ aspirated-,
 
-    T:   Consonant Dental Stop Voiceless Unaspirated,
-    TH:  Consonant Dental Stop Voiceless Aspirated,
-    D:   Consonant Dental Stop Voiced Unaspirated,
-    DH:  Consonant Dental Stop Voiced Aspirated,
-    N:   Consonant Dental Nasal Voiced Unaspirated,
+    T:   consonant+ stop  dental voiced- aspirated-,
+    TH:  consonant+ stop  dental voiced- aspirated+,
+    D:   consonant+ stop  dental voiced+ aspirated-,
+    DH:  consonant+ stop  dental voiced+ aspirated+,
+    N:   consonant+ nasal dental voiced+ aspirated-,
 
-    P:   Consonant Labial Stop Voiceless Unaspirated,
-    PH:  Consonant Labial Stop Voiceless Aspirated,
-    B:   Consonant Labial Stop Voiced Unaspirated,
-    BH:  Consonant Labial Stop Voiced Aspirated,
-    M:   Consonant Labial Nasal Voiced Unaspirated,
+    P:   consonant+ stop  labial voiced- aspirated-,
+    PH:  consonant+ stop  labial voiced- aspirated+,
+    B:   consonant+ stop  labial voiced+ aspirated-,
+    BH:  consonant+ stop  labial voiced+ aspirated+,
+    M:   consonant+ nasal labial voiced+ aspirated-,
 
-    Y:   Consonant Approximant Voiced Palatal Unaspirated,
-    R:   Consonant Approximant Voiced Retroflex Unaspirated,
-    L:   Consonant Approximant Voiced Dental Unaspirated,
-    V:   Consonant Approximant Voiced Labial Unaspirated,
+    Y:   consonant+ approximant palatal   voiced+ aspirated-,
+    R:   consonant+ approximant retroflex voiced+ aspirated-,
+    L:   consonant+ approximant dental    voiced+ aspirated-,
+    V:   consonant+ approximant labial    voiced+ aspirated-,
 
-    SH:  Consonant Fricative Voiceless Palatal Aspirated,
-    SS:  Consonant Fricative Voiceless Retroflex Aspirated,
-    S:   Consonant Fricative Voiceless Dental Aspirated,
-    H:   Consonant Fricative Voiced Aspirated,
+    SH:  consonant+ fricative palatal   voiced- aspirated+,
+    SS:  consonant+ fricative retroflex voiced- aspirated+,
+    S:   consonant+ fricative dental    voiced- aspirated+,
+    H:   consonant+ fricative glottal   voiced+ aspirated+,
 """
 
-class Enum(object):
-    def __init__(self, case_names, case_values=None):
-        if not case_values:
-            case_values = case_names
-        for name, value in zip(case_names, case_values):
-            setattr(self, name, value)
 
-Property = Enum("""
-    Vowel Consonant
-    Stop Nasal Approximant Fricative
-    Velar Palatal Retroflex Dental Labial
-    Voiceless Voiced Unaspirated Aspirated
-""".split())
-
-def properties(names):
-    if isinstance(names, unicode):
-        names = names.split()
-    return set(getattr(Property, name) for name in names)
 
 class Letter(object):
-    def __init__(self, name, properties_names):
+    PROPERTIES = {
+        "is_consonant": [True, False],
+        "manner": ["stop", "nasal", "approximant", "fricative"],
+        "place": ["velar", "palatal", "retroflex", "dental", "labial", "glottal"],
+        "is_voiced": [True, False],
+        "is_aspirated": [True, False],
+    }
+    def __init__(self, name, property_literals):
         self.name = name
-        self.properties = properties(properties_names)
-    def __contains__(self, item):
-        return item in self.properties
+        self.letter_enum = None
+        for i in property_literals:
+            property_name = None
+            property_value = None
+            if i.endswith(("-", "+")):
+                property_name = "is_" + i[:-1]
+                property_value = bool(("-", "+").index(i[-1:]))
+            else:
+                for k, v in self.PROPERTIES.items():
+                    if i in v:
+                        property_name = k
+                        property_value = i
+                        break
+            if property_name:
+                setattr(self, property_name, property_value)
+    def same(self, property_names):
+        for l in self.letter_enum.letters:
+            if all(
+                getattr(l, n) == getattr(self, n)
+                for n in property_names
+            ):
+                yield l
+    def free(self, property_names):
+        for l in self.letter_enum.letters:
+            if all(
+                getattr(l, n) != getattr(self, n)
+                for n in property_names
+            ):
+                yield l
 
-class LetterEnum(Enum):
-    def __init__(self, letter_names, letters):
-        super(LetterEnum, self).__init__(letter_names, letters)
+class LetterEnum(object):
+    def __init__(self, letters):
         self.letters = letters
-    def get(self, is_=set(), not_=set()):
-        letters = []
+        self._letter_dict = {}
         for l in self.letters:
-            if l.properties >= is_ - not_ and \
-            l.properties.isdisjoint(not_):
-                letters.append(l)
-        return letters
+            l.letter_enum = self
+            self._letter_dict[l.name] = l
+    def __getattr__(self, name):
+        return self._letter_dict[name]
 
-case_names = []
-case_values = []
+letters = []
 for item in DATA.split(",")[:-1]:
-    name, _, properties_names = item.partition(":")
-    name = name.strip()
-    properties_names = properties_names.split()
-    case_names.append(name)
-    case_values.append(Letter(name, properties_names))
-Consonant = LetterEnum(case_names, case_values)
-
+    name, _, property_record = item.partition(":")
+    letters.append(Letter(name.strip(), property_record.split()))
+Consonant = LetterEnum(letters)
 c = Consonant
-p = Property
 
 with open("temp/output.txt", "w") as f:
 
@@ -105,27 +113,24 @@ with open("temp/output.txt", "w") as f:
 
         c1_list = set()
 
-        if p.Stop in c2:
+        if c2.manner == "stop":
             c1_list.update(
-                c.get(
-                    is_ = c2.properties,
-                    not_ = properties("Aspirated"),
-                )
+                i for i in c2.free("is_aspirated".split())
+                if not i.is_aspirated
             )
             c1_list.update(
-                c.get(
-                    (c2.properties & properties("Velar Palatal Retroflex Dental Labial")) | properties("Nasal")
-                )
+                i for i in c2.same("place".split())
+                if i.manner == "nasal"
             )
-        else:
-            c1_list.add(c2)
+        # else:
+        #     c1_list.add(c2)
 
-        if (p.Stop in c2 and p.Voiceless in c2) or p.Nasal in c2:
-            c1_list.update(
-                c.get(
-                    (c2.properties & properties("Velar Palatal Retroflex Dental Labial")) | properties("Fricative")
-                )
-            )
+        # if (p.stop in c2 and p.voiced in c2) or p.nasal in c2:
+        #     c1_list.update(
+        #         c.get(
+        #             (c2.properties & properties("velar palatal retroflex dental labial")) | properties("fricative")
+        #         )
+        #     )
 
         if c2 in [c.Y, c.R, c.V]:
             c1_list.update(c.letters)
