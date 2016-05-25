@@ -106,7 +106,7 @@ class FeatureTables(BaseFeature):
         tables["OS/2"].extend([
             "include (WeightClass.fea);",
             "fsType {};".format(client.tables["OS/2"]["fsType"]),
-            "Vendor "{}";".format(client.tables["OS/2"]["Vendor"]),
+            "Vendor \"{}\";".format(client.tables["OS/2"]["Vendor"]),
         ])
 
         set_vertical_metrics = False
@@ -264,10 +264,10 @@ class FeatureMatches(BaseFeature):
             self.name_sequence = name_sequence
             self.glyphs = [feature.font[name] for name in self.name_sequence.split()]
             self.target = None
-            for glyph in reversed(
+            for glyph in reversed([
                 g for g in self.glyphs
                 if g.name[2:] not in ["Virama", "Nukta", "RAc2"]
-            ):
+            ]):
                 if self.target is None:
                     self.target = feature._get_stem_position(glyph)
                 else:
