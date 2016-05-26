@@ -2,7 +2,7 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, collections, itertools
+import os, collections, itertools, re
 import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit as kit
 
@@ -299,6 +299,8 @@ class FeatureMatches(BaseFeature):
     BASE_NAMES_ALIVE = None
     BASE_NAMES_DEAD = None
 
+    mI_ANCHOR_NAME = "abvm.i"
+
     def __init__(self, project, name, style, filename_group):
         super(FeatureMatches, self).__init__(project, name, style, filename_group)
         self._bases_alive = None
@@ -500,16 +502,6 @@ class FeatureMatches(BaseFeature):
                 ),
             )
 
-    def _modify(matchobj):
-        match = match_dict[matchobj.group(1)]
-        modified = "pos base [{}] <anchor {}".format(
-            " ".join(base.glyphs[0].name for base in match.bases),
-            int(matchobj.group(2)) - self.font[self.name_default].width,
-        )
-        if not match.bases:
-            modified = "# " + modified
-        return modified
-
     def output_mark_positioning_for_mI_variants(self):
 
         abvm_backup_path = os.path.join(
@@ -520,14 +512,25 @@ class FeatureMatches(BaseFeature):
             self.style.directory,
             WriteFeaturesMarkFDK.kAbvmFeatureFileName,
         )
-        if os.path.exists(abvm_path_backup):
+        if os.path.exists(abvm_backup_path):
             kit.copy(abvm_backup_path, abvm_path)
         else:
             kit.copy(abvm_path, abvm_backup_path)
 
         pattern_begin = re.compile(r"lookup MARK_BASE_%s \{$" % self.mI_ANCHOR_NAME)
         pattern_end = re.compile(r"\} MARK_BASE_%s;$" % self.mI_ANCHOR_NAME)
+
         match_dict = {match.number: match for match in self.matches}
+        def _modify(matchobj):
+            match = match_dict[matchobj.group(1)]
+            modified = "pos base [{}] <anchor {}".format(
+                " ".join(base.glyphs[0].name for base in match.bases),
+                int(matchobj.group(2)) - self.font[self.name_default].width,
+            )
+            if not match.bases:
+                modified = "# " + modified
+            return modified
+
         with open(abvm_path, "r") as f:
             lines_modified = []
             is_inside_the_lookup = False
@@ -539,7 +542,7 @@ class FeatureMatches(BaseFeature):
                     else:
                         line_modified = re.sub(
                             r"pos base {}\.(\d\d) <anchor (-?\d+)".format(self.name_default),
-                            self._modify,
+                            _modify,
                             line,
                         )
                 else:
