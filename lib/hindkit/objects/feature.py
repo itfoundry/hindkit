@@ -106,6 +106,18 @@ class FeatureTables(BaseFeature):
         tables["OS/2"].append("include (WeightClass.fea);")
         tables["OS/2"].append("fsType {};".format(client.tables["OS/2"]["fsType"]))
 
+        unicode_range_bits = set(
+            i for i in
+            [self.project.family.script.unicode_range_bit] +
+            self.project.options["additional_unicode_range_bits"]
+            if i
+        )
+        tables["OS/2"].append(
+            "UnicodeRange {};".format(
+                " ".join(str(i) for i in sorted(unicode_range_bits))
+            )
+        )
+
         vender_id = client.tables["OS/2"]["Vendor"]
         if vender_id:
             tables["OS/2"].append("Vendor \"{}\";".format(vender_id))
@@ -171,8 +183,14 @@ class FeatureTables(BaseFeature):
                 "winDescent {};".format(info.openTypeOS2WinDescent),
             ])
 
-        # tables["OS/2"].extend(self.project.generate_UnicodeRange)
-        # tables["OS/2"].extend(self.project.generate_CodePageRange)
+        code_pages = set(
+            i for i in self.project.options["additional_code_pages"] if i
+        )
+        tables["OS/2"].append(
+            "CodePageRange {};".format(
+                " ".join(str(i) for i in sorted(code_pages))
+            )
+        )
 
         if self.project.options["override_GDEF"]:
             GDEF_records = {

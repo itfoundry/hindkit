@@ -57,6 +57,7 @@ class Script(object):
         aliases = None,
         sample_text = None,
         is_indic = False,
+        unicode_range_bit = None,
     ):
         self.name = name
         self.abbr = abbr
@@ -64,6 +65,7 @@ class Script(object):
         self.aliases = kit.fallback(aliases, [])
         self.sample_text = sample_text
         self.is_indic = is_indic
+        self.unicode_range_bit = unicode_range_bit
 
 SCRIPTS = [
     Script(
@@ -72,6 +74,7 @@ SCRIPTS = [
         tags = ['dev2', 'deva'],
         is_indic = True,
         sample_text = 'सभी मनुष्यों को गौरव और अधिकारों के मामले में जन्मजात स्वतन्त्रता और समानता प्राप्त है।',
+        unicode_range_bit = 15,
     ),
     Script(
         name = 'Gujarati',
@@ -79,6 +82,7 @@ SCRIPTS = [
         tags = ['gjr2', 'gujr'],
         is_indic = True,
         sample_text = 'પ્રતિષ્ઠા અને અધિકારોની દૃષ્ટિએ સર્વ માનવો જન્મથી સ્વતંત્ર અને સમાન હોય છે.',
+        unicode_range_bit = 18,
     ),
     Script(
         name = 'Gurmukhi',
@@ -86,6 +90,7 @@ SCRIPTS = [
         tags = ['gur2', 'guru'],
         is_indic = True,
         sample_text = 'ਸਾਰਾ ਮਨੁੱਖੀ ਪਰਿਵਾਰ ਆਪਣੀ ਮਹਿਮਾ, ਸ਼ਾਨ ਅਤੇ ਹੱਕਾਂ ਦੇ ਪੱਖੋਂ ਜਨਮ ਤੋਂ ਹੀ ਆਜ਼ਾਦ ਹੈ ਅਤੇ ਸੁਤੇ ਸਿੱਧ ਸਾਰੇ ਲੋਕ ਬਰਾਬਰ ਹਨ।',
+        unicode_range_bit = 17,
     ),
     Script(
         name = 'Bangla',
@@ -94,6 +99,7 @@ SCRIPTS = [
         aliases = ['Bengali'],
         is_indic = True,
         sample_text = 'সমস্ত মানুষ স্বাধীনভাবে সমান মর্যাদা এবং অধিকার নিয়ে জন্মগ্রহণ করে।',
+        unicode_range_bit = 16,
     ),
     Script(
         name = 'Odia',
@@ -102,6 +108,7 @@ SCRIPTS = [
         aliases = ['Oriya'],
         is_indic = True,
         sample_text = 'ସବୁ ମନୁଷ୍ଯ ଜନ୍ମକାଳରୁ ସ୍ବାଧୀନ. ସେମାନଙ୍କର ମର୍ଯ୍ଯାଦା ଓ ଅଧିକାର ସମାନ.',
+        unicode_range_bit = 19,
     ),
     Script(
         name = 'Telugu',
@@ -109,6 +116,7 @@ SCRIPTS = [
         tags = ['tel2', 'telu'],
         is_indic = True,
         sample_text = 'ప్రతిపత్తిస్వత్వముల విషయమున మానవులెల్లరును జన్మతః స్వతంత్రులును సమానులును నగుదురు.',
+        unicode_range_bit = 21,
     ),
     Script(
         name = 'Kannada',
@@ -116,6 +124,7 @@ SCRIPTS = [
         tags = ['knd2', 'knda'],
         is_indic = True,
         sample_text = 'ಎಲ್ಲಾ ಮಾನವರೂ ಸ್ವತಂತ್ರರಾಗಿಯೇ ಜನಿಸಿದ್ಧಾರೆ. ಹಾಗೂ ಘನತೆ ಮತ್ತು ಹಕ್ಕುಗಳಲ್ಲಿ ಸಮಾನರಾಗಿದ್ದಾರೆ.',
+        unicode_range_bit = 22,
     ),
     Script(
         name = 'Malayalam',
@@ -123,6 +132,7 @@ SCRIPTS = [
         tags = ['mlm2', 'mlym'],
         is_indic = True,
         sample_text = 'മനുഷ്യരെല്ലാവരും തുല്യാവകാശങ്ങളോടും അന്തസ്സോടും സ്വാതന്ത്ര്യത്തോടുംകൂടി ജനിച്ചിട്ടുള്ളവരാണ്‌.',
+        unicode_range_bit = 23,
     ),
     Script(
         name = 'Tamil',
@@ -130,6 +140,7 @@ SCRIPTS = [
         tags = ['tml2', 'taml'],
         is_indic = True,
         sample_text = 'மனிதப் பிறிவியினர் சகலரும் சுதந்திரமாகவே பிறக்கின்றனர்; அவர்கள் மதிப்பிலும், உரிமைகளிலும் சமமானவர்கள், அவர்கள் நியாயத்தையும் மனச்சாட்சியையும் இயற்பண்பாகப் பெற்றவர்கள்.',
+        unicode_range_bit = 20,
     ),
     Script(
         name = 'Sinhala',
@@ -138,16 +149,19 @@ SCRIPTS = [
         aliases = ['Sinhalese'],
         is_indic = True,
         sample_text = 'සියලු මනුෂ්‍යයෝ නිදහස්ව උපත ලබා ඇත. ගරුත්වයෙන් හා අයිතිවාසිකම්වලින් සමාන වෙති.',
+        unicode_range_bit = 73,
     ),
     Script(
         name = 'Ol Chiki',
         abbr = 'ol',
         tags = ['olck'],
+        unicode_range_bit = 114,
     ),
     Script(
         name = 'Arabic',
         abbr = 'ar',
         tags = ['arab'],
+        unicode_range_bit = 13,
     ),
 ]
 

@@ -59,6 +59,9 @@ class Project(object):
                 'prefer_typo_metrics': False,
                 'is_width_weight_slope_only': False,
 
+            'additional_unicode_range_bits': [],
+            'additional_code_pages': [],
+
         }
 
         self.options.update(options)
