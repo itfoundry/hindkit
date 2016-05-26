@@ -2,7 +2,7 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, collections
+import os, collections, itertools
 import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit as kit
 
@@ -106,7 +106,7 @@ class FeatureTables(BaseFeature):
         tables["OS/2"].extend([
             "include (WeightClass.fea);",
             "fsType {};".format(client.tables["OS/2"]["fsType"]),
-            "Vendor "{}";".format(client.tables["OS/2"]["Vendor"]),
+            "Vendor \"{}\";".format(client.tables["OS/2"]["Vendor"]),
         ])
 
         set_vertical_metrics = False
@@ -260,18 +260,14 @@ class FeatureWeightClass(BaseFeature):
 class FeatureMatches(BaseFeature):
 
     class Base(object):
-        def __init__(self, feature, name_sequence):
-            self.name_sequence = name_sequence
-            self.glyphs = [feature.font[name] for name in self.name_sequence.split()]
+        def __init__(self, feature, base_glyph_sequence):
+            self.glyphs = base_glyph_sequence
             self.target = None
-            for glyph in reversed(
-                g for g in self.glyphs
-                if g.name[2:] not in ["Virama", "Nukta", "RAc2"]
-            ):
+            for g in self.glyphs:
                 if self.target is None:
-                    self.target = feature._get_stem_position(glyph)
+                    self.target = feature._get_stem_position(g)
                 else:
-                    self.target += glyph.width
+                    self.target += g.width
 
     class Match(object):
         def __init__(self, feature, mI_variant_name):
@@ -299,16 +295,21 @@ class FeatureMatches(BaseFeature):
 
     mI_NAME_STEM = "mI"
 
+    BASE_NAMES_ALIVE = None
+    BASE_NAMES_DEAD = None
+
+    def __init__(self, project, name, style, filename_group):
+        super(FeatureMatches, self).__init__(project, name, style, filename_group)
+        self._bases_alive = None
+        self._bases_dead = None
+
     def generate(self):
 
         self.font = self.style.open()
 
-        mI_variant_names = self.font.groups[self.CLASS_NAME_mI_VARIANTS]
-        if mI_variant_names:
-            self.matches = [self.Match(self, name) for name in mI_variant_names]
-        else:
-            return
-
+        self.matches = [self.Match(self, i) for i in self.font.groups[self.CLASS_NAME_mI_VARIANTS]]
+        if not self.matches:
+            raise ValueError("[WARNING] No variants for mI.")
         self.not_matched = self.Match(self, None)
 
         abvm_position_in_mE = self._get_abvm_position(
@@ -320,10 +321,9 @@ class FeatureMatches(BaseFeature):
         else:
             self.abvm_right_margin = abs(abvm_position_in_mE)
 
-        self.bases = [
-            self.Base(self, name_sequence)
-            for name_sequence in self._get_base_name_sequences()
-        ]
+        self.bases = [self.Base(self, i) for i in self._base_glyph_sequences()]
+        if not self.bases:
+            raise ValueError("[WARNING] No bases.")
 
         self.adjustment_extremes = self._get_adjustment_extremes()
         if self.adjustment_extremes:
@@ -331,12 +331,12 @@ class FeatureMatches(BaseFeature):
             target_min = min(targets)
             target_max = max(targets)
             for i, target in enumerate(targets):
-                print("Old:", target, end=", ")
+                # print("Old:", target, end=", ")
                 ratio = (target - target_min) / (target_max - target_min)
                 ae = self.adjustment_extremes
                 adjustment = ae[0] + (ae[-1] - ae[0]) * ratio
                 targets[i] += adjustment
-                print("New:", targets[i], end="; ")
+                # print("New:", targets[i], end="; ")
             print()
 
         self.tolerance = self._get_stem_position(
@@ -401,21 +401,51 @@ class FeatureMatches(BaseFeature):
         else:
             return abvm_position
 
-    base_names_alive = None
-    base_names_dead = None
+    @property
+    def bases_alive(self):
+        if self._bases_alive is None:
+            base_names = kit.fallback(
+                self.BASE_NAMES_ALIVE,
+                self.font.groups[self.CLASS_NAME_BASES_ALIVE],
+            )
+            return [self.font[i] for i in base_names]
+        else:
+            return self._bases_alive
+    @bases_alive.setter
+    def bases_alive(self, value):
+        self._bases_alive = value
 
-    def _get_base_name_sequences(self):
-        if self.base_names_alive is None:
-            self.base_names_alive = self.font.groups[self.CLASS_NAME_BASES_ALIVE]
-        for alive in self.base_names_alive:
-            if alive in self.font:
-                yield alive
-        if self.project.options["match_mI_variants"] == "sequence":
-            if self.base_names_dead is None:
-                self.base_names_dead = self.font.groups[self.CLASS_NAME_BASES_DEAD]
-            for dead in self.base_names_dead:
-                for alive in self.base_names_alive:
-                    yield dead + " " + alive
+    @property
+    def bases_dead(self):
+        if self._bases_dead is None:
+            base_names = kit.fallback(
+                self.BASE_NAMES_DEAD,
+                self.font.groups[self.CLASS_NAME_BASES_DEAD],
+            )
+            return [self.font[i] for i in base_names]
+        else:
+            return self._bases_dead
+    @bases_dead.setter
+    def bases_dead(self, value):
+        self._bases_dead = value
+
+    def _base_glyph_sequences(self):
+
+        LENGTH = 2
+
+        bases_alive = self.bases_alive
+        if self.project.options["match_mI_variants"] == "single":
+            bases_dead = [None]
+        elif self.project.options["match_mI_variants"] == "sequence":
+            bases_dead = [None] + self.bases_dead
+        else:
+            raise ValueError("[WARNING] Project.options[\"match_mI_variants\"] is not set to \"single\" or \"sequence\".")
+
+        seeds = [bases_dead] * (LENGTH - 1) + [bases_alive]
+        for raw_sequence in itertools.product(*seeds):
+            sequence = [i for i in raw_sequence if i is not None]
+            if sequence:
+                yield sequence
 
     def match_mI_variants(self, base):
         if base.target <= self.matches[0].overhanging:
@@ -456,13 +486,17 @@ class FeatureMatches(BaseFeature):
             self.substitute_rule_lines.append(
                 "sub {}' [{}] by {};".format(
                     self.name_default,
-                    " ".join(base.glyphs[0].name for base in single_glyph_bases),
+                    " ".join(i.glyphs[0].name for i in single_glyph_bases),
                     match.name,
                 ),
             )
         for base in multiple_glyph_bases:
             self.substitute_rule_lines.append(
-                "sub {}' {} by {};".format(self.name_default, base.name_sequence, match.name),
+                "sub {}' {} by {};".format(
+                    self.name_default,
+                    " ".join(i.name for i in base.glyphs),
+                    match.name,
+                ),
             )
 
     def _modify(matchobj):
