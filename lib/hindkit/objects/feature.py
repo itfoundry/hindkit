@@ -103,11 +103,12 @@ class FeatureTables(BaseFeature):
             ("name", []),
         ])
 
-        tables["OS/2"].extend([
-            "include (WeightClass.fea);",
-            "fsType {};".format(client.tables["OS/2"]["fsType"]),
-            "Vendor \"{}\";".format(client.tables["OS/2"]["Vendor"]),
-        ])
+        tables["OS/2"].append("include (WeightClass.fea);")
+        tables["OS/2"].append("fsType {};".format(client.tables["OS/2"]["fsType"]))
+
+        vender_id = client.tables["OS/2"]["Vendor"]
+        if vender_id:
+            tables["OS/2"].append("Vendor \"{}\";".format(vender_id))
 
         set_vertical_metrics = False
         for field in (
