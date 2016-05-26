@@ -245,8 +245,10 @@ class Project(object):
         if self.options['compile']:
             kit.makedirs(self.directories['products'])
             self.fmndb.prepare()
-            for product in self.products:
+            for product in (i for i in self.products if i.file_format == 'OTF'):
                 product.style.temp = True
-                if product.file_format == 'TTF':
-                    subprocess.call(['open', product.style.path])
+                product.prepare()
+            for product in (i for i in self.products if i.file_format == 'TTF'):
+                subprocess.call(['open', product.style.path])
+            for product in (i for i in self.products if i.file_format == 'TTF'):
                 product.prepare()
