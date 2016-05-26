@@ -112,11 +112,12 @@ class FeatureTables(BaseFeature):
             self.project.options["additional_unicode_range_bits"]
             if i
         )
-        tables["OS/2"].append(
-            "UnicodeRange {};".format(
-                " ".join(str(i) for i in sorted(unicode_range_bits))
+        if unicode_range_bits:
+            tables["OS/2"].append(
+                "UnicodeRange {};".format(
+                    " ".join(str(i) for i in sorted(unicode_range_bits))
+                )
             )
-        )
 
         vender_id = client.tables["OS/2"]["Vendor"]
         if vender_id:
@@ -186,11 +187,12 @@ class FeatureTables(BaseFeature):
         code_pages = set(
             i for i in self.project.options["additional_code_pages"] if i
         )
-        tables["OS/2"].append(
-            "CodePageRange {};".format(
-                " ".join(str(i) for i in sorted(code_pages))
+        if code_pages:
+            tables["OS/2"].append(
+                "CodePageRange {};".format(
+                    " ".join(str(i) for i in sorted(code_pages))
+                )
             )
-        )
 
         if self.project.options["override_GDEF"]:
             GDEF_records = {
@@ -385,7 +387,7 @@ class FeatureMatches(BaseFeature):
             ])
 
         if self.project.options["position_marks_for_mI_variants"] and \
-        self.project.options["match_mI_variants"] != "sequence":
+        self.project.options["match_mI_variants"] == "single":
             self.output_mark_positioning_for_mI_variants()
 
     def _get_adjustment_extremes(self):
