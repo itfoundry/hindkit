@@ -495,6 +495,9 @@ class FeatureMatches(BaseFeature):
 
         if not match.bases:
             print("\t\t`{}` is not used.".format(match.name))
+            self.substitute_rule_lines.append(
+                "# sub {}' _ by {};".format(self.name_default, match.name),
+            )
             return
 
         single_glyph_bases = []
@@ -543,13 +546,15 @@ class FeatureMatches(BaseFeature):
         match_dict = {match.number: match for match in self.matches}
         def _modify(matchobj):
             match = match_dict[matchobj.group(1)]
-            modified = "pos base [{}] <anchor {}".format(
-                " ".join(base.glyphs[0].name for base in match.bases),
-                int(matchobj.group(2)) - self.font[self.name_default].width,
-            )
-            if not match.bases:
-                modified = "# " + modified
-            return modified
+            if match.bases:
+                prefix = ""
+                names = "[{}]".format(" ".join(i.glyphs[0].name for i in match.bases))
+            else:
+                prefix = "# "
+                names = "_"
+            x = int(matchobj.group(2))
+            x_with_offset = x - self.matches[0].mI_variant.width
+            return "{}pos base {} <anchor {}".format(prefix, names, x_with_offset)
 
         with open(abvm_path, "r") as f:
             lines_modified = []
