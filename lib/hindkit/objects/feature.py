@@ -50,27 +50,27 @@ class FeatureClasses(BaseFeature):
 
         if self.project.options["prepare_mark_positioning"]:
 
-            glyph_classes = []
-            glyph_classes.extend([(WriteFeaturesMarkFDK.kCombMarksClassName, kit.filters.marks)])
-
+            f = kit.filters
+            glyph_classes = [
+                (WriteFeaturesMarkFDK.kCombMarksClassName, f.marks, None),
+            ]
             if self.project.options["match_mI_variants"]:
+                m = FeatureMatches
                 glyph_classes.extend([
-                    (FeatureMatches.CLASS_NAME_mI_VARIANTS, kit.filters.mI_variants),
-                    (FeatureMatches.CLASS_NAME_BASES_ALIVE, kit.filters.bases_alive),
-                    (FeatureMatches.CLASS_NAME_BASES_DEAD, kit.filters.bases_dead),
-                    (FeatureMatches.CLASS_NAME_BASES_FOR_LONG_mI, kit.filters.bases_for_long_mII),
+                    (m.CLASS_NAME_mI_VARIANTS, f.mI_variants, None),
+                    (m.CLASS_NAME_BASES_ALIVE, f.bases_alive, m.BASE_NAMES_ALIVE),
+                    (m.CLASS_NAME_BASES_DEAD, f.bases_dead, m.BASE_NAMES_DEAD),
+                    (m.CLASS_NAME_BASES_FOR_LONG_mI, f.bases_for_long_mII, None),
                 ])
 
             font_0 = self.project.products[0].style.open()
 
             glyph_order = self.project.glyph_data.glyph_order
-            for class_name, filter_function in glyph_classes:
-                glyph_names = [
-                    glyph.name for glyph in filter(
-                        lambda glyph: filter_function(self.project.family, glyph),
-                        font_0,
-                    )
-                ]
+            for class_name, filter_function, overriding in glyph_classes:
+                glyph_names = kit.fallback(
+                    overriding,
+                    [i.name for i in font_0 if filter_function(self.project.family, i)],
+                )
                 glyph_names = self.sort_names(glyph_names, glyph_order)
                 font_0.groups.update({class_name: glyph_names})
                 lines.extend(
