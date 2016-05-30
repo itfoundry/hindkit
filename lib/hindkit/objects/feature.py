@@ -285,6 +285,7 @@ class FeatureMatches(BaseFeature):
             self.glyphs = base_glyph_sequence
             self.target = None
             for g in self.glyphs:
+                #TODO: Kerning.
                 if self.target is None:
                     self.target = feature._get_stem_position(g)
                 else:
@@ -321,6 +322,8 @@ class FeatureMatches(BaseFeature):
 
     mI_ANCHOR_NAME = "abvm.i"
 
+    BASE_GLYPH_SEQUENCE_LENGTH = 2
+
     def __init__(self, project, name, style, filename_group):
         super(FeatureMatches, self).__init__(project, name, style, filename_group)
         self._bases_alive = None
@@ -354,12 +357,10 @@ class FeatureMatches(BaseFeature):
             target_min = min(targets)
             target_max = max(targets)
             for i, target in enumerate(targets):
-                # print("Old:", target, end=", ")
                 ratio = (target - target_min) / (target_max - target_min)
                 ae = self.adjustment_extremes
                 adjustment = ae[0] + (ae[-1] - ae[0]) * ratio
                 targets[i] += adjustment
-                # print("New:", targets[i], end="; ")
             print()
 
         self.tolerance = self._get_stem_position(
@@ -454,8 +455,6 @@ class FeatureMatches(BaseFeature):
 
     def _base_glyph_sequences(self):
 
-        LENGTH = 2
-
         bases_alive = self.bases_alive
         if self.project.options["match_mI_variants"] == "single":
             bases_dead = [None]
@@ -464,7 +463,7 @@ class FeatureMatches(BaseFeature):
         else:
             raise ValueError("[WARNING] Project.options[\"match_mI_variants\"] is not set to \"single\" or \"sequence\".")
 
-        seeds = [bases_dead] * (LENGTH - 1) + [bases_alive]
+        seeds = [bases_dead] * (self.BASE_GLYPH_SEQUENCE_LENGTH - 1) + [bases_alive]
         for raw_sequence in itertools.product(*seeds):
             sequence = [i for i in raw_sequence if i is not None]
             if sequence:
@@ -516,11 +515,34 @@ class FeatureMatches(BaseFeature):
                     match.name,
                 ),
             )
-        for base in multiple_glyph_bases:
+
+        def compress(raw):
+            compressed = {}
+            for k, v in raw:
+                if k in compressed:
+                    compressed[k].extend(v)
+                else:
+                    compressed[k] = v
+            return compressed
+
+        # self.BASE_GLYPH_SEQUENCE_LENGTH = 2
+
+        compressed = compress(
+            (tuple(i.glyphs[:1]), i.glyphs[1:]) for i in multiple_glyph_bases
+        )
+        compressed = compress(
+            (tuple(v), list(k)) for k, v in compressed.items()
+        )
+
+        for rule in ([v, list(k)] for k, v in compressed.items()):
             self.substitute_rule_lines.append(
                 "sub {}' {} by {};".format(
                     self.name_default,
-                    " ".join(i.name for i in base.glyphs),
+                    " ".join(
+                        i[0].name if len(i) == 1
+                        else "[{}]".format(" ".join(j.name for j in i))
+                        for i in rule
+                    ),
                     match.name,
                 ),
             )
