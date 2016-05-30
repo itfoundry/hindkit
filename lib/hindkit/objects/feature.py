@@ -72,7 +72,8 @@ class FeatureClasses(BaseFeature):
                     [i.name for i in font_0 if filter_function(self.project.family, i)],
                 )
                 glyph_names = self.sort_names(glyph_names, glyph_order)
-                font_0.groups.update({class_name: glyph_names})
+                if glyph_names:
+                    font_0.groups.update({class_name: glyph_names})
                 lines.extend(
                     self.compose_glyph_class_def_lines(class_name, glyph_names)
                 )
