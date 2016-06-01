@@ -59,9 +59,12 @@ class FeatureClasses(BaseFeature):
                 glyph_classes.extend([
                     (m.CLASS_NAME_mI_VARIANTS, f.mI_variants, None),
                     (m.CLASS_NAME_BASES_ALIVE, f.bases_alive, m.BASE_NAMES_ALIVE),
-                    (m.CLASS_NAME_BASES_DEAD, f.bases_dead, m.BASE_NAMES_DEAD),
-                    (m.CLASS_NAME_BASES_FOR_LONG_mI, f.bases_for_long_mII, None),
+                    (m.CLASS_NAME_BASES_FOR_LONG_mI, f.bases_for_long_mII, m.BASE_NAMES_FOR_LONG_mII),
                 ])
+                if self.project.options["match_mI_variants"] == "sequence":
+                    glyph_classes.extend([
+                        (m.CLASS_NAME_BASES_DEAD, f.bases_dead, m.BASE_NAMES_DEAD),
+                    ])
 
             font_0 = self.project.products[0].style.open()
 
@@ -297,7 +300,7 @@ class FeatureMatches(BaseFeature):
             self.name = mI_variant_name
             if self.name:
                 self.mI_variant = feature.font[self.name]
-                self.number = self.mI_variant.name.partition(".")[2]
+                self.tag = self.mI_variant.name.partition(".")[2]
                 self.overhanging = abs(self.mI_variant.rightMargin)
             self.bases = []
 
@@ -316,10 +319,11 @@ class FeatureMatches(BaseFeature):
     ] + "GAbar JAbar DDAbar BAbar ZHA YAheavy DDAmarwari".split()
     CONSONANTS_DEAD = kit.constants.CONSONANT_STEMS
 
-    mI_NAME_STEM = "mI"
+    mI_VARIANT_NAME_PATTERN = r"mI\.\d\d"
 
     BASE_NAMES_ALIVE = None
     BASE_NAMES_DEAD = None
+    BASE_NAMES_FOR_LONG_mII = None
 
     mI_ANCHOR_NAME = "abvm.i"
 
@@ -372,7 +376,7 @@ class FeatureMatches(BaseFeature):
             match = self.match_mI_variants(base)
             match.bases.append(base)
 
-        self.name_default = self.style.family.script.abbr + self.mI_NAME_STEM
+        self.name_default = self.style.family.script.abbr + "mI"
 
         self.substitute_rule_lines = []
         for match in self.matches:
@@ -566,9 +570,10 @@ class FeatureMatches(BaseFeature):
         pattern_begin = re.compile(r"lookup MARK_BASE_%s \{$" % self.mI_ANCHOR_NAME)
         pattern_end = re.compile(r"\} MARK_BASE_%s;$" % self.mI_ANCHOR_NAME)
 
-        match_dict = {match.number: match for match in self.matches}
+        match_dict = {match.tag: match for match in self.matches}
+        print(match_dict)
         def _modify(matchobj):
-            match = match_dict[matchobj.group(1)]
+            match = match_dict[matchobj.group(1).partition(".")[2]]
             if match.bases:
                 prefix = ""
                 names = "[{}]".format(" ".join(i.glyphs[0].name for i in match.bases))
@@ -589,7 +594,10 @@ class FeatureMatches(BaseFeature):
                         line_modified = line
                     else:
                         line_modified = re.sub(
-                            r"pos base {}\.(\d\d) <anchor (-?\d+)".format(self.name_default),
+                            r"pos base ({}{}) <anchor (-?\d+)".format(
+                                self.style.family.script.abbr,
+                                self.mI_VARIANT_NAME_PATTERN,
+                            ),
                             _modify,
                             line,
                         )
