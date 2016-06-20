@@ -341,7 +341,7 @@ class FeatureMatches(BaseFeature):
         self.matches = [self.Match(self, i) for i in self.font.groups[self.CLASS_NAME_mI_VARIANTS]]
         if not self.matches:
             raise ValueError("[WARNING] No variants for mI.")
-        self.not_matched = self.Match(self, None)
+        # self.not_matched = self.Match(self, None)
 
         abvm_position_in_mE = self._get_abvm_position(
             self.font[self.style.family.script.abbr + "mE"],
@@ -374,7 +374,8 @@ class FeatureMatches(BaseFeature):
 
         for base in self.bases:
             match = self.match_mI_variants(base)
-            match.bases.append(base)
+            if match:
+                match.bases.append(base)
 
         self.name_default = self.style.family.script.abbr + "mI"
 
@@ -387,6 +388,10 @@ class FeatureMatches(BaseFeature):
                 # "  lookupflag IgnoreMarks;\n",
             ])
             f.writelines("  " + l + "\n" for l in self.substitute_rule_lines)
+            # f.writelines(
+            #     "  # " + " ".join(g.name for g in b.glyphs) + "\n"
+            #     for b in self.not_matched.bases
+            # )
             f.writelines([
                 # "  lookupflag 0;\n",
                 "} %s;\n" % self.name,
@@ -432,28 +437,20 @@ class FeatureMatches(BaseFeature):
 
     @property
     def bases_alive(self):
-        if self._bases_alive is None:
-            base_names = kit.fallback(
-                self.BASE_NAMES_ALIVE,
-                self.font.groups[self.CLASS_NAME_BASES_ALIVE],
-            )
-            return [self.font[i] for i in base_names]
-        else:
-            return self._bases_alive
+        return kit.fallback(
+            self._bases_alive,
+            [self.font[i] for i in self.font.groups.get(self.CLASS_NAME_BASES_ALIVE, [])]
+        )
     @bases_alive.setter
     def bases_alive(self, value):
         self._bases_alive = value
 
     @property
     def bases_dead(self):
-        if self._bases_dead is None:
-            base_names = kit.fallback(
-                self.BASE_NAMES_DEAD,
-                self.font.groups[self.CLASS_NAME_BASES_DEAD],
-            )
-            return [self.font[i] for i in base_names]
-        else:
-            return self._bases_dead
+        return kit.fallback(
+            self._bases_dead,
+            [self.font[i] for i in self.font.groups.get(self.CLASS_NAME_BASES_DEAD, [])]
+        )
     @bases_dead.setter
     def bases_dead(self, value):
         self._bases_dead = value
@@ -485,7 +482,7 @@ class FeatureMatches(BaseFeature):
             candidate_enough = self.matches[i]
             if (
                 abs(candidate_enough.overhanging - base.target) <
-                abs(candidate_short.overhanging - base.target)
+                abs(candidate_short.overhanging - base.target) * 0.5
             ):
                 return candidate_enough
             else:
@@ -493,7 +490,8 @@ class FeatureMatches(BaseFeature):
         elif base.target <= self.matches[-1].overhanging + self.tolerance:
             return self.matches[-1]
         else:
-            return self.not_matched
+            # return self.not_matched
+            return
 
     def output_mI_variant_matches(self, match):
 
