@@ -288,7 +288,7 @@ class FeatureMatches(BaseFeature):
         def __init__(self, feature, base_glyph_sequence):
             self.glyphs = base_glyph_sequence
             self.target = None
-            for g in self.glyphs:
+            for g in reversed(self.glyphs):
                 #TODO: Kerning.
                 if self.target is None:
                     self.target = feature._get_stem_position(g)
