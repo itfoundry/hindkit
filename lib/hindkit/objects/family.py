@@ -33,7 +33,10 @@ class Family(object):
 
         self.info = defcon.Font().info
 
-        self.client = kit.Client(self, client_name)
+        self.client_name = client_name
+
+    def get_client_data(self):
+        return kit.Client(self, self.client_name)
 
     def set_masters(self, value=None):
         scheme = kit.fallback(value, [('Light', 0), ('Bold',  100)])
@@ -43,7 +46,7 @@ class Family(object):
         ]
 
     def set_styles(self, value=None):
-        scheme = kit.fallback(value, self.client.style_scheme)
+        scheme = kit.fallback(value, self.get_client_data().style_scheme)
         self.styles = [
             kit.Style(self, name, weight_location, weight_class)
             for name, weight_location, weight_class in scheme

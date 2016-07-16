@@ -97,7 +97,7 @@ class FeatureTables(BaseFeature):
     def generate(self):
 
         info = self.project.family.info
-        client = self.project.family.client
+        client_data = self.project.family.get_client_data()
 
         lines = []
         tables = collections.OrderedDict([
@@ -108,7 +108,7 @@ class FeatureTables(BaseFeature):
         ])
 
         tables["OS/2"].append("include (WeightClass.fea);")
-        tables["OS/2"].append("fsType {};".format(client.tables["OS/2"]["fsType"]))
+        tables["OS/2"].append("fsType {};".format(client_data.tables["OS/2"]["fsType"]))
 
         unicode_range_bits = set(
             i for i in
@@ -123,7 +123,7 @@ class FeatureTables(BaseFeature):
                 )
             )
 
-        vender_id = client.tables["OS/2"]["Vendor"]
+        vender_id = client_data.tables["OS/2"]["Vendor"]
         if vender_id:
             tables["OS/2"].append("Vendor \"{}\";".format(vender_id))
 
@@ -154,14 +154,14 @@ class FeatureTables(BaseFeature):
             if info.openTypeHheaLineGap is None:
                 info.openTypeHheaLineGap = 0
 
-            if client.vertical_metrics_strategy == "Google Fonts":
+            if client_data.vertical_metrics_strategy == "Google Fonts":
                 if info.openTypeOS2TypoAscender is None:
                     info.openTypeOS2TypoAscender = info.openTypeHheaAscender
                 if info.openTypeOS2TypoDescender is None:
                     info.openTypeOS2TypoDescender = info.openTypeHheaDescender
                 if info.openTypeOS2TypoLineGap is None:
                     info.openTypeOS2TypoLineGap = info.openTypeHheaLineGap
-            elif client.vertical_metrics_strategy == "ITF":
+            elif client_data.vertical_metrics_strategy == "ITF":
                 extra_height = info.openTypeHheaAscender - info.openTypeHheaDescender - info.unitsPerEm
                 if info.openTypeOS2TypoAscender is None:
                     info.openTypeOS2TypoAscender = info.openTypeHheaAscender - int(round(extra_height / 2))
@@ -218,7 +218,7 @@ class FeatureTables(BaseFeature):
                 name_id,
                 content.encode("unicode_escape").replace("\\x", "\\00").replace("\\u", "\\")
             )
-            for name_id, content in sorted(client.tables["name"].items())
+            for name_id, content in sorted(client_data.tables["name"].items())
             if content
         )
 
@@ -569,7 +569,6 @@ class FeatureMatches(BaseFeature):
         pattern_end = re.compile(r"\} MARK_BASE_%s;$" % self.mI_ANCHOR_NAME)
 
         match_dict = {match.tag: match for match in self.matches}
-        print(match_dict)
         def _modify(matchobj):
             match = match_dict[matchobj.group(1).partition(".")[2]]
             if match.bases:
