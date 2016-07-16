@@ -173,7 +173,7 @@ class FeatureTables(BaseFeature):
             if info.openTypeOS2WinAscent is None:
                 info.openTypeOS2WinAscent = info.openTypeHheaAscender
             if info.openTypeOS2WinDescent is None:
-                info.openTypeOS2WinDescent = abs(info.openTypeHheaDescender)
+                info.openTypeOS2WinDescent = abs(info.openTypeHheaDescender) + info.openTypeHheaLineGap
 
             tables["hhea"].extend([
                 "Ascender {};".format(info.openTypeHheaAscender),
