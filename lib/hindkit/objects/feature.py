@@ -338,9 +338,11 @@ class FeatureMatches(BaseFeature):
 
         self.font = self.style.open()
 
-        self.matches = [self.Match(self, i) for i in self.font.groups[self.CLASS_NAME_mI_VARIANTS]]
-        if not self.matches:
+        mI_variant_names = self.font.groups[self.CLASS_NAME_mI_VARIANTS]
+        if not mI_variant_names:
             raise ValueError("[WARNING] No variants for mI.")
+        # The order in glyph classes can't be trusted:
+        self.matches = [self.Match(self, i) for i in sorted(mI_variant_names)]
         # self.not_matched = self.Match(self, None)
 
         abvm_position_in_mE = self._get_abvm_position(
