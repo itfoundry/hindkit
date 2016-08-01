@@ -133,10 +133,12 @@ class Project(object):
             if name not in names
         ]
         if not_covered_glyphs:
-            raise SystemExit(
-                'Some glyphs are not covered by the GOADB: ' +
-                ' '.join(not_covered_glyphs)
+            print(
+                "[WARNING] Some glyphs are not covered by the GOADB: " +
+                " ".join(not_covered_glyphs)
             )
+            if self.options['build_ttf']:
+                raise SystemExit("[EXIT] GOADB must match the glyph set exactly for compiling TTFs.")
         names_trimmed = [
             name
             for name in names
