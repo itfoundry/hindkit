@@ -21,7 +21,7 @@ class Client(object):
                 self.family.info.copyright,
                 "Copyright {} Indian Type Foundry. All Rights Reserved.".format(datetime.date.today().year),
             ),
-            7: "{} is a trademark of the Indian Type Foundry.".format(self.family.base_name),
+            7: "{} is a trademark of the Indian Type Foundry.".format(self.family.trademark),
             8: "Indian Type Foundry",
             9: self.family.info.openTypeNameDesigner,
             10: self.family.info.openTypeNameDescription,

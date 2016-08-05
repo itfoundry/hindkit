@@ -4,7 +4,7 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import hindkit as kit
 
 family = kit.Family(
-    base_name = "Hind",
+    trademark = "Hind",
     script_name = "Devanagari",
     client_name = "Google Fonts",
 )

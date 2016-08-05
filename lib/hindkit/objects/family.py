@@ -11,19 +11,25 @@ class Family(object):
     def __init__(
         self,
         name = None,
-        base_name = None,
+        trademark = None,
+        name_stem = None,
         script_name = None,
         append_script_name = False,
         client_name = None,
     ):
 
-        self.base_name = base_name
+        self.trademark = trademark
+        if name_stem:
+            self.name_stem = name_stem
+        else:
+            self.name_stem = self.trademark
+
         self.script = kit.constants.SCRIPT_NAMES_TO_SCRIPTS.get(script_name)
 
         if name:
             self.name = name
         else:
-            self.name = self.base_name
+            self.name = self.name_stem
             if script_name and append_script_name:
                 self.name += ' ' + script_name
         self.name_postscript = self.name.replace(' ', '')
