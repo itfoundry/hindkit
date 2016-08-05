@@ -108,7 +108,7 @@ class Master(BaseFont):
 
     def import_glyphs_from(
         self,
-        source_dir,
+        source_path,
         target_dir = None,
         importing_names = None,
         excluding_names = None,
@@ -119,15 +119,6 @@ class Master(BaseFont):
         if excluding_names is None:
             excluding_names = []
 
-        source_filename_pattern = os.path.join(
-            source_dir,
-            '*-{}.ufo'.format(self.name),
-        )
-        source_paths = glob.glob(source_filename_pattern)
-        if source_paths:
-            source_path = source_paths[0]
-        else:
-            raise SystemExit("`{}` is missing.".format(source_filename_pattern))
         source = defcon.Font(source_path)
 
         if target_dir:
