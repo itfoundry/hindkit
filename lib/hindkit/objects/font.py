@@ -48,6 +48,8 @@ class BaseFont(kit.BaseFile):
         self._full_name = None
         self._full_name_postscript = None
 
+        self.font_in_memory = None
+
     @property
     def name_postscript(self):
         return kit.fallback(self._name_postscript, self.postscript(self.name))
@@ -72,21 +74,30 @@ class BaseFont(kit.BaseFile):
     def full_name_postscript(self, value):
         self._full_name_postscript = value
 
-    def open(self):
-        if os.path.exists(self.path):
-            if self.file_format == 'UFO':
-                print("\nOpening `{}`".format(self.path))
-                return defcon.Font(self.path)
-            else:
-                raise SystemExit("`{}` is not supported by defcon.".format(self.path))
+    def open(self, from_disk=False):
+        if not from_disk and self.font_in_memory:
+            return self.font_in_memory
         else:
-            raise SystemExit("`{}` is missing.".format(self.path))
+            if os.path.exists(self.path):
+                if self.file_format == 'UFO':
+                    print("\nOpening `{}`".format(self.path))
+                    self.font_in_memory = defcon.Font(self.path)
+                    return self.font_in_memory
+                else:
+                    raise SystemExit("`{}` is not supported by defcon.".format(self.path))
+            else:
+                raise SystemExit("`{}` is missing.".format(self.path))
 
-    def save_as(self, font, temp=True):
+    def save_temp(self, font=None, as_filename=None, temp=True):
         self.counter += 1
-        self.filename = None
-        self.filename += '--{}'.format(self.counter)
+        if as_filename is None:
+            self.filename = None
+            self.filename += '--{}'.format(self.counter)
+        else:
+            self.filename = as_filename
         self.temp = temp
+        if not font:
+            font = self.font_in_memory
         font.save(self.path)
 
 
@@ -157,8 +168,6 @@ class Master(BaseFont):
             print(new_name, end=', ')
         print()
 
-        self.save_as(target)
-
     def derive_glyphs(self, deriving_names):
 
         if deriving_names is None:
@@ -180,8 +189,6 @@ class Master(BaseFont):
                 target[deriving_name].width = target[source_name].width
             print('{} (from {})'.format(deriving_name, source_name), end=', ')
         print()
-
-        self.save_as(target)
 
 
 class Style(BaseFont):
