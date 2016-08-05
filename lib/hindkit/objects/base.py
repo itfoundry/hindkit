@@ -13,6 +13,7 @@ class BaseFile(object):
         file_format = None,
         abstract_directory = '',
         project = None,
+        family = None,
         filename_group = None,
     ):
 
@@ -24,6 +25,10 @@ class BaseFile(object):
         self.temp_directory = kit.Project.directories['intermediates']
 
         self.project = project
+        if family is None:
+            self.family = self.project.family
+        else:
+            self.family = family
 
         self.file_group = []
         for filename in kit.fallback(filename_group, [self.name]):
@@ -34,6 +39,7 @@ class BaseFile(object):
                     filename,
                     file_format = self.file_format,
                     abstract_directory = self.abstract_directory,
+                    family = self.family,
                 )
                 self.file_group.append(f)
 
@@ -93,12 +99,22 @@ class BaseFile(object):
         self._path = value
 
     def check_override(self, *args, **kwargs):
+
         for f in self.file_group:
+
             if f.temp and os.path.exists(f.path):
                 continue
+
+            variant_tag = f.family.variant_tag
+            if variant_tag is not None:
+                abstract_directory_variant = os.path.join(f.abstract_directory, variant_tag)
+                if os.path.exists(abstract_directory_variant):
+                    f.abstract_directory = abstract_directory_variant
+
             path_original = f.path
             f.temp = True
             path_temp = f.path
+
             try:
                 print(path_original, path_temp)
                 kit.copy(path_original, path_temp)
@@ -106,6 +122,7 @@ class BaseFile(object):
             except IOError:
                 if not os.path.exists(path_original):
                     if f is self:
+                        kit.makedirs(f.directory)
                         f.generate(*args, **kwargs)
                         print('[GENERATED]', path_original)
                     else:

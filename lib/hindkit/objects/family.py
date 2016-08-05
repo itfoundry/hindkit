@@ -16,6 +16,7 @@ class Family(object):
         script_name = None,
         append_script_name = False,
         client_name = None,
+        variant_tag = None,
     ):
 
         self.trademark = trademark
@@ -35,6 +36,7 @@ class Family(object):
         self.info = defcon.Font().info
 
         self.client_name = client_name
+        self.variant_tag = variant_tag
 
     def get_client_data(self):
         return kit.Client(self, self.client_name)

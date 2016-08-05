@@ -40,9 +40,8 @@ class BaseFont(kit.BaseFile):
             name,
             file_format = file_format,
             abstract_directory = abstract_directory,
+            family = family,
         )
-
-        self.family = family
 
         self._name_postscript = None
         self._full_name = None
@@ -98,6 +97,7 @@ class BaseFont(kit.BaseFile):
         self.temp = temp
         if not font:
             font = self.font_in_memory
+        print("\nSaving `{}`".format(self.path))
         font.save(self.path)
 
 
