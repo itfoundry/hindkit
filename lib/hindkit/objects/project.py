@@ -150,8 +150,6 @@ class Project(object):
 
         kit.makedirs(self.directories['intermediates'])
 
-        # self._finalize_options()
-
         if self.options['prepare_masters']:
 
             path = self.temp(self.directories['masters'])
@@ -175,7 +173,9 @@ class Project(object):
                 font = master.open()
                 font.lib['public.glyphOrder'] = self.glyph_data.glyph_order_trimmed
                 font.lib.pop('com.schriftgestaltung.glyphOrder', None)
-                master.save_as(font)
+
+            for master in self.family.masters:
+                master.save_temp()
 
         if self.options['prepare_styles']:
 
