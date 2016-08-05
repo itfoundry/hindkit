@@ -19,13 +19,8 @@ class Family(object):
     ):
 
         self.trademark = trademark
-        if name_stem:
-            self.name_stem = name_stem
-        else:
-            self.name_stem = self.trademark
-
+        self.name_stem = kit.fallback(name_stem, self.trademark)
         self.script = kit.constants.SCRIPT_NAMES_TO_SCRIPTS.get(script_name)
-
         if name:
             self.name = name
         else:
