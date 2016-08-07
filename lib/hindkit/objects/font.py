@@ -295,9 +295,14 @@ class Product(BaseFont):
 
         if self.style.file_format == 'UFO':
             font = self.style.open()
-            if font.info.postscriptFontName != self.full_name_postscript:
-                font.info.postscriptFontName = self.full_name_postscript
-                font.save()
+            i = font.info
+            i.familyName = None
+            i.styleName = None
+            i.styleMapStyleName = None
+            i.openTypeNamePreferredFamilyName = None
+            i.openTypeNamePreferredSubfamilyName = None
+            font.info.postscriptFontName = self.full_name_postscript
+            font.save()
 
         arguments = [
             '-f', self.style.path,
