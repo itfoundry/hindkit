@@ -132,6 +132,7 @@ class Master(BaseFont):
         target_dir = None,
         importing_names = None,
         excluding_names = None,
+        import_kerning = False,
     ):
 
         if importing_names is None:
@@ -176,6 +177,11 @@ class Master(BaseFont):
             target[new_name].copyDataFromGlyph(source_glyph)
             print(new_name, end=', ')
         print()
+
+        if import_kerning:
+            target.groups.update(source.groups)
+            target.kerning.update(source.kerning)
+            print("\n[NOTE] Imported kerning.")
 
     def derive_glyphs(self, deriving_names):
 
