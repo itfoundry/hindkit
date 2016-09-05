@@ -15,11 +15,19 @@ class Client(object):
         self.style_scheme = kit.constants.STYLES_ITF
         self.vertical_metrics_strategy = 'ITF'
 
+        current_year = datetime.date.today().year
+        if self.family.initial_release_year:
+            self.release_year_range = str(self.family.initial_release_year)
+            if current_year > self.family.initial_release_year:
+                self.release_year_range += "-{}".format(str(current_year))
+        else:
+            self.release_year_range = str(current_year)
+
         self.tables = {}
         self.tables['name'] = {
             0: kit.fallback(
                 self.family.info.copyright,
-                "Copyright {} Indian Type Foundry. All Rights Reserved.".format(datetime.date.today().year),
+                "Copyright {} Indian Type Foundry. All rights reserved.".format(self.release_year_range),
             ),
             7: "{} is a trademark of the Indian Type Foundry.".format(self.family.trademark),
             8: "Indian Type Foundry",

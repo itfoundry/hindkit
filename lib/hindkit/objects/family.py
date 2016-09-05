@@ -17,6 +17,7 @@ class Family(object):
         append_script_name = False,
         client_name = None,
         variant_tag = None,
+        initial_release_year = None,
     ):
 
         self.trademark = trademark
@@ -37,6 +38,7 @@ class Family(object):
 
         self.client_name = client_name
         self.variant_tag = variant_tag
+        self.initial_release_year = initial_release_year
 
     def get_client_data(self):
         return kit.Client(self, self.client_name)
