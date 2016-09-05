@@ -632,7 +632,7 @@ class FeatureReferences(BaseFeature):
             if os.path.exists(self.project.feature_kern.path):
                 lines.append(
                     "feature %(tag)s { include (%(path)s); } %(tag)s;" % {
-                        "tag": "dist" if self.project.family.script.is_indic else "kern",
+                        "tag": "kern", # "dist" if self.project.family.script.is_indic ?
                         "path": os.path.relpath(self.project.feature_kern.path, self.style.directory),
                     }
                 )
