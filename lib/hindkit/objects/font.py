@@ -230,6 +230,8 @@ class Style(BaseFont):
         self.is_oblique = kit.fallback(is_oblique, 'Oblique' in self.name.split())
 
         self.master = None
+        self.dirty = False
+
         # self.products = []
 
     @property

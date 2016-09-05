@@ -163,17 +163,6 @@ class Project(object):
                 except AttributeError:
                     pass
 
-            reference_font = self.family.masters[0].open()
-            self.glyph_data.glyph_order_trimmed = self.trim_glyph_names(
-                self.glyph_data.glyph_order,
-                reference_font.glyphOrder,
-            )
-
-            for master in self.family.masters:
-                font = master.open()
-                font.lib['public.glyphOrder'] = self.glyph_data.glyph_order_trimmed
-                font.lib.pop('com.schriftgestaltung.glyphOrder', None)
-
             for master in self.family.masters:
                 master.save_temp()
 
@@ -183,6 +172,18 @@ class Project(object):
             kit.remove(path)
             kit.makedirs(path)
             self.family.prepare_styles()
+
+            reference_font = self.family.styles[0].open()
+            self.glyph_data.glyph_order_trimmed = self.trim_glyph_names(
+                self.glyph_data.glyph_order,
+                reference_font.glyphOrder,
+            )
+            for product in self.products:
+                if not product.incidental:
+                    font = product.style.open()
+                    font.lib['public.glyphOrder'] = self.glyph_data.glyph_order_trimmed
+                    font.lib.pop('com.schriftgestaltung.glyphOrder', None)
+                    product.style.save_temp()
 
         if self.options['prepare_features']:
 
@@ -245,12 +246,105 @@ class Project(object):
                 self.features_references.prepare()
 
         if self.options['compile']:
+
             kit.makedirs(self.directories['products'])
             self.fmndb.prepare()
-            for product in (i for i in self.products if i.file_format == 'OTF'):
-                product.style.temp = True
-                product.prepare()
-            for product in (i for i in self.products if i.file_format == 'TTF'):
-                subprocess.call(['open', product.style.path])
-            for product in (i for i in self.products if i.file_format == 'TTF'):
-                product.prepare()
+
+            for product in self.products:
+                if not product.incidental:
+
+                    product.style.temp = True
+
+                    font = product.style.open()
+                    font.groups.clear()
+                    font.kerning.clear()
+                    product.style.save_temp()
+
+                    if product.style.dirty and (
+                        self.options['run_checkoutlines'] or self.options['run_autohint']
+                    ):
+                        options = {
+                            'doOverlapRemoval': self.options['run_checkoutlines'],
+                            'doAutoHint': self.options['run_autohint'],
+                            'allowDecimalCoords': False,
+                        }
+                        _updateInstance(options, product.style.path)
+
+                    product.prepare()
+
+            for product in self.products:
+                if product.file_format == 'TTF':
+                    subprocess.call(['open', product.style.path])
+            for product in self.products:
+                if product.file_format == 'TTF':
+                    product.prepare()
+
+
+# makeInstancesUFO.updateInstance
+
+def _updateInstance(options, fontInstancePath):
+    if options['doOverlapRemoval']:
+        print("\tdoing overlap removal with checkOutlinesUFO %s ..." % (fontInstancePath))
+        logList = []
+        opList = ["-e", fontInstancePath]
+        if options['allowDecimalCoords']:
+            opList.insert(0, "-dec")
+        if os.name == "nt":
+            opList.insert(0, 'checkOutlinesUFO.cmd')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        else:
+            opList.insert(0, 'checkOutlinesUFO')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        while 1:
+            output = proc.stdout.readline()
+            if output:
+                print(".", end=' ')
+                logList.append(output)
+            if proc.poll() != None:
+                output = proc.stdout.readline()
+                if output:
+                    print(output, end=' ')
+                    logList.append(output)
+                break
+        log = "".join(logList)
+        if not ("Done with font" in log):
+            print()
+            print(log)
+            print("Error in checkOutlinesUFO %s" % (fontInstancePath))
+            # raise(SnapShotError)
+        else:
+            print()
+
+    if options['doAutoHint']:
+        print("\tautohinting %s ..." % (fontInstancePath))
+        logList = []
+        opList = ['-q', '-nb', fontInstancePath]
+        if options['allowDecimalCoords']:
+            opList.insert(0, "-dec")
+        if os.name == "nt":
+            opList.insert(0, 'autohint.cmd')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        else:
+            opList.insert(0, 'autohint')
+            proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+        while 1:
+            output = proc.stdout.readline()
+            if output:
+                print(output, end=' ')
+                logList.append(output)
+            if proc.poll() != None:
+                output = proc.stdout.readline()
+                if output:
+                    print(output, end=' ')
+                    logList.append(output)
+                break
+        log = "".join(logList)
+        if not ("Done with font" in log):
+            print()
+            print(log)
+            print("Error in autohinting %s" % (fontInstancePath))
+            # raise(SnapShotError)
+        else:
+            print()
+
+    return
