@@ -79,6 +79,7 @@ class Goadb(kit.BaseFile):
 
     TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP = {
         'CR\tCR\tuni000D\n': 'CR\tuni000D\tuni000D\n',
+        'uni00A0\tnonbreakingspace\tuni00A0\n': 'uni00A0\tuni00A0\tuni00A0\n',
     }
 
     def __init__(
