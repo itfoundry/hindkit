@@ -114,7 +114,7 @@ class FeatureTables(BaseFeature):
             i for i in
             [self.project.family.script.unicode_range_bit] +
             self.project.options["additional_unicode_range_bits"]
-            if i
+            if i is not None
         )
         if unicode_range_bits:
             tables["OS/2"].append(
