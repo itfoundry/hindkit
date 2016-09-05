@@ -100,32 +100,6 @@ class BaseFont(kit.BaseFile):
         print("\nSaving `{}`".format(self.path))
         font.save(self.path)
 
-
-class Master(BaseFont):
-
-    def __init__(self, family, name, weight_location=0):
-
-        super(Master, self).__init__(
-            family,
-            name,
-            abstract_directory = kit.Project.directories['masters'],
-        )
-        self.weight_location = weight_location
-
-    @BaseFont.filename.getter
-    def filename(self):
-        '''According to Glyphs app's convention.'''
-        if self._filename is None:
-            path_pattern = '{}/*{}.ufo'.format(self.directory, self.name)
-            paths = glob.glob(path_pattern)
-            if paths:
-                self._filename = os.path.basename(paths[0]).partition('.')[0]
-                return self._filename
-            else:
-                raise SystemExit("`{}` is missing.".format(path_pattern))
-        else:
-            return self._filename
-
     def import_glyphs_from(
         self,
         source_path,
@@ -204,6 +178,32 @@ class Master(BaseFont):
                 target[deriving_name].width = target[source_name].width
             print('{} (from {})'.format(deriving_name, source_name), end=', ')
         print()
+
+
+class Master(BaseFont):
+
+    def __init__(self, family, name, weight_location=0):
+
+        super(Master, self).__init__(
+            family,
+            name,
+            abstract_directory = kit.Project.directories['masters'],
+        )
+        self.weight_location = weight_location
+
+    @BaseFont.filename.getter
+    def filename(self):
+        '''According to Glyphs app's convention.'''
+        if self._filename is None:
+            path_pattern = '{}/*{}.ufo'.format(self.directory, self.name)
+            paths = glob.glob(path_pattern)
+            if paths:
+                self._filename = os.path.basename(paths[0]).partition('.')[0]
+                return self._filename
+            else:
+                raise SystemExit("`{}` is missing.".format(path_pattern))
+        else:
+            return self._filename
 
 
 class Style(BaseFont):
