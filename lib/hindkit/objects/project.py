@@ -252,16 +252,15 @@ class Project(object):
 
             for product in self.products:
                 if not product.incidental:
-
                     product.style.temp = True
-
-                    font = product.style.open()
-                    font.groups.clear()
-                    font.kerning.clear()
-                    product.style.save_temp()
-
+                    if self.options['build_ttf']:
+                        font = product.style.open()
+                        font.groups.clear()
+                        font.kerning.clear()
+                        product.style.save_temp()
                     if product.style.dirty and (
-                        self.options['run_checkoutlines'] or self.options['run_autohint']
+                        self.options['run_checkoutlines'] or
+                        self.options['run_autohint']
                     ):
                         options = {
                             'doOverlapRemoval': self.options['run_checkoutlines'],
@@ -269,7 +268,6 @@ class Project(object):
                             'allowDecimalCoords': False,
                         }
                         _updateInstance(options, product.style.path)
-
                     product.prepare()
 
             for product in self.products:
