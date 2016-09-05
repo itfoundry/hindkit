@@ -120,11 +120,11 @@ class Project(object):
         if self.options['run_makeinstances']:
             styles = self.family.styles
         else:
-            styles = self.family.get_styles_that_are_directly_derived_from_masters()
+            styles = [i for i in self.family.styles if i.master]
 
-        self.products = [style.produce(self, file_format='OTF') for style in styles]
+        self.products = [i.produce(self, file_format='OTF') for i in styles]
         if self.options['build_ttf']:
-            self.products.extend(style.produce(self, file_format='TTF') for style in styles)
+            self.products.extend(i.produce(self, file_format='TTF', incidental=True) for i in styles)
 
     def trim_glyph_names(self, names, reference_names):
         not_covered_glyphs = [

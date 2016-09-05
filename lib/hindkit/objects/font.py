@@ -229,6 +229,7 @@ class Style(BaseFont):
         self.is_italic = kit.fallback(is_italic, 'Italic' in self.name.split())
         self.is_oblique = kit.fallback(is_oblique, 'Oblique' in self.name.split())
 
+        self.master = None
         # self.products = []
 
     @property
@@ -245,13 +246,13 @@ class Style(BaseFont):
     def filename(self):
         return kit.fallback(self._filename, 'font')
 
-    def produce(self, project, file_format='OTF'):
-        return Product(project, self, file_format=file_format)
+    def produce(self, project, file_format='OTF', incidental=False):
+        return Product(project, self, file_format=file_format, incidental=incidental)
 
 
 class Product(BaseFont):
 
-    def __init__(self, project, style, file_format='OTF'):
+    def __init__(self, project, style, file_format='OTF', incidental=False):
 
         self.style = style
         self.weight_location = self.style.weight_location
@@ -268,6 +269,8 @@ class Product(BaseFont):
         )
 
         self.project = project
+
+        self.incidental = incidental
 
     @BaseFont.filename.getter
     def filename(self):

@@ -58,16 +58,12 @@ class Family(object):
         ]
         if self.masters is None:
             self.set_masters((i.name, i.weight_location) for i in self.styles)
-
-    def get_styles_that_are_directly_derived_from_masters(self):
-        master_positions = [
-            master.weight_location for master in self.masters
-        ]
-        styles_that_are_directly_derived_from_masters = []
-        for style in self.styles:
-            if style.weight_location in master_positions:
-                styles_that_are_directly_derived_from_masters.append(style)
-        return styles_that_are_directly_derived_from_masters
+        else:
+            for master in self.masters:
+                for style in self.styles:
+                    if style.weight_location == master.weight_location:
+                        style.master = master
+                        break
 
     def _has_kerning(self):
         raise NotImplementedError()
@@ -81,7 +77,7 @@ class Family(object):
     def prepare_styles(self):
 
         p = self.project
-        styles = [product.style for product in p.products]
+        styles = [i.style for i in p.products if not i.incidental]
         for style in styles:
             style.temp = True
             kit.makedirs(style.directory)
@@ -89,19 +85,18 @@ class Family(object):
         if p.options['run_makeinstances']:
             self.generate_styles()
         else:
-            for master, style in zip(self.masters, styles):
-                kit.copy(master.path, style.path)
-                font = style.open()
-                font.info.postscriptFontName = style.full_name_postscript
-                if font.dirty:
-                    font.save()
-                if p.options['run_checkoutlines'] or p.options['run_autohint']:
-                    options = {
-                        'doOverlapRemoval': p.options['run_checkoutlines'],
-                        'doAutoHint': p.options['run_autohint'],
-                        'allowDecimalCoords': False,
-                    }
-                    _updateInstance(options, style.path)
+            for style in styles:
+                kit.copy(style.master.path, style.path)
+                style.open().info.postscriptFontName = style.full_name_postscript
+                style.dirty = True
+
+        for style in styles:
+            try:
+                style.postprocess()
+                style.dirty = True
+            except AttributeError:
+                pass
+            style.save_temp()
 
     def generate_styles(self):
 
