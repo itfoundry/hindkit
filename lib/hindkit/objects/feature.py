@@ -264,7 +264,7 @@ class FeatureKern(BaseFeature):
             folderPath = self.style.directory,
         )
         try:
-            self.project.postprocess_kerning
+            self.postprocess
         except AttributeError:
             pass
         else:
@@ -273,8 +273,7 @@ class FeatureKern(BaseFeature):
                 with open(kern_path) as f:
                     content = f.read()
                 with open(kern_path, "w") as f:
-                    f.write(self.project.postprocess_kerning(content))
-
+                    f.write(self.postprocess(content))
 
 class FeatureWeightClass(BaseFeature):
     def generate(self):
