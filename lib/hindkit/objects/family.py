@@ -173,8 +173,8 @@ class Fmndb(kit.BaseFile):
         '# [PostScriptName]',
         '#   f = Preferred Family Name',
         '#   s = Subfamily/Style Name',
-        '#   l = Compatible Family Menu Name (Style-Linking Family Name)',
-        '#   m = 1, Macintosh Compatible Full Name (Deprecated)',
+        '#   l = Compatible Family Menu Name (Style-Linking Family Name; FMNDB v2)',
+        '#   c = Windows Compatible Menu Name (FMNDB v1)'
     ]
 
     def __init__(self, project, name='FontMenuNameDB'):
@@ -195,22 +195,24 @@ class Fmndb(kit.BaseFile):
                 self.lines.append('  f = {}'.format(f_name))
                 self.lines.append('  s = {}'.format(product.name))
 
-                l_name = product.full_name
                 comment_lines = []
 
                 if self.project.options['do_style_linking']:
-                    if product.name == 'Regular':
-                        l_name = l_name.replace(' Regular', '')
-                    else:
-                        if product.is_bold:
-                            comment_lines.append('  # IsBoldStyle')
-                            l_name = l_name.replace(' Bold', '')
-                        if product.is_italic:
-                            comment_lines.append('  # IsItalicStyle')
-                            l_name = l_name.replace(' Italic', '')
-
-                if l_name != f_name:
-                    self.lines.append('  l = {}'.format(l_name))
+                    l_name = f_name
+                    # c_name_auto = l_name
+                    if product.is_bold:
+                        comment_lines.append('  # IsBoldStyle')
+                        # c_name_auto += ' Bold'
+                    if product.is_italic:
+                        comment_lines.append('  # IsItalicStyle')
+                        # c_name_auto += ' Italic'
+                    # if c_name_auto != product.full_name:
+                    #     c_name = product.full_name
+                    #     self.lines.append('  c = {}'.format(c_name))
+                else:
+                    l_name = product.full_name
+                    if l_name != f_name:
+                        self.lines.append('  l = {}'.format(l_name))
 
                 self.lines.extend(comment_lines)
 
