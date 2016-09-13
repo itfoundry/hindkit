@@ -169,8 +169,10 @@ class BaseFont(kit.BaseFile):
             source_name = {
                 'CR': 'space',
                 'uni000D': 'space',
+                'nonbreakingspace': 'space',
                 'uni00A0': 'space',
                 'NULL': None,
+                'zerowidthspace': None,
                 'uni200B': None,
             }[deriving_name]
             target.newGlyph(deriving_name)
