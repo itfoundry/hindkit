@@ -46,7 +46,7 @@ class Project(object):
             'match_mI_variants': False, # 'single' or 'sequence'
                 'position_marks_for_mI_variants': False,
 
-            'run_makeinstances': len(self.family.styles) > len(self.family.masters),
+            'run_makeinstances': True,
             'run_checkoutlines': True,
             'run_autohint': False,
             'build_ttf': False,

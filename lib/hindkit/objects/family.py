@@ -58,12 +58,11 @@ class Family(object):
         ]
         if self.masters is None:
             self.set_masters((i.name, i.weight_location) for i in self.styles)
-        else:
-            for master in self.masters:
-                for style in self.styles:
-                    if style.weight_location == master.weight_location:
-                        style.master = master
-                        break
+        for master in self.masters:
+            for style in self.styles:
+                if style.weight_location == master.weight_location:
+                    style.master = master
+                    break
 
     def _has_kerning(self):
         raise NotImplementedError()
@@ -93,9 +92,10 @@ class Family(object):
         for style in styles:
             try:
                 style.postprocess()
-                style.dirty = True
             except AttributeError:
                 pass
+            else:
+                style.dirty = True
             style.save_temp()
 
     def generate_styles(self):
