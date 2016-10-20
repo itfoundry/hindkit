@@ -88,6 +88,10 @@ class BaseFont(kit.BaseFile):
                 raise SystemExit("`{}` is missing.".format(self.path))
 
     def save_temp(self, font=None, as_filename=None, temp=True):
+        if not font:
+            font = self.font_in_memory
+        if not font:
+            return
         self.counter += 1
         if as_filename is None:
             self.filename = None
@@ -95,8 +99,6 @@ class BaseFont(kit.BaseFile):
         else:
             self.filename = as_filename
         self.temp = temp
-        if not font:
-            font = self.font_in_memory
         print("\nSaving `{}`".format(self.path))
         font.save(self.path)
 

@@ -258,7 +258,7 @@ class Project(object):
                         font.groups.clear()
                         font.kerning.clear()
                         product.style.save_temp()
-                    if product.style.dirty and (
+                    if (
                         self.options['run_checkoutlines'] or
                         self.options['run_autohint']
                     ):
