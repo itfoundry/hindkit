@@ -112,7 +112,7 @@ class FeatureTables(BaseFeature):
 
         unicode_range_bits = set(
             i for i in
-            [self.project.family.script.unicode_range_bit] +
+            self.project.family.script.unicode_range_bits +
             self.project.options["additional_unicode_range_bits"]
             if i is not None
         )
