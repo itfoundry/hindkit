@@ -173,17 +173,18 @@ class Project(object):
             kit.makedirs(path)
             self.family.prepare_styles()
 
-            reference_font = self.family.styles[0].open()
-            self.glyph_data.glyph_order_trimmed = self.trim_glyph_names(
-                self.glyph_data.glyph_order,
-                reference_font.glyphOrder,
-            )
-            for product in self.products:
-                if not product.incidental:
-                    font = product.style.open()
-                    font.lib['public.glyphOrder'] = self.glyph_data.glyph_order_trimmed
-                    font.lib.pop('com.schriftgestaltung.glyphOrder', None)
-                    product.style.save_temp()
+            if self.family.styles[0].file_format == "UFO":
+                reference_font = self.family.styles[0].open()
+                self.glyph_data.glyph_order_trimmed = self.trim_glyph_names(
+                    self.glyph_data.glyph_order,
+                    reference_font.glyphOrder,
+                )
+                for product in self.products:
+                    if not product.incidental:
+                        font = product.style.open()
+                        font.lib['public.glyphOrder'] = self.glyph_data.glyph_order_trimmed
+                        font.lib.pop('com.schriftgestaltung.glyphOrder', None)
+                        product.style.save_temp()
 
         if self.options['prepare_features']:
 
@@ -194,8 +195,9 @@ class Project(object):
             for product in self.products:
                 product.style.temp = True
 
-            reference_font = self.products[0].style.open()
-            self.family.info.unitsPerEm = reference_font.info.unitsPerEm
+            if self.family.styles[0].file_format == "UFO":
+                reference_font = self.products[0].style.open()
+                self.family.info.unitsPerEm = reference_font.info.unitsPerEm
 
             self.feature_classes = kit.Feature(
                 self, 'classes',
@@ -261,7 +263,7 @@ class Project(object):
                     if (
                         self.options['run_checkoutlines'] or
                         self.options['run_autohint']
-                    ):
+                    ) and self.family.styles[0].file_format == "UFO":
                         options = {
                             'doOverlapRemoval': self.options['run_checkoutlines'],
                             'doAutoHint': self.options['run_autohint'],

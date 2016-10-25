@@ -88,6 +88,9 @@ class Family(object):
                 kit.copy(style.master.path, style.path)
                 style.open().info.postscriptFontName = style.full_name_postscript
                 style.dirty = True
+                if style.file_format == "UFO":
+                    style.open().info.postscriptFontName = style.full_name_postscript
+                    style.dirty = True
 
         for style in styles:
             try:
