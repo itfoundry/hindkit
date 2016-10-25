@@ -316,6 +316,7 @@ class Product(BaseFont):
             i.styleMapStyleName = None
             i.openTypeNamePreferredFamilyName = None
             i.openTypeNamePreferredSubfamilyName = None
+            i.copyright = None
             font.info.postscriptFontName = self.full_name_postscript
             font.save()
 
