@@ -292,10 +292,10 @@ class Product(BaseFont):
         style = self.style
 
         if self.file_format == 'OTF':
-            self.style.file_format = 'UFO'
+            # self.style.file_format = 'UFO' #TODO: Can be UFO or OTF.
             goadb = self.project.goadb_trimmed
         elif self.file_format == 'TTF':
-            self.style.file_format = 'TTF'
+            self.style.file_format = 'TTF' #TODO: Should restore the original file format afterwards. Or the styles should just seperate.
             goadb = self.project.goadb_trimmed_ttf
 
         goadb.prepare(self.project.glyph_data.glyph_order_trimmed)
