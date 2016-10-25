@@ -78,16 +78,19 @@ class Family(object):
         p = self.project
         styles = [i.style for i in p.products if not i.incidental]
         for style in styles:
-            style.temp = True
             kit.makedirs(style.directory)
 
         if p.options['run_makeinstances']:
+            for style in styles:
+                style.temp = True
             self.generate_styles()
         else:
             for style in styles:
-                kit.copy(style.master.path, style.path)
-                style.open().info.postscriptFontName = style.full_name_postscript
-                style.dirty = True
+                if os.path.exists(style.master.path):
+                    style.temp = True
+                    kit.copy(style.master.path, style.path)
+                else:
+                    style.check_override()
                 if style.file_format == "UFO":
                     style.open().info.postscriptFontName = style.full_name_postscript
                     style.dirty = True
