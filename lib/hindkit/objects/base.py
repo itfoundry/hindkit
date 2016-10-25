@@ -117,6 +117,10 @@ class BaseFile(object):
 
             try:
                 print(path_original, path_temp)
+                kit.makedirs(os.path.dirname(path_temp))
+                if isinstance(self, kit.Style):
+                    path_original = os.path.dirname(path_original)
+                    path_temp = os.path.dirname(path_temp)
                 kit.copy(path_original, path_temp)
                 print('[COPIED]', path_original)
             except IOError:
