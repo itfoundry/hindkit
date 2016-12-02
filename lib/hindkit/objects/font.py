@@ -327,8 +327,9 @@ class Product(BaseFont):
             '-gf', goadb.path,
             '-rev', self.project.fontrevision,
             '-ga',
-            '-omitMacNames',
         ]
+        if self.project.options['omit_mac_name_records']:
+            arguments.append('-omitMacNames')
         if not self.project.args.test:
             arguments.append('-r')
         if not self.project.options['run_autohint']:

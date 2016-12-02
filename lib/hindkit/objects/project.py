@@ -54,6 +54,7 @@ class Project(object):
             'override_GDEF': True,
 
             'do_style_linking': False,
+            'omit_mac_name_records': True,
 
             'use_os_2_version_4': False,
                 'prefer_typo_metrics': False,
