@@ -69,6 +69,12 @@ class Script(object):
 
 SCRIPTS = [
     Script(
+        name = "Latin",
+        abbr = "",
+        tags = ["latn"],
+        unicode_range_bits = [0],
+    ),
+    Script(
         name = "Devanagari",
         abbr = "dv",
         tags = ["dev2", "deva"],

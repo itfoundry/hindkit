@@ -13,7 +13,7 @@ class Family(object):
         name = None,
         trademark = None,
         name_stem = None,
-        script_name = None,
+        script_name = "Latin",
         append_script_name = False,
         client_name = None,
         variant_tag = None,
