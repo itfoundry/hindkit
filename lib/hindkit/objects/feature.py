@@ -207,8 +207,18 @@ class FeatureTables(BaseFeature):
             }
             if self.project.options["prepare_mark_positioning"] or os.path.exists(os.path.join(self.directory, "classes.fea")):
                 GDEF_records["marks"] = "@{}".format(WriteFeaturesMarkFDK.kCombMarksClassName)
-            if os.path.exists(os.path.join(self.directory, "classes_suffixing.fea")):
-                GDEF_records["marks"] = "@{}".format("COMBINING_MARKS_GDEF")
+            classes_suffixing_path = os.path.join(self.directory, "classes_suffixing.fea")
+            if os.path.exists(classes_suffixing_path):
+                lines_without_comment = []
+                with open(classes_suffixing_path) as f:
+                    lines_without_comment = [line.partition("#")[0].strip() for line in f]
+                content_without_comment = "\n".join(lines_without_comment)
+                for k, v in [
+                    ("bases", "@BASES_GDEF"),
+                    ("marks", "@COMBINING_MARKS_GDEF"),
+                ]:
+                    if v in content_without_comment:
+                        GDEF_records[k] = v
             tables["GDEF"].extend([
                 "GlyphClassDef {bases}, {ligatures}, {marks}, {components};".format(**GDEF_records)
             ])
