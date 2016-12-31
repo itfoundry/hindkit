@@ -59,7 +59,7 @@ class FeatureClasses(BaseFeature):
                 glyph_classes.extend([
                     (m.CLASS_NAME_mI_VARIANTS, f.mI_variants, None),
                     (m.CLASS_NAME_BASES_ALIVE, f.bases_alive, m.BASE_NAMES_ALIVE),
-                    (m.CLASS_NAME_BASES_FOR_LONG_mI, f.bases_for_long_mII, m.BASE_NAMES_FOR_LONG_mII),
+                    (m.CLASS_NAME_BASES_FOR_LONG_mII, f.bases_for_long_mII, m.BASE_NAMES_FOR_LONG_mII),
                 ])
                 if self.project.options["match_mI_variants"] == "sequence":
                     glyph_classes.extend([
@@ -321,7 +321,7 @@ class FeatureMatches(BaseFeature):
     CLASS_NAME_mI_VARIANTS = "mI_VARIANTS"
     CLASS_NAME_BASES_ALIVE = "BASES_ALIVE"
     CLASS_NAME_BASES_DEAD = "BASES_DEAD"
-    CLASS_NAME_BASES_FOR_LONG_mI = "BASES_FOR_LONG_mI"
+    CLASS_NAME_BASES_FOR_LONG_mII = "BASES_FOR_LONG_mII"
 
     CONSONANTS_ALIVE = [
         i + "A" for i in kit.constants.CONSONANT_STEMS
@@ -450,7 +450,11 @@ class FeatureMatches(BaseFeature):
     def bases_alive(self):
         return kit.fallback(
             self._bases_alive,
-            [self.font[i] for i in self.font.groups.get(self.CLASS_NAME_BASES_ALIVE, [])]
+            [
+                self.font[i] for i in
+                self.font.groups.get(self.CLASS_NAME_BASES_ALIVE, [])
+                if ".mU" not in i
+            ],
         )
     @bases_alive.setter
     def bases_alive(self, value):

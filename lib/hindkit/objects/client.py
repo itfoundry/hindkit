@@ -33,7 +33,7 @@ class Client(object):
             8: "Indian Type Foundry",
             9: self.family.info.openTypeNameDesigner,
             10: self.family.info.openTypeNameDescription,
-            11: "http://www.indiantypefoundry.com",
+            11: "https://www.indiantypefoundry.com",
             12: self.family.info.openTypeNameDesignerURL,
             13: "This Font Software is protected under domestic and international trademark and copyright law. You agree to identify the ITF fonts by name and credit the ITF's ownership of the trademarks and copyrights in any design or production credits.",
             14: "http://www.indiantypefoundry.com/licensing/eula/",
