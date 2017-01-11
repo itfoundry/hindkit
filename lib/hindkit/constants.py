@@ -188,14 +188,17 @@ def get_u_scalar_to_u_name():
     return u_scalar_to_u_name
 
 @kit.memoize
-def get_glyph_list(filename):
+def get_glyph_list(filename, with_u_scalar=False):
     glyph_list = collections.OrderedDict()
     with open(kit.relative_to_package("data/" + filename)) as f:
         for line in f:
             line_without_comment = line.partition("#")[0].strip()
             if line_without_comment:
                 u_scalar, glyph_name, u_name = line_without_comment.split(";")
-                glyph_list[glyph_name] = u_name
+                if with_u_scalar:
+                    glyph_list[glyph_name] = (u_scalar, u_name)
+                else:
+                    glyph_list[glyph_name] = u_name
     return glyph_list
 
 @kit.memoize
