@@ -77,8 +77,8 @@ class Family(object):
 
         p = self.project
         styles = [i.style for i in p.products if not i.incidental]
-        for style in styles:
-            kit.makedirs(style.directory)
+        # for style in styles:
+        #     kit.makedirs(style.directory)
 
         if p.options['run_makeinstances']:
             for style in styles:
