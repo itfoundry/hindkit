@@ -15,7 +15,7 @@ This package hosts the build system for the Hind multiscript project:
 
 ## Dependencies
 
-- AFDKO http://www.adobe.com/devnet/opentype/afdko.html
+- AFDKO http://adobe.com/devnet/opentype/afdko.html
 
 ## Installation
 
