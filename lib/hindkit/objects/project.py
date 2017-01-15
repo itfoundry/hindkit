@@ -3,7 +3,6 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import os, argparse, subprocess
-import fontTools.ttLib
 import hindkit as kit
 
 class Project(object):

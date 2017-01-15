@@ -310,14 +310,18 @@ class Product(BaseFont):
 
         if self.style.file_format == 'UFO':
             font = self.style.open()
-            i = font.info
-            i.familyName = None
-            i.styleName = None
-            i.styleMapStyleName = None
-            i.openTypeNamePreferredFamilyName = None
-            i.openTypeNamePreferredSubfamilyName = None
-            i.copyright = None
             font.info.postscriptFontName = self.full_name_postscript
+            for i in """
+                versionMajor
+                versionMinor
+                copyright
+                familyName
+                styleName
+                styleMapStyleName
+                openTypeNamePreferredFamilyName
+                openTypeNamePreferredSubfamilyName
+            """.split():
+                setattr(font.info, i, None)
             font.save()
 
         arguments = [
@@ -356,7 +360,7 @@ class Product(BaseFont):
             pass
         else:
             if os.path.exists(self.path):
-                original = fontTools.ttLib.TTFont(self.path)
+                original = fontTools.ttLib.TTFont(self.path, recalcTimestamp=True)
                 postprocessed = self.postprocess(original)
                 if postprocessed:
                     postprocessed.save(self.path, reorderTables=False)
