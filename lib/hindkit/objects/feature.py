@@ -370,13 +370,13 @@ class FeatureMatches(BaseFeature):
         self.adjustment_extremes = self._get_adjustment_extremes()
         if self.adjustment_extremes:
             targets = [base.target for base in self.bases]
-            target_min = min(targets)
-            target_max = max(targets)
-            for i, target in enumerate(targets):
-                ratio = (target - target_min) / (target_max - target_min)
+            TARGET_MIN = min(targets)
+            TARGET_MAX = max(targets)
+            for i, base in enumerate(self.bases):
+                ratio = (base.target - TARGET_MIN) / (TARGET_MAX - TARGET_MIN)
                 ae = self.adjustment_extremes
                 adjustment = ae[0] + (ae[-1] - ae[0]) * ratio
-                targets[i] += adjustment
+                self.bases[i].target += adjustment
             print()
 
         self.tolerance = self._get_stem_position(

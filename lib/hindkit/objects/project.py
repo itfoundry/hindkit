@@ -29,7 +29,7 @@ class Project(object):
         self.fontrevision = fontrevision
 
         # (light_min, light_max), (bold_min, bold_max)
-        # self.adjustment_for_matching_mI_variants = (0, 0), (0, 0)
+        self.adjustment_for_matching_mI_variants = (0, 0), (0, 0)
 
         self.options = {
 
