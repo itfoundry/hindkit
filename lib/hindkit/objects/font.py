@@ -338,6 +338,8 @@ class Product(BaseFont):
             arguments.append('-r')
         if not self.project.options['run_autohint']:
             arguments.append('-shw')
+        if self.family.is_serif is not None:
+            arguments.append('-serif' if self.family.is_serif else '-sans')
         if self.project.options['do_style_linking']:
             if self.is_bold:
                 arguments.append('-b')

@@ -18,6 +18,7 @@ class Family(object):
         client_name = None,
         variant_tag = None,
         initial_release_year = None,
+        is_serif = None,
     ):
 
         self.trademark = trademark
@@ -39,6 +40,7 @@ class Family(object):
         self.client_name = client_name
         self.variant_tag = variant_tag
         self.initial_release_year = initial_release_year
+        self.is_serif = is_serif
 
     def get_client_data(self):
         return kit.Client(self, self.client_name)
