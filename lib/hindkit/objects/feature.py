@@ -347,7 +347,7 @@ class FeatureMatches(BaseFeature):
 
         self.font = self.style.open()
 
-        mI_variant_names = self.font.groups[self.CLASS_NAME_mI_VARIANTS]
+        mI_variant_names = self.font.groups.get(self.CLASS_NAME_mI_VARIANTS)
         if not mI_variant_names:
             raise ValueError("[WARNING] No variants for mI.")
         # The order in glyph classes can't be trusted:

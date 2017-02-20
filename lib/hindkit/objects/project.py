@@ -8,12 +8,12 @@ import hindkit as kit
 class Project(object):
 
     directories = {
-        'masters': 'masters',
-        'styles': 'styles',
-        'features': 'features',
-        'intermediates': 'intermediates',
-        'products': 'products',
-        'output': '/Library/Application Support/Adobe/Fonts',
+        "masters": "masters",
+        "styles": "styles",
+        "features": "features",
+        "intermediates": "intermediates",
+        "products": "products",
+        "output": "/Library/Application Support/Adobe/Fonts",
     }
 
     def __init__(

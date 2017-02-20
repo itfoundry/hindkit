@@ -354,6 +354,7 @@ class Product(BaseFont):
                 arguments.append('-osbOn' if boolean else '-osbOff')
                 arguments.append(digit)
 
+        kit.makedirs(os.path.dirname(self.path))
         subprocess.call(['makeotf'] + arguments)
 
         try:
