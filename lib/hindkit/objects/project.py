@@ -279,6 +279,15 @@ class Project(object):
                 if product.file_format == 'TTF':
                     product.prepare()
 
+        client_data = self.family.get_client_data()
+
+        if client_data.name == "Google Fonts":
+
+            with open(kit.relative_to_package("data/template-OFL.txt")) as f:
+                template = f.read()
+            with open(kit.relative_to_cwd("OFL.txt"), "w") as f:
+                f.write(template.format(client_data.tables["name"][0]))
+
 
 # makeInstancesUFO.updateInstance
 

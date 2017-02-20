@@ -53,7 +53,7 @@ class Client(object):
             self.tables["name"].update({
                 0: kit.fallback(
                     self.family.info.copyright,
-                    "Copyright (c) {} Indian Type Foundry (info@indiantypefoundry.com)".format(self.release_year_range),
+                    "Copyright {} Indian Type Foundry (info@indiantypefoundry.com)".format(self.release_year_range),
                 ),
                 7: None,
                 13: "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL",
