@@ -152,15 +152,20 @@ class Project(object):
         defcon_font.lib.pop('com.schriftgestaltung.glyphOrder', None)
         font.save_temp()
 
+    def reset_temp_directory(self, name, files=None):
+        path = self.temp(self.directories[name])
+        kit.remove(path)
+        kit.makedirs(path)
+        for i in files:
+            i.temp = True
+
     def build(self):
 
         kit.makedirs(self.directories['intermediates'])
 
         if self.options['prepare_masters']:
 
-            path = self.temp(self.directories['masters'])
-            kit.remove(path)
-            kit.makedirs(path)
+            self.reset_temp_directory("masters")
 
             for master in self.family.masters:
                 master.prepare()
@@ -174,19 +179,12 @@ class Project(object):
 
         if self.options['prepare_styles']:
 
-            path = self.temp(self.directories['styles'])
-            kit.remove(path)
-            kit.makedirs(path)
+            self.reset_temp_directory("styles")
             self.family.prepare_styles()
 
         if self.options['prepare_features']:
 
-            path = self.temp(self.directories['features'])
-            kit.remove(path)
-            kit.makedirs(path)
-
-            for product in self.products:
-                product.style.temp = True
+            self.reset_temp_directory("features", [i.style for i in self.products])
 
             if self.family.styles[0].file_format == "UFO":
                 reference_font = self.products[0].style.open()
@@ -242,7 +240,8 @@ class Project(object):
 
         if self.options['compile']:
 
-            kit.makedirs(self.directories['products'])
+            self.reset_temp_directory("products", self.products)
+
             self.fmndb.prepare()
 
             for product in self.products:
