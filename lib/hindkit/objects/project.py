@@ -124,7 +124,16 @@ class Project(object):
 
         self.products = [i.produce(self, file_format='OTF') for i in styles]
         if self.options['build_ttf']:
-            self.products.extend(i.produce(self, file_format='TTF', incidental=True) for i in styles)
+            self.products.extend(
+                i.produce(self, file_format='TTF', incidental=True)
+                for i in styles
+            )
+
+        if len(set(i.file_format for i in self.products)) > 1:
+            for product in self.products:
+                product.abstract_directory = os.path.join(
+                    product.abstract_directory, product.extension,
+                )
 
     def trim_glyph_names(self, names, reference_names):
         not_covered_glyphs = [
