@@ -16,6 +16,8 @@ class GlyphData(object):
 
     ITFDG = []
 
+    goadb_path = 'GlyphOrderAndAliasDB'
+
     @staticmethod
     def split(line):
         return line.partition('#')[0].split()
@@ -23,7 +25,6 @@ class GlyphData(object):
     def __init__(
         self,
         glyph_order_name = 'glyphorder.txt',
-        goadb_name = 'GlyphOrderAndAliasDB',
     ):
 
         self.glyph_order = []
@@ -31,9 +32,9 @@ class GlyphData(object):
         self.dictionary = agd.dictionary()
         self.goadb = StringIO.StringIO()
 
-        if os.path.exists(goadb_name):
+        if os.path.exists(self.goadb_path):
 
-            with open(goadb_name) as f:
+            with open(self.goadb_path) as f:
                 self.goadb.writelines(
                     '\t'.join(self.split(line)) + '\n'
                     for line in f
