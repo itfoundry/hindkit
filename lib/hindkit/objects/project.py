@@ -146,6 +146,12 @@ class Project(object):
         ]
         return names_trimmed
 
+    def update_glyphOrder(self, font):
+        defcon_font = font.open()
+        defcon_font.lib['public.glyphOrder'] = self.glyph_data.glyph_order_trimmed
+        defcon_font.lib.pop('com.schriftgestaltung.glyphOrder', None)
+        font.save_temp()
+
     def build(self):
 
         kit.makedirs(self.directories['intermediates'])
@@ -172,19 +178,6 @@ class Project(object):
             kit.remove(path)
             kit.makedirs(path)
             self.family.prepare_styles()
-
-            if self.family.styles[0].file_format == "UFO":
-                reference_font = self.family.styles[0].open()
-                self.glyph_data.glyph_order_trimmed = self.trim_glyph_names(
-                    self.glyph_data.glyph_order,
-                    reference_font.glyphOrder,
-                )
-                for product in self.products:
-                    if not product.incidental:
-                        font = product.style.open()
-                        font.lib['public.glyphOrder'] = self.glyph_data.glyph_order_trimmed
-                        font.lib.pop('com.schriftgestaltung.glyphOrder', None)
-                        product.style.save_temp()
 
         if self.options['prepare_features']:
 

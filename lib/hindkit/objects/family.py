@@ -82,13 +82,20 @@ class Family(object):
         # for style in styles:
         #     kit.makedirs(style.directory)
 
+        p.glyph_data.glyph_order_trimmed = p.trim_glyph_names(
+            p.glyph_data.glyph_order,
+            self.masters[0].open().glyphOrder,
+        )
+
         if p.options['run_makeinstances']:
+            p.update_glyphOrder(self.masters[0])
             for style in styles:
                 style.temp = True
             self.generate_styles()
         else:
             for style in styles:
                 if os.path.exists(style.master.path):
+                    p.update_glyphOrder(style.master)
                     style.temp = True
                     kit.copy(style.master.path, style.path)
                 else:
