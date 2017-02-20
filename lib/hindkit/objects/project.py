@@ -2,7 +2,7 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, argparse, subprocess
+import os, argparse, subprocess, collections
 import hindkit as kit
 
 class Project(object):
@@ -279,6 +279,22 @@ class Project(object):
                 template = f.read()
             with open(kit.relative_to_cwd("OFL.txt"), "w") as f:
                 f.write(template.format(client_data.tables["name"][0]))
+
+            file_format_to_paths = collections.defaultdict(list)
+            for product in self.products:
+                file_format_to_paths[product.file_format].append(product.path)
+            for file_format, paths in file_format_to_paths.items():
+                archive_filename = "{}-{}-{}.zip".format(
+                    self.family.name_postscript,
+                    self.fontrevision.replace(".", ""),
+                    file_format,
+                )
+                archive_path = os.path.join(self.directories["products"], archive_filename)
+                kit.remove(archive_path)
+                subprocess.call(["zip", archive_path] + paths)
+                subprocess.call(["ttx", "-fq"] + paths)
+                for path in paths:
+                    kit.remove(path)
 
 
 # makeInstancesUFO.updateInstance
