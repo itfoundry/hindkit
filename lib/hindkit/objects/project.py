@@ -173,7 +173,7 @@ class Project(object):
     def build(self):
 
         self.reset_directory("temp")
-        for name in ["masters", "styles", "features", "products"]:
+        for name in ["masters", "styles", "features", "products"]: # The whole "temp" directory has already been cleared.
             self.reset_directory(name, temp=True)
 
         if self.options['prepare_masters']:
@@ -250,22 +250,7 @@ class Project(object):
 
             self.fmndb.prepare()
 
-            for product in (i for i in self.products if not i.subsidiary):
-                if product.style.file_format == "UFO":
-                    if self.options['run_checkoutlines'] or self.options['run_autohint']:
-                        options = {
-                            'doOverlapRemoval': self.options['run_checkoutlines'],
-                            'doAutoHint': self.options['run_autohint'],
-                            'allowDecimalCoords': False,
-                        }
-                        _updateInstance(options, product.style.get_path())
-                    defcon_font = product.style.open()
-                    defcon_font.groups.clear()
-                    defcon_font.kerning.clear()
-                    product.style.save()
-                product.generate()
-
-            for product in (i for i in self.products if i.subsidiary):
+            for product in self.products:
                 product.generate()
 
             products_built = [i for i in self.products if i.built]

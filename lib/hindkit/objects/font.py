@@ -283,8 +283,16 @@ class Product(BaseFont):
 
             if self.style.file_format == 'UFO':
 
-                font = self.style.open()
-                font.info.postscriptFontName = self.full_name_postscript
+                if self.project.options['run_checkoutlines'] or self.project.options['run_autohint']:
+                    options = {
+                        'doOverlapRemoval': self.project.options['run_checkoutlines'],
+                        'doAutoHint': self.project.options['run_autohint'],
+                        'allowDecimalCoords': False,
+                    }
+                    _updateInstance(options, product.style.get_path())
+
+                defcon_font = self.style.open()
+                defcon_font.info.postscriptFontName = self.full_name_postscript
                 for i in """
                     versionMajor
                     versionMinor
@@ -295,7 +303,9 @@ class Product(BaseFont):
                     openTypeNamePreferredFamilyName
                     openTypeNamePreferredSubfamilyName
                 """.split():
-                    setattr(font.info, i, None)
+                    setattr(defcon_font.info, i, None)
+                defcon_font.groups.clear()
+                defcon_font.kerning.clear()
                 self.style.save()
 
         elif self.file_format == 'TTF':
