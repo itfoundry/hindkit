@@ -77,30 +77,31 @@ class BaseFont(kit.BaseFile):
         if not from_disk and self.font_in_memory:
             return self.font_in_memory
         else:
-            if os.path.exists(self.path):
+            if os.path.exists(self.get_path()):
                 if self.file_format == 'UFO':
-                    print("\nOpening `{}`".format(self.path))
-                    self.font_in_memory = defcon.Font(self.path)
+                    self.font_in_memory = defcon.Font(self.get_path())
+                    print("[OPENED]", self.get_path())
                     return self.font_in_memory
                 else:
-                    raise SystemExit("`{}` is not supported by defcon.".format(self.path))
+                    raise SystemExit("`{}` is not supported by defcon.".format(self.get_path()))
             else:
-                raise SystemExit("`{}` is missing.".format(self.path))
+                raise SystemExit("`{}` is missing.".format(self.get_path()))
 
-    def save_temp(self, font=None, as_filename=None, temp=True):
-        if not font:
-            font = self.font_in_memory
-        if not font:
-            return
+    def save(self, defcon_font=None, as_filename=None):
+        if not defcon_font:
+            if self.font_in_memory:
+                defcon_font = self.font_in_memory
+            else:
+                return
         self.counter += 1
         if as_filename is None:
-            self.filename = None
-            self.filename += '--{}'.format(self.counter)
+            self._filename = None
+            self._filename = self.filename + '--{}'.format(self.counter)
         else:
-            self.filename = as_filename
-        self.temp = temp
-        print("\nSaving `{}`".format(self.path))
-        font.save(self.path)
+            self._filename = as_filename
+        defcon_font.save(self.get_path())
+        self.font_in_memory = None
+        print("[SAVED]", self.get_path())
 
     def import_glyphs_from(
         self,
@@ -152,7 +153,6 @@ class BaseFont(kit.BaseFile):
                     print("(decomposed {} in {})".format(component.baseGlyph, new_name), end=' ')
             target[new_name].copyDataFromGlyph(source_glyph)
             print(new_name, end=', ')
-        print()
 
         if import_kerning:
             target.groups.update(source.groups)
@@ -181,7 +181,6 @@ class BaseFont(kit.BaseFile):
             if source_name:
                 target[deriving_name].width = target[source_name].width
             print('{} (from {})'.format(deriving_name, source_name), end=', ')
-        print()
 
 
 class Master(BaseFont):
@@ -199,7 +198,7 @@ class Master(BaseFont):
     def filename(self):
         '''According to Glyphs app's convention.'''
         if self._filename is None:
-            path_pattern = '{}/*{}.ufo'.format(self.directory, self.name)
+            path_pattern = '{}/*{}.ufo'.format(self.get_directory(temp=False), self.name)
             paths = glob.glob(path_pattern)
             if paths:
                 self._filename = os.path.basename(paths[0]).partition('.')[0]
@@ -224,7 +223,7 @@ class Style(BaseFont):
     ):
 
         super(Style, self).__init__(family, name)
-        self._abstract_directory = None
+        self.abstract_directory = os.path.join(kit.Project.directories['styles'], self.name)
 
         self.weight_location = weight_location
         self.weight_class = weight_class
@@ -237,16 +236,6 @@ class Style(BaseFont):
         self.dirty = False
 
         # self.products = []
-
-    @property
-    def abstract_directory(self):
-        return kit.fallback(
-            self._abstract_directory,
-            os.path.join('styles', self.name),
-        )
-    @abstract_directory.setter
-    def abstract_directory(self, value):
-        self._abstract_directory = value
 
     @BaseFont.filename.getter
     def filename(self):
@@ -302,7 +291,7 @@ class Product(BaseFont):
 
         while not os.path.exists(self.style.path):
             print(
-                "\n[PROMPT] Input file {} is missing. Try again? [Y/n]: ".format(style.path),
+                "\n[PROMPT] Input file {} is missing. Try again? [Y/n]: ".format(self.style.get_path()),
                 end = '',
             )
             if raw_input().upper().startswith('N'):
@@ -354,7 +343,7 @@ class Product(BaseFont):
                 arguments.append('-osbOn' if boolean else '-osbOff')
                 arguments.append(digit)
 
-        kit.makedirs(os.path.dirname(self.path))
+        kit.makedirs(self.get_directory())
         subprocess.call(['makeotf'] + arguments)
 
         try:
@@ -362,11 +351,11 @@ class Product(BaseFont):
         except AttributeError:
             pass
         else:
-            if os.path.exists(self.path):
-                original = fontTools.ttLib.TTFont(self.path, recalcTimestamp=True)
+            if os.path.exists(self.get_path()):
+                original = fontTools.ttLib.TTFont(self.get_path(), recalcTimestamp=True)
                 postprocessed = self.postprocess(original)
                 if postprocessed:
-                    postprocessed.save(self.path, reorderTables=False)
+                    postprocessed.save(self.get_path(), reorderTables=False)
 
         destination = self.project.directories['output']
         if os.path.exists(self.path) and os.path.isdir(destination):

@@ -92,9 +92,11 @@ class Goadb(kit.BaseFile):
         super(Goadb, self).__init__(name, project=project)
         self.for_ttf = for_ttf
 
-    def generate(self, names=None):
-        goadb_trimmed = self.project.glyph_data.generate_goadb(names)
-        with open(self.path, 'w') as f:
+    def generate(self):
+        goadb_trimmed = self.project.glyph_data.generate_goadb(
+            self.project.glyph_data.glyph_order_trimmed
+        )
+        with open(self.get_path(), 'w') as f:
             for line in goadb_trimmed:
                 if self.for_ttf:
                     line = self.TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP.get(

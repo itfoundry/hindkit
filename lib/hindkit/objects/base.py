@@ -11,7 +11,7 @@ class BaseFile(object):
         self,
         name,
         file_format = None,
-        abstract_directory = '',
+        abstract_directory = None,
         project = None,
         family = None,
         filename_group = None,
@@ -19,16 +19,21 @@ class BaseFile(object):
 
         self.name = name
         self.file_format = file_format
-        self.abstract_directory = abstract_directory
-
-        self.temp = False
-        self.temp_directory = kit.Project.directories['intermediates']
+        if abstract_directory is None:
+            self.abstract_directory = kit.Project.directories["sources"]
+        else:
+            self.abstract_directory = abstract_directory
 
         self.project = project
         if family is None:
             self.family = self.project.family
         else:
             self.family = family
+
+        if self.family.variant_tag:
+            self.abstract_directory_variant = os.path.join(self.abstract_directory, self.family.variant_tag)
+            if os.path.exists(self.abstract_directory_variant):
+                self.abstract_directory = self.abstract_directory_variant
 
         self.file_group = []
         for filename in kit.fallback(filename_group, [self.name]):
@@ -54,9 +59,6 @@ class BaseFile(object):
     @property
     def filename(self):
         return kit.fallback(self._filename, self.name)
-    @filename.setter
-    def filename(self, value):
-        self._filename = value
 
     @property
     def extension(self):
@@ -78,64 +80,55 @@ class BaseFile(object):
     def filename_with_extension(self, value):
         self._filename_with_extension = value
 
-    @property
-    def directory(self):
-        directory = self.abstract_directory
-        if self.temp:
-            directory = os.path.join(self.temp_directory, directory)
+    def get_directory(self, temp=True):
+        if temp:
+            directory = self.family.project.temp(self.abstract_directory)
+        else:
+            directory = self.abstract_directory
         return kit.fallback(self._directory, directory)
-    @directory.setter
-    def directory(self, value):
-        self._directory = value
 
-    @property
-    def path(self):
+    def get_path(self, temp=True):
         return kit.fallback(
             self._path,
-            os.path.join(self.directory, self.filename_with_extension),
+            os.path.join(self.get_directory(temp=temp), self.filename_with_extension),
         )
-    @path.setter
-    def path(self, value):
-        self._path = value
 
-    def check_override(self, *args, **kwargs):
+    def _copy(self, into_temp=True, whole_directory=False):
+        if whole_directory:
+            permanent = self.get_directory(temp=False)
+            temp = self.get_directory()
+        else:
+            permanent = self.get_path(temp=False)
+            temp = self.get_path()
+        if into_temp:
+            kit.makedirs(self.get_directory())
+            kit.copy(permanent, temp)
+            print("[COPIED INTO TEMP]", permanent, "=>", temp)
+        else:
+            kit.makedirs(self.get_directory(temp=False))
+            kit.copy(temp, permanent)
+            print("[COPIED OUT OF TEMP]", temp, "=>", permanent)
 
+    def copy_into_temp(self, whole_directory=False):
+        self._copy(into_temp=True, whole_directory=whole_directory)
+
+    def copy_out_of_temp(self, whole_directory=False):
+        self._copy(into_temp=False, whole_directory=whole_directory)
+
+    def prepare(self, whole_directory=False):
         for f in self.file_group:
-
-            if f.temp and os.path.exists(f.path):
-                continue
-
-            variant_tag = f.family.variant_tag
-            if variant_tag is not None:
-                abstract_directory_variant = os.path.join(f.abstract_directory, variant_tag)
-                if os.path.exists(abstract_directory_variant):
-                    f.abstract_directory = abstract_directory_variant
-
-            path_original = f.path
-            f.temp = True
-            path_temp = f.path
-
-            try:
-                print(path_original, path_temp)
-                kit.makedirs(os.path.dirname(path_temp))
-                if isinstance(self, kit.Style):
-                    path_original = os.path.dirname(path_original)
-                    path_temp = os.path.dirname(path_temp)
-                kit.copy(path_original, path_temp)
-                print('[COPIED]', path_original)
-            except IOError:
-                if not os.path.exists(path_original):
-                    if f is self:
-                        kit.makedirs(f.directory)
-                        f.generate(*args, **kwargs)
-                        print('[GENERATED]', path_original)
-                    else:
-                        pass
+            if os.path.exists(f.get_path(temp=False)):
+                if os.path.exists(f.get_path()):
+                    print("[TEMP FILE ALREADY EXISTS]", f.get_path())
+                    continue
                 else:
-                    raise
-
-    def prepare(self, *args, **kwargs):
-        self.check_override(*args, **kwargs)
+                    f.copy_into_temp()
+            else:
+                try:
+                    f.generate()
+                    print("[GENERATED]", f.get_path())
+                except NotImplementedError:
+                    pass
 
     def generate(self):
-        raise NotImplementedError("Can't generate {}.".format(self.path))
+        raise NotImplementedError("[CAN'T GENERATE] " + self.get_path())

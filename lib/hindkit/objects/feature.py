@@ -88,7 +88,7 @@ class FeatureClasses(BaseFeature):
                 font.save()
 
         if lines:
-            with open(self.path, "w") as f:
+            with open(self.get_path(), "w") as f:
                 f.writelines(i + "\n" for i in lines)
 
 
@@ -205,9 +205,9 @@ class FeatureTables(BaseFeature):
                 "marks": "",
                 "components": "",
             }
-            if self.project.options["prepare_mark_positioning"] or os.path.exists(os.path.join(self.directory, "classes.fea")):
+            if self.project.options["prepare_mark_positioning"] or os.path.exists(os.path.join(self.get_directory(), "classes.fea")):
                 GDEF_records["marks"] = "@{}".format(WriteFeaturesMarkFDK.kCombMarksClassName)
-            classes_suffixing_path = os.path.join(self.directory, "classes_suffixing.fea")
+            classes_suffixing_path = os.path.join(self.get_directory(), "classes_suffixing.fea")
             if os.path.exists(classes_suffixing_path):
                 lines_without_comment = []
                 with open(classes_suffixing_path) as f:
@@ -239,7 +239,7 @@ class FeatureTables(BaseFeature):
                 lines.append("} %s;" % name)
 
         if lines:
-            with open(self.path, "w") as f:
+            with open(self.get_path(), "w") as f:
                 f.writelines(i + "\n" for i in lines)
 
 
@@ -249,7 +249,7 @@ class FeatureLanguagesystems(BaseFeature):
         for tag in self.project.family.script.tags:
             lines.append("languagesystem {} dflt;".format(tag))
         if lines:
-            with open(self.path, "w") as f:
+            with open(self.get_path(), "w") as f:
                 f.writelines(i + "\n" for i in lines)
 
 
@@ -258,7 +258,7 @@ class FeatureMark(BaseFeature):
         WriteFeaturesMarkFDK.kMarkFeatureFileName = self.filename_with_extension
         WriteFeaturesMarkFDK.MarkDataClass(
             font = self.style.open(),
-            folderPath = self.style.directory,
+            folderPath = self.style.get_directory(),
             trimCasingTags = False,
             genMkmkFeature = self.project.options["prepare_mark_to_mark_positioning"],
             writeClassesFile = True,
@@ -271,14 +271,14 @@ class FeatureKern(BaseFeature):
         WriteFeaturesKernFDK.kKernFeatureFileName = self.filename_with_extension
         WriteFeaturesKernFDK.KernDataClass(
             font = self.style.open(),
-            folderPath = self.style.directory,
+            folderPath = self.style.get_directory(),
         )
         try:
             self.postprocess
         except AttributeError:
             pass
         else:
-            kern_path = self.path
+            kern_path = self.get_path()
             if os.path.exists(kern_path):
                 with open(kern_path) as f:
                     content = f.read()
@@ -287,7 +287,7 @@ class FeatureKern(BaseFeature):
 
 class FeatureWeightClass(BaseFeature):
     def generate(self):
-        with open(self.path, "w") as f:
+        with open(self.get_path(), "w") as f:
             f.write("WeightClass {};\n".format(str(self.style.weight_class)))
 
 
@@ -377,7 +377,6 @@ class FeatureMatches(BaseFeature):
                 ae = self.adjustment_extremes
                 adjustment = ae[0] + (ae[-1] - ae[0]) * ratio
                 self.bases[i].target += adjustment
-            print()
 
         self.tolerance = self._get_stem_position(
             self.font[self.style.family.script.abbr + "VA"]
@@ -393,7 +392,7 @@ class FeatureMatches(BaseFeature):
         self.substitute_rule_lines = []
         for match in self.matches:
             self.output_mI_variant_matches(match)
-        with open(self.path, "w") as f:
+        with open(self.get_path(), "w") as f:
             f.writelines([
                 "lookup %s {\n" % self.name,
                 # "  lookupflag IgnoreMarks;\n",
@@ -568,11 +567,11 @@ class FeatureMatches(BaseFeature):
     def output_mark_positioning_for_mI_variants(self):
 
         abvm_backup_path = os.path.join(
-            self.style.directory,
+            self.style.get_directory(),
             "backup--" + WriteFeaturesMarkFDK.kAbvmFeatureFileName,
         )
         abvm_path = os.path.join(
-            self.style.directory,
+            self.style.get_directory(),
             WriteFeaturesMarkFDK.kAbvmFeatureFileName,
         )
         if os.path.exists(abvm_backup_path):
@@ -627,7 +626,7 @@ class FeatureMatches(BaseFeature):
 
 class FeatureReferences(BaseFeature):
     def generate(self):
-        with open(self.path, "w") as f:
+        with open(self.get_path(), "w") as f:
             lines = ["table head { FontRevision 1.000; } head;"]
             for feature in [
                 self.project.feature_classes,
@@ -636,20 +635,20 @@ class FeatureReferences(BaseFeature):
                 self.project.feature_gsub,
             ]:
                 for i in feature.file_group:
-                    if os.path.exists(i.path):
+                    if os.path.exists(i.get_path()):
                         lines.append(
                             "include ({});".format(
-                                os.path.relpath(i.path, self.style.directory)
+                                os.path.relpath(i.get_path(), self.style.get_directory())
                             )
                         )
-            if os.path.exists(self.project.feature_kern.path):
+            if os.path.exists(self.project.feature_kern.get_path()):
                 lines.append(
                     "feature %(tag)s { include (%(path)s); } %(tag)s;" % {
                         "tag": "kern", # "dist" if self.project.family.script.is_indic ?
-                        "path": os.path.relpath(self.project.feature_kern.path, self.style.directory),
+                        "path": os.path.relpath(self.project.feature_kern.get_path(), self.style.get_directory()),
                     }
                 )
-            if os.path.exists(os.path.join(self.style.directory, WriteFeaturesMarkFDK.kMarkClassesFileName)):
+            if os.path.exists(os.path.join(self.style.get_directory(), WriteFeaturesMarkFDK.kMarkClassesFileName)):
                 lines.append("include ({});".format(WriteFeaturesMarkFDK.kMarkClassesFileName))
             for feature_name, filename in [
                 ("mark", WriteFeaturesMarkFDK.kMarkFeatureFileName),
@@ -657,7 +656,7 @@ class FeatureReferences(BaseFeature):
                 ("abvm", WriteFeaturesMarkFDK.kAbvmFeatureFileName),
                 ("blwm", WriteFeaturesMarkFDK.kBlwmFeatureFileName),
             ]:
-                if os.path.exists(os.path.join(self.style.directory, filename)):
+                if os.path.exists(os.path.join(self.style.get_directory(), filename)):
                     lines.append(
                         "feature %(tag)s { include (%(path)s); } %(tag)s;" % {
                             "tag": feature_name,

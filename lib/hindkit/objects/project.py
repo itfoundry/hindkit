@@ -8,10 +8,11 @@ import hindkit as kit
 class Project(object):
 
     directories = {
+        "sources": "",
         "masters": "masters",
         "styles": "styles",
         "features": "features",
-        "intermediates": "intermediates",
+        "temp": "intermediates",
         "products": "products",
         "output": "/Library/Application Support/Adobe/Fonts",
     }
@@ -79,7 +80,7 @@ class Project(object):
         self._finalize_options()
 
     def temp(self, abstract_path):
-        return os.path.join(self.directories['intermediates'], abstract_path)
+        return os.path.join(self.directories['temp'], abstract_path)
 
     def _finalize_options(self):
 
@@ -159,22 +160,23 @@ class Project(object):
         defcon_font = font.open()
         defcon_font.lib['public.glyphOrder'] = self.glyph_data.glyph_order_trimmed
         defcon_font.lib.pop('com.schriftgestaltung.glyphOrder', None)
-        font.save_temp()
+        font.save()
 
-    def reset_temp_directory(self, name, files=None):
-        path = self.temp(self.directories[name])
+    def reset_directory(self, name, temp=False):
+        if temp:
+            path = self.temp(self.directories[name])
+        else:
+            path = self.directories[name]
         kit.remove(path)
         kit.makedirs(path)
-        for i in files:
-            i.temp = True
 
     def build(self):
 
-        kit.makedirs(self.directories['intermediates'])
+        self.reset_directory("temp")
+        for name in ["masters", "styles", "features", "products"]:
+            self.reset_directory(name, temp=True)
 
         if self.options['prepare_masters']:
-
-            self.reset_temp_directory("masters")
 
             for master in self.family.masters:
                 master.prepare()
@@ -184,16 +186,13 @@ class Project(object):
                     pass
 
             for master in self.family.masters:
-                master.save_temp()
+                master.save()
 
         if self.options['prepare_styles']:
 
-            self.reset_temp_directory("styles")
             self.family.prepare_styles()
 
         if self.options['prepare_features']:
-
-            self.reset_temp_directory("features", [i.style for i in self.products])
 
             if self.family.styles[0].file_format == "UFO":
                 reference_font = self.products[0].style.open()
@@ -249,18 +248,15 @@ class Project(object):
 
         if self.options['compile']:
 
-            self.reset_temp_directory("products", self.products)
-
             self.fmndb.prepare()
 
             for product in self.products:
                 if not product.incidental:
-                    product.style.temp = True
                     if self.options['build_ttf']:
-                        font = product.style.open()
-                        font.groups.clear()
-                        font.kerning.clear()
-                        product.style.save_temp()
+                        defcon_font = product.style.open()
+                        defcon_font.groups.clear()
+                        defcon_font.kerning.clear()
+                        product.style.save()
                     if (
                         self.options['run_checkoutlines'] or
                         self.options['run_autohint']
@@ -270,8 +266,8 @@ class Project(object):
                             'doAutoHint': self.options['run_autohint'],
                             'allowDecimalCoords': False,
                         }
-                        _updateInstance(options, product.style.path)
-                    product.prepare()
+                        _updateInstance(options, product.style.get_path())
+                product.generate()
 
             for product in self.products:
                 if product.file_format == 'TTF':
@@ -290,8 +286,8 @@ class Project(object):
                 f.write(template.format(client_data.tables["name"][0]))
 
             file_format_to_paths = collections.defaultdict(list)
-            for product in self.products:
-                file_format_to_paths[product.file_format].append(product.path)
+            for product in products_built:
+                file_format_to_paths[product.file_format].append(product.get_path(temp=False))
             for file_format, paths in file_format_to_paths.items():
                 archive_filename = "{}-{}-{}.zip".format(
                     self.family.name_postscript,

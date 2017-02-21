@@ -79,8 +79,6 @@ class Family(object):
 
         p = self.project
         styles = [i.style for i in p.products if not i.incidental]
-        # for style in styles:
-        #     kit.makedirs(style.directory)
 
         p.glyph_data.glyph_order_trimmed = p.trim_glyph_names(
             p.glyph_data.glyph_order,
@@ -89,17 +87,14 @@ class Family(object):
 
         if p.options['run_makeinstances']:
             p.update_glyphOrder(self.masters[0])
-            for style in styles:
-                style.temp = True
             self.generate_styles()
         else:
             for style in styles:
-                if os.path.exists(style.master.path):
+                if os.path.exists(style.master.get_path()):
                     p.update_glyphOrder(style.master)
-                    style.temp = True
-                    kit.copy(style.master.path, style.path)
+                    kit.copy(style.master.get_path(), style.get_path())
                 else:
-                    style.check_override()
+                    style.prepare(whole_directory=True)
                 if style.file_format == "UFO":
                     style.open().info.postscriptFontName = style.full_name_postscript
                     style.dirty = True
@@ -111,14 +106,14 @@ class Family(object):
                 pass
             else:
                 style.dirty = True
-            style.save_temp()
+            style.save()
 
     def generate_styles(self):
 
         p = self.project
         p.designspace.prepare()
 
-        arguments = ['-d', p.designspace.path]
+        arguments = ['-d', p.designspace.get_path()]
         if not p.options['run_checkoutlines']:
             arguments.append('-c')
         if not p.options['run_autohint']:
@@ -139,14 +134,14 @@ class DesignSpace(kit.BaseFile):
     def generate(self):
 
         doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
-            os.path.abspath(kit.relative_to_cwd(self.path))
+            os.path.abspath(kit.relative_to_cwd(self.get_path()))
         )
 
         for i, master in enumerate(self.project.family.masters):
 
             doc.addSource(
 
-                path = os.path.abspath(kit.relative_to_cwd(master.path)),
+                path = os.path.abspath(kit.relative_to_cwd(master.get_path())),
                 name = 'master ' + master.name,
                 location = {'weight': master.weight_location},
 
@@ -169,7 +164,7 @@ class DesignSpace(kit.BaseFile):
                     familyName = self.project.family.name,
                     styleName = style.name,
                     fileName = os.path.abspath(
-                        kit.relative_to_cwd(style.path)
+                        kit.relative_to_cwd(style.get_path())
                     ),
                     postScriptFontName = style.full_name_postscript,
                     # styleMapFamilyName = None,
@@ -231,5 +226,5 @@ class Fmndb(kit.BaseFile):
 
                 self.lines.extend(comment_lines)
 
-        with open(self.path, 'w') as f:
+        with open(self.get_path(), 'w') as f:
             f.writelines(i + '\n' for i in self.lines)
