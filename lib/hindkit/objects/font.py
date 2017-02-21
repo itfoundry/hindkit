@@ -267,29 +267,52 @@ class Product(BaseFont):
 
         self.incidental = incidental
 
+        self.built = False
+
     @BaseFont.filename.getter
     def filename(self):
         return kit.fallback(self._filename, self.full_name_postscript)
 
-    def prepare(self, project=None):
-        if project:
-            self.project = project
-        self.generate()
-
     def generate(self):
 
-        style = self.style
-
         if self.file_format == 'OTF':
-            # self.style.file_format = 'UFO' #TODO: Can be UFO or OTF.
+
             goadb = self.project.goadb_trimmed
+
+            # self.style.file_format = 'UFO' #TODO: Can be UFO or OTF.
+
+            if self.style.file_format == 'UFO':
+
+                font = self.style.open()
+                font.info.postscriptFontName = self.full_name_postscript
+                for i in """
+                    versionMajor
+                    versionMinor
+                    copyright
+                    familyName
+                    styleName
+                    styleMapStyleName
+                    openTypeNamePreferredFamilyName
+                    openTypeNamePreferredSubfamilyName
+                """.split():
+                    setattr(font.info, i, None)
+                self.style.save()
+
         elif self.file_format == 'TTF':
-            self.style.file_format = 'TTF' #TODO: Should restore the original file format afterwards. Or the styles should just seperate.
+
             goadb = self.project.goadb_trimmed_ttf
 
-        goadb.prepare(self.project.glyph_data.glyph_order_trimmed)
+            subprocess.call([
+                "osascript", "-l", "JavaScript",
+                kit.relative_to_package("data/generate_ttf.js"),
+                os.path.abspath(self.style.get_path()),
+            ])
 
-        while not os.path.exists(self.style.path):
+            self.style.file_format = 'TTF' #TODO: Should restore the original file format afterwards. Or the styles should just seperate.
+
+        goadb.prepare()
+
+        while not os.path.exists(self.style.get_path()):
             print(
                 "\n[PROMPT] Input file {} is missing. Try again? [Y/n]: ".format(self.style.get_path()),
                 end = '',
@@ -297,27 +320,11 @@ class Product(BaseFont):
             if raw_input().upper().startswith('N'):
                 return
 
-        if self.style.file_format == 'UFO':
-            font = self.style.open()
-            font.info.postscriptFontName = self.full_name_postscript
-            for i in """
-                versionMajor
-                versionMinor
-                copyright
-                familyName
-                styleName
-                styleMapStyleName
-                openTypeNamePreferredFamilyName
-                openTypeNamePreferredSubfamilyName
-            """.split():
-                setattr(font.info, i, None)
-            font.save()
-
         arguments = [
-            '-f', self.style.path,
-            '-o', self.path,
-            '-mf', self.project.fmndb.path,
-            '-gf', goadb.path,
+            '-f', self.style.get_path(),
+            '-o', self.get_path(),
+            '-mf', self.project.fmndb.get_path(),
+            '-gf', goadb.get_path(),
             '-rev', self.project.fontrevision,
             '-ga',
         ]
@@ -357,6 +364,6 @@ class Product(BaseFont):
                 if postprocessed:
                     postprocessed.save(self.get_path(), reorderTables=False)
 
-        destination = self.project.directories['output']
-        if os.path.exists(self.path) and os.path.isdir(destination):
-            kit.copy(self.path, destination)
+        if os.path.exists(self.get_path()):
+            self.built = True
+            print("[FONT SUCCESSFULLY BUILT]", self.get_path())

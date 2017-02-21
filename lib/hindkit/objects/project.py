@@ -269,12 +269,19 @@ class Project(object):
                         _updateInstance(options, product.style.get_path())
                 product.generate()
 
-            for product in self.products:
-                if product.file_format == 'TTF':
-                    subprocess.call(['open', product.style.path])
-            for product in self.products:
-                if product.file_format == 'TTF':
-                    product.prepare()
+            products_built = [i for i in self.products if i.built]
+
+            output_dir = self.directories["output"]
+            if os.path.isdir(output_dir):
+                do_output = True
+            else:
+                do_output = False
+
+            for product in products_built:
+                product.copy_out_of_temp()
+                if do_output:
+                    kit.copy(product.get_path(), output_dir)
+                    print("[COPIED TO OUPUT DIRECTORY]", product.get_path())
 
         client_data = self.family.get_client_data()
 
@@ -296,10 +303,13 @@ class Project(object):
                 )
                 archive_path = os.path.join(self.directories["products"], archive_filename)
                 kit.remove(archive_path)
-                subprocess.call(["zip", archive_path] + paths)
+                subprocess.call(["zip", "-j", archive_path] + paths)
+                print("[ZIPPED]", archive_path)
                 subprocess.call(["ttx", "-fq"] + paths)
+                print("[TTX DUMPED]")
                 for path in paths:
                     kit.remove(path)
+                    print("[REMOVED]", path)
 
 
 # makeInstancesUFO.updateInstance
