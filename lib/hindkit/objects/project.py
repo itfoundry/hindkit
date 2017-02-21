@@ -126,7 +126,7 @@ class Project(object):
         self.products = [i.produce(self, file_format='OTF') for i in styles]
         if self.options['build_ttf']:
             self.products.extend(
-                i.produce(self, file_format='TTF', incidental=True)
+                i.produce(self, file_format='TTF', subsidiary=True)
                 for i in styles
             )
 
@@ -250,23 +250,22 @@ class Project(object):
 
             self.fmndb.prepare()
 
-            for product in self.products:
-                if not product.incidental:
-                    if self.options['build_ttf']:
-                        defcon_font = product.style.open()
-                        defcon_font.groups.clear()
-                        defcon_font.kerning.clear()
-                        product.style.save()
-                    if (
-                        self.options['run_checkoutlines'] or
-                        self.options['run_autohint']
-                    ) and self.family.styles[0].file_format == "UFO":
+            for product in (i for i in self.products if not i.subsidiary):
+                if product.style.file_format == "UFO":
+                    if self.options['run_checkoutlines'] or self.options['run_autohint']:
                         options = {
                             'doOverlapRemoval': self.options['run_checkoutlines'],
                             'doAutoHint': self.options['run_autohint'],
                             'allowDecimalCoords': False,
                         }
                         _updateInstance(options, product.style.get_path())
+                    defcon_font = product.style.open()
+                    defcon_font.groups.clear()
+                    defcon_font.kerning.clear()
+                    product.style.save()
+                product.generate()
+
+            for product in (i for i in self.products if i.subsidiary):
                 product.generate()
 
             products_built = [i for i in self.products if i.built]

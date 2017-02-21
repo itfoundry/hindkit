@@ -78,7 +78,7 @@ class Family(object):
     def prepare_styles(self):
 
         p = self.project
-        styles = [i.style for i in p.products if not i.incidental]
+        styles = [i.style for i in p.products if not i.subsidiary]
 
         p.glyph_data.glyph_order_trimmed = p.trim_glyph_names(
             p.glyph_data.glyph_order,
@@ -109,17 +109,13 @@ class Family(object):
             style.save()
 
     def generate_styles(self):
-
-        p = self.project
-        p.designspace.prepare()
-
-        arguments = ['-d', p.designspace.get_path()]
-        if not p.options['run_checkoutlines']:
-            arguments.append('-c')
-        if not p.options['run_autohint']:
-            arguments.append('-a')
-
-        subprocess.call(['makeInstancesUFO'] + arguments)
+        self.project.designspace.prepare()
+        subprocess.call([
+            "makeInstancesUFO",
+            "-d", self.project.designspace.get_path(),
+            "-c",
+            "-a",
+        ])
 
 
 class DesignSpace(kit.BaseFile):

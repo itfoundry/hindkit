@@ -241,13 +241,13 @@ class Style(BaseFont):
     def filename(self):
         return kit.fallback(self._filename, 'font')
 
-    def produce(self, project, file_format='OTF', incidental=False):
-        return Product(project, self, file_format=file_format, incidental=incidental)
+    def produce(self, project, file_format='OTF', subsidiary=False):
+        return Product(project, self, file_format=file_format, subsidiary=subsidiary)
 
 
 class Product(BaseFont):
 
-    def __init__(self, project, style, file_format='OTF', incidental=False):
+    def __init__(self, project, style, file_format='OTF', subsidiary=False):
 
         self.style = style
         self.weight_location = self.style.weight_location
@@ -265,7 +265,7 @@ class Product(BaseFont):
 
         self.project = project
 
-        self.incidental = incidental
+        self.subsidiary = subsidiary
 
         self.built = False
 
