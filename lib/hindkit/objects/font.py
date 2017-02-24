@@ -292,6 +292,7 @@ class Style(BaseFont):
         is_bold = None,
         is_italic = None,
         is_oblique = None,
+        is_style_linkable = None,
     ):
 
         super(Style, self).__init__(family, name)
@@ -300,9 +301,14 @@ class Style(BaseFont):
         self.weight_location = weight_location
         self.weight_class = weight_class
 
-        self.is_bold = kit.fallback(is_bold, 'Bold' in self.name.split())
-        self.is_italic = kit.fallback(is_italic, 'Italic' in self.name.split())
-        self.is_oblique = kit.fallback(is_oblique, 'Oblique' in self.name.split())
+        self.is_bold = kit.fallback(is_bold, "Bold" in self.name.split())
+        self.is_italic = kit.fallback(is_italic, "Italic" in self.name.split())
+        self.is_oblique = kit.fallback(is_oblique, "Oblique" in self.name.split())
+
+        self.is_style_linkable = kit.fallback(
+            is_style_linkable,
+            (self.name == "Regular" or self.is_bold or self.is_italic),
+        )
 
         self.master = None
         self.dirty = False
@@ -327,6 +333,7 @@ class Product(BaseFont):
         self.is_bold = self.style.is_bold
         self.is_italic = self.style.is_italic
         self.is_oblique = self.style.is_oblique
+        self.is_style_linkable = self.style.is_style_linkable
 
         super(Product, self).__init__(
             self.style.family,

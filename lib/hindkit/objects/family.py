@@ -176,51 +176,36 @@ class DesignSpace(kit.BaseFile):
 class Fmndb(kit.BaseFile):
 
     LINES_HEAD = [
-        '# [PostScriptName]',
-        '#   f = Preferred Family Name',
-        '#   s = Subfamily/Style Name',
-        '#   l = Compatible Family Menu Name (Style-Linking Family Name; FMNDB v2)',
-        '#   c = Windows Compatible Menu Name (FMNDB v1)'
+        "# [PostScriptName]",
+        "#   f = Family Name",
+        "#   s = Style Name",
+        "#   l = Style-Linking Family Name",
     ]
 
-    def __init__(self, project, name='FontMenuNameDB'):
+    def __init__(self, project, name="FontMenuNameDB"):
         super(Fmndb, self).__init__(name, project=project)
         self.lines = []
         self.lines.extend(self.LINES_HEAD)
 
     def generate(self):
 
-        f_name = self.project.family.name
-
         for product in self.project.products:
 
-            if product.file_format == 'OTF':
+            if product.subsidiary:
+                continue
 
-                self.lines.append('')
-                self.lines.append('[{}]'.format(product.full_name_postscript))
-                self.lines.append('  f = {}'.format(f_name))
-                self.lines.append('  s = {}'.format(product.name))
+            self.lines.append("")
+            self.lines.append("[" + product.full_name_postscript + "]")
+            self.lines.append("  f = " + self.project.family.name)
+            self.lines.append("  s = " + product.name)
 
-                comment_lines = []
+            if self.project.options["do_style_linking"] and product.is_style_linkable:
+                if product.is_bold:
+                    self.lines.append("  # IsBoldStyle")
+                if product.is_italic:
+                    self.lines.append("  # IsItalicStyle")
+            else:
+                self.lines.append("  l = " + product.full_name)
 
-                if self.project.options['do_style_linking']:
-                    l_name = f_name
-                    # c_name_auto = l_name
-                    if product.is_bold:
-                        comment_lines.append('  # IsBoldStyle')
-                        # c_name_auto += ' Bold'
-                    if product.is_italic:
-                        comment_lines.append('  # IsItalicStyle')
-                        # c_name_auto += ' Italic'
-                    # if c_name_auto != product.full_name:
-                    #     c_name = product.full_name
-                    #     self.lines.append('  c = {}'.format(c_name))
-                else:
-                    l_name = product.full_name
-                    if l_name != f_name:
-                        self.lines.append('  l = {}'.format(l_name))
-
-                self.lines.extend(comment_lines)
-
-        with open(self.get_path(), 'w') as f:
-            f.writelines(i + '\n' for i in self.lines)
+        with open(self.get_path(), "w") as f:
+            f.writelines(i + "\n" for i in self.lines)
