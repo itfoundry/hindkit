@@ -6,6 +6,8 @@ import os, glob, subprocess
 import defcon, fontTools.ttLib
 import hindkit as kit
 
+# defcon.Glyph.insertAnchor
+
 def _insertAnchor(self, index, anchor):
     # try:
     #     assert anchor.glyph != self
@@ -28,11 +30,81 @@ def _insertAnchor(self, index, anchor):
 
 defcon.Glyph.insertAnchor = _insertAnchor
 
+
 class BaseFont(kit.BaseFile):
 
     @staticmethod
     def postscript(name):
         return name.replace(' ', '')
+
+    # makeInstancesUFO.updateInstance
+    @staticmethod
+    def _updateInstance(options, fontInstancePath):
+        if options['doOverlapRemoval']:
+            print("\tdoing overlap removal with checkOutlinesUFO %s ..." % (fontInstancePath))
+            logList = []
+            opList = ["-e", fontInstancePath]
+            if options['allowDecimalCoords']:
+                opList.insert(0, "-dec")
+            if os.name == "nt":
+                opList.insert(0, 'checkOutlinesUFO.cmd')
+                proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+            else:
+                opList.insert(0, 'checkOutlinesUFO')
+                proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+            while 1:
+                output = proc.stdout.readline()
+                if output:
+                    print(".", end=' ')
+                    logList.append(output)
+                if proc.poll() != None:
+                    output = proc.stdout.readline()
+                    if output:
+                        print(output, end=' ')
+                        logList.append(output)
+                    break
+            log = "".join(logList)
+            if not ("Done with font" in log):
+                print()
+                print(log)
+                print("Error in checkOutlinesUFO %s" % (fontInstancePath))
+                # raise(SnapShotError)
+            else:
+                print()
+
+        if options['doAutoHint']:
+            print("\tautohinting %s ..." % (fontInstancePath))
+            logList = []
+            opList = ['-q', '-nb', fontInstancePath]
+            if options['allowDecimalCoords']:
+                opList.insert(0, "-dec")
+            if os.name == "nt":
+                opList.insert(0, 'autohint.cmd')
+                proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+            else:
+                opList.insert(0, 'autohint')
+                proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
+            while 1:
+                output = proc.stdout.readline()
+                if output:
+                    print(output, end=' ')
+                    logList.append(output)
+                if proc.poll() != None:
+                    output = proc.stdout.readline()
+                    if output:
+                        print(output, end=' ')
+                        logList.append(output)
+                    break
+            log = "".join(logList)
+            if not ("Done with font" in log):
+                print()
+                print(log)
+                print("Error in autohinting %s" % (fontInstancePath))
+                # raise(SnapShotError)
+            else:
+                print()
+
+        return
 
     def __init__(self, family, name, file_format='UFO', abstract_directory=''):
 
@@ -289,7 +361,7 @@ class Product(BaseFont):
                         'doAutoHint': self.project.options['run_autohint'],
                         'allowDecimalCoords': False,
                     }
-                    _updateInstance(options, product.style.get_path())
+                    self._updateInstance(options, self.style.get_path())
 
                 defcon_font = self.style.open()
                 defcon_font.info.postscriptFontName = self.full_name_postscript
