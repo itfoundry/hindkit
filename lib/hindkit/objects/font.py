@@ -371,20 +371,26 @@ class Product(BaseFont):
                     self._updateInstance(options, self.style.get_path())
 
                 defcon_font = self.style.open()
-                defcon_font.info.postscriptFontName = self.full_name_postscript
                 for i in """
                     versionMajor
                     versionMinor
                     copyright
                     familyName
                     styleName
+                    styleMapFamilyName
                     styleMapStyleName
+                    postscriptWeightName
+                    openTypeHeadCreated
                     openTypeNamePreferredFamilyName
                     openTypeNamePreferredSubfamilyName
+                    openTypeNameDesigner
+                    openTypeOS2WeightClass
+                    openTypeOS2WidthClass
                 """.split():
                     setattr(defcon_font.info, i, None)
                 defcon_font.groups.clear()
                 defcon_font.kerning.clear()
+                defcon_font.info.postscriptFontName = self.full_name_postscript
                 self.style.save()
 
         elif self.file_format == 'TTF':
