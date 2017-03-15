@@ -28,7 +28,7 @@ def _insertAnchor(self, index, anchor):
     self.postNotification(notification="Glyph.AnchorsChanged")
     self.dirty = True
 
-defcon.Glyph.insertAnchor = _insertAnchor
+# defcon.Glyph.insertAnchor = _insertAnchor
 
 
 class BaseFont(kit.BaseFile):
@@ -358,17 +358,7 @@ class Product(BaseFont):
 
             goadb = self.project.goadb_trimmed
 
-            # self.style.file_format = 'UFO' #TODO: Can be UFO or OTF.
-
             if self.style.file_format == 'UFO':
-
-                if self.project.options['run_checkoutlines'] or self.project.options['run_autohint']:
-                    options = {
-                        'doOverlapRemoval': self.project.options['run_checkoutlines'],
-                        'doAutoHint': self.project.options['run_autohint'],
-                        'allowDecimalCoords': False,
-                    }
-                    self._updateInstance(options, self.style.get_path())
 
                 defcon_font = self.style.open()
                 for i in """
@@ -393,6 +383,14 @@ class Product(BaseFont):
                 defcon_font.info.postscriptFontName = self.full_name_postscript
                 self.style.save()
 
+                if self.project.options['run_checkoutlines'] or self.project.options['run_autohint']:
+                    options = {
+                        'doOverlapRemoval': self.project.options['run_checkoutlines'],
+                        'doAutoHint': self.project.options['run_autohint'],
+                        'allowDecimalCoords': False,
+                    }
+                    self._updateInstance(options, self.style.get_path())
+
         elif self.file_format == 'TTF':
 
             goadb = self.project.goadb_trimmed_ttf
@@ -405,15 +403,16 @@ class Product(BaseFont):
 
             self.style.file_format = 'TTF' #TODO: Should restore the original file format afterwards. Or the styles should just seperate.
 
-        goadb.prepare()
+            while not os.path.exists(self.style.get_path()):
+                print(
+                    "\n[PROMPT] Input file {} is missing. Try again? [Y/n]: ".format(self.style.get_path()),
+                    end = '',
+                )
+                if raw_input().upper().startswith('N'):
+                    return
 
-        while not os.path.exists(self.style.get_path()):
-            print(
-                "\n[PROMPT] Input file {} is missing. Try again? [Y/n]: ".format(self.style.get_path()),
-                end = '',
-            )
-            if raw_input().upper().startswith('N'):
-                return
+        goadb.prepare()
+        kit.makedirs(self.get_directory())
 
         arguments = [
             '-f', self.style.get_path(),
@@ -445,20 +444,17 @@ class Product(BaseFont):
                 arguments.append('-osbOn' if boolean else '-osbOff')
                 arguments.append(digit)
 
-        kit.makedirs(self.get_directory())
         subprocess.call(['makeotf'] + arguments)
-
-        try:
-            self.postprocess
-        except AttributeError:
-            pass
-        else:
-            if os.path.exists(self.get_path()):
-                original = fontTools.ttLib.TTFont(self.get_path(), recalcTimestamp=True)
-                postprocessed = self.postprocess(original)
-                if postprocessed:
-                    postprocessed.save(self.get_path(), reorderTables=False)
 
         if os.path.exists(self.get_path()):
             self.built = True
             print("[FONT SUCCESSFULLY BUILT]", self.get_path())
+            try:
+                self.postprocess
+            except AttributeError:
+                pass
+            else:
+                original = fontTools.ttLib.TTFont(self.get_path(), recalcTimestamp=True)
+                postprocessed = self.postprocess(original)
+                postprocessed.save(self.get_path(), reorderTables=False)
+                print("[FONT POSTPROCESSED]", self.get_path())

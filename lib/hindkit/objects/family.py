@@ -113,8 +113,9 @@ class Family(object):
         subprocess.call([
             "makeInstancesUFO",
             "-d", self.project.designspace.get_path(),
-            "-c",
             "-a",
+            "-c",
+            "-n",
         ])
 
 
