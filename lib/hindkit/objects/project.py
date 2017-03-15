@@ -235,7 +235,7 @@ class Project(object):
                 self.features_references = kit.Feature(
                     self, 'features', product.style,
                 )
-                self.features_references.extension = ''
+                self.features_references._extension = ''
 
                 if self.options['prepare_kerning']:
                     self.feature_kern.prepare()

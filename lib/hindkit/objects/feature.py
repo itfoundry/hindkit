@@ -455,9 +455,6 @@ class FeatureMatches(BaseFeature):
                 if ".mU" not in i
             ],
         )
-    @bases_alive.setter
-    def bases_alive(self, value):
-        self._bases_alive = value
 
     @property
     def bases_dead(self):
@@ -465,9 +462,6 @@ class FeatureMatches(BaseFeature):
             self._bases_dead,
             [self.font[i] for i in self.font.groups.get(self.CLASS_NAME_BASES_DEAD, [])]
         )
-    @bases_dead.setter
-    def bases_dead(self, value):
-        self._bases_dead = value
 
     def _base_glyph_sequences(self):
 

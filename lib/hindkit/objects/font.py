@@ -33,10 +33,6 @@ def _insertAnchor(self, index, anchor):
 
 class BaseFont(kit.BaseFile):
 
-    @staticmethod
-    def postscript(name):
-        return name.replace(' ', '')
-
     # makeInstancesUFO.updateInstance
     @staticmethod
     def _updateInstance(options, fontInstancePath):
@@ -123,27 +119,18 @@ class BaseFont(kit.BaseFile):
 
     @property
     def name_postscript(self):
-        return kit.fallback(self._name_postscript, self.postscript(self.name))
-    @name_postscript.setter
-    def name_postscript(self, value):
-        self._name_postscript = value
+        return kit.fallback(self._name_postscript, self.name.replace(' ', ''))
 
     @property
     def full_name(self):
         return kit.fallback(self._full_name, self.family.name + ' ' + self.name)
-    @full_name.setter
-    def full_name(self, value):
-        self._full_name = value
 
     @property
     def full_name_postscript(self):
         return kit.fallback(
             self._full_name_postscript,
-            self.postscript(self.family.name) + '-' + self.name_postscript,
+            self.family.name_postscript + '-' + self.name_postscript,
         )
-    @full_name_postscript.setter
-    def full_name_postscript(self, value):
-        self._full_name_postscript = value
 
     def open(self, from_disk=False):
         if not from_disk and self.font_in_memory:

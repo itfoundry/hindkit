@@ -66,9 +66,6 @@ class BaseFile(object):
             self._extension,
             self.file_format.lower() if self.file_format else None,
         )
-    @extension.setter
-    def extension(self, value):
-        self._extension = value
 
     @property
     def filename_with_extension(self):
@@ -76,9 +73,6 @@ class BaseFile(object):
             self._filename_with_extension,
             self.filename + (('.' + self.extension) if self.extension else ''),
         )
-    @filename_with_extension.setter
-    def filename_with_extension(self, value):
-        self._filename_with_extension = value
 
     def get_directory(self, temp=True):
         if temp:
