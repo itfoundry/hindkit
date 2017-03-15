@@ -276,10 +276,6 @@ class Style(BaseFont):
         name,
         location = (0),
         weight_class = 400,
-        is_bold = None,
-        is_italic = None,
-        is_oblique = None,
-        is_style_linkable = None,
     ):
 
         super(Style, self).__init__(family, name)
@@ -287,15 +283,6 @@ class Style(BaseFont):
 
         self.location = location
         self.weight_class = weight_class
-
-        self.is_bold = kit.fallback(is_bold, "Bold" in self.name.split())
-        self.is_italic = kit.fallback(is_italic, "Italic" in self.name.split())
-        self.is_oblique = kit.fallback(is_oblique, "Oblique" in self.name.split())
-
-        self.is_style_linkable = kit.fallback(
-            is_style_linkable,
-            (self.name == "Regular" or self.is_bold or self.is_italic),
-        )
 
         self.master = None
         self.dirty = False
@@ -317,10 +304,6 @@ class Product(BaseFont):
         self.style = style
         self.location = self.style.location
         self.weight_class = self.style.weight_class
-        self.is_bold = self.style.is_bold
-        self.is_italic = self.style.is_italic
-        self.is_oblique = self.style.is_oblique
-        self.is_style_linkable = self.style.is_style_linkable
 
         super(Product, self).__init__(
             self.style.family,
@@ -330,14 +313,23 @@ class Product(BaseFont):
         )
 
         self.project = project
-
         self.subsidiary = subsidiary
-
         self.built = False
+
+        name_parts = self.name.split(" ")
+        self.is_bold = "Bold" in name_parts
+        self.is_italic = "Italic" in name_parts
+        self.is_oblique = "Oblique" in name_parts
+
+        self._style_linking_family_name = None
 
     @BaseFont.filename.getter
     def filename(self):
         return kit.fallback(self._filename, self.full_name_postscript)
+
+    @property
+    def style_linking_family_name(self):
+        return kit.fallback(self._style_linking_family_name, self.full_name)
 
     def generate(self):
 

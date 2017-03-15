@@ -203,16 +203,31 @@ class Fmndb(kit.BaseFile):
 
             self.lines.append("")
             self.lines.append("[" + product.full_name_postscript + "]")
-            self.lines.append("  f = " + self.project.family.name)
+            self.lines.append("  f = " + product.family.name)
             self.lines.append("  s = " + product.name)
 
-            if self.project.options["do_style_linking"] and product.is_style_linkable:
+            comment_lines = []
+
+            if self.project.options["do_style_linking"]:
+                name_parts = product.name.split(" ")
+                try:
+                    name_parts.remove("Regular")
+                except ValueError:
+                    pass
                 if product.is_bold:
-                    self.lines.append("  # IsBoldStyle")
+                    name_parts.remove("Bold")
+                    comment_lines.append("  # IsBoldStyle")
                 if product.is_italic:
-                    self.lines.append("  # IsItalicStyle")
-            else:
-                self.lines.append("  l = " + product.full_name)
+                    name_parts.remove("Italic")
+                    comment_lines.append("  # IsItalicStyle")
+                product._style_linking_family_name = " ".join(
+                    [product.family.name] + name_parts
+                )
+
+            if product.style_linking_family_name != product.family.name:
+                self.lines.append("  l = " + product.style_linking_family_name)
+
+            self.lines.extend(comment_lines)
 
         with open(self.get_path(), "w") as f:
             f.writelines(i + "\n" for i in self.lines)
