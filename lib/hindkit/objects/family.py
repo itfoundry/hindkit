@@ -46,7 +46,7 @@ class Family(object):
         return kit.Client(self, self.client_name)
 
     def set_masters(self, value=None):
-        scheme = kit.fallback(value, [('Light', (0)), ('Bold',  (100))])
+        scheme = kit.fallback(value, [('Light', 0), ('Bold',  100)])
         self.masters = [
             kit.Master(self, name, location)
             for name, location in scheme

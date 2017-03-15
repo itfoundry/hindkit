@@ -102,7 +102,7 @@ class BaseFont(kit.BaseFile):
 
         return
 
-    def __init__(self, family, name, file_format='UFO', abstract_directory=''):
+    def __init__(self, family, name, file_format='UFO', abstract_directory='', location=0):
 
         super(BaseFont, self).__init__(
             name,
@@ -110,6 +110,11 @@ class BaseFont(kit.BaseFile):
             abstract_directory = abstract_directory,
             family = family,
         )
+
+        if isinstance(location, tuple):
+            self.location = location
+        else:
+            self.location = (location,)
 
         self._name_postscript = None
         self._full_name = None
@@ -244,14 +249,14 @@ class BaseFont(kit.BaseFile):
 
 class Master(BaseFont):
 
-    def __init__(self, family, name, location=(0)):
+    def __init__(self, family, name, location=0):
 
         super(Master, self).__init__(
             family,
             name,
             abstract_directory = kit.Project.directories['masters'],
+            location = location,
         )
-        self.location = location
 
     @BaseFont.filename.getter
     def filename(self):
@@ -274,14 +279,13 @@ class Style(BaseFont):
         self,
         family,
         name,
-        location = (0),
+        location = 0,
         weight_class = 400,
     ):
 
-        super(Style, self).__init__(family, name)
+        super(Style, self).__init__(family, name, location=location)
         self.abstract_directory = os.path.join(kit.Project.directories['styles'], self.name)
 
-        self.location = location
         self.weight_class = weight_class
 
         self.master = None
