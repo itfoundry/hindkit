@@ -257,20 +257,20 @@ class BaseFont(kit.BaseFile):
 
 class Master(BaseFont):
 
-    def __init__(self, family, name, weight_location=0):
+    def __init__(self, family, name, location=(0)):
 
         super(Master, self).__init__(
             family,
             name,
             abstract_directory = kit.Project.directories['masters'],
         )
-        self.weight_location = weight_location
+        self.location = location
 
     @BaseFont.filename.getter
     def filename(self):
-        '''According to Glyphs app's convention.'''
+        '''According to the Glyphs app's convention.'''
         if self._filename is None:
-            path_pattern = '{}/*{}.ufo'.format(self.get_directory(temp=False), self.name)
+            path_pattern = '{}/*-{}.ufo'.format(self.get_directory(temp=False), self.name)
             paths = glob.glob(path_pattern)
             if paths:
                 self._filename = os.path.basename(paths[0]).partition('.')[0]
@@ -287,7 +287,7 @@ class Style(BaseFont):
         self,
         family,
         name,
-        weight_location = 0,
+        location = (0),
         weight_class = 400,
         is_bold = None,
         is_italic = None,
@@ -298,7 +298,7 @@ class Style(BaseFont):
         super(Style, self).__init__(family, name)
         self.abstract_directory = os.path.join(kit.Project.directories['styles'], self.name)
 
-        self.weight_location = weight_location
+        self.location = location
         self.weight_class = weight_class
 
         self.is_bold = kit.fallback(is_bold, "Bold" in self.name.split())
@@ -328,7 +328,7 @@ class Product(BaseFont):
     def __init__(self, project, style, file_format='OTF', subsidiary=False):
 
         self.style = style
-        self.weight_location = self.style.weight_location
+        self.location = self.style.location
         self.weight_class = self.style.weight_class
         self.is_bold = self.style.is_bold
         self.is_italic = self.style.is_italic

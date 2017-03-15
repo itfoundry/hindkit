@@ -419,13 +419,13 @@ class FeatureMatches(BaseFeature):
         else:
             light_min, light_max = light
             bold_min, bold_max = bold
-            axis_start = self.project.family.masters[0].weight_location
-            axis_end = self.project.family.masters[-1].weight_location
+            axis_start = self.project.family.masters[0].location[0]
+            axis_end = self.project.family.masters[-1].location[0]
             axis_range = axis_end - axis_start
             if axis_range == 0:
                 ratio = 1
             else:
-                ratio = (self.style.weight_location - axis_start) / axis_range
+                ratio = (self.style.location[0] - axis_start) / axis_range
             return (
                 light_min + (bold_min - light_min) * ratio,
                 light_max + (bold_max - light_max) * ratio,

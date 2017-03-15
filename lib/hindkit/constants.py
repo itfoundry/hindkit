@@ -7,28 +7,28 @@ import os, collections
 import hindkit as kit
 
 STYLES_SINGLE = [
-    ("Regular", 0, 400),
+    ("Regular", (0), 400),
 ]
 
 STYLES_DUAL = [
-    ("Regular", 0, 400),
-    ("Bold",  100, 700),
+    ("Regular", (0), 400),
+    ("Bold",  (100), 700),
 ]
 
 STYLES_ITF = [
-    ("Light",     0, 300),
-    ("Regular",  21, 400),
-    ("Medium",   44, 500),
-    ("Semibold", 70, 600),
-    ("Bold",    100, 700),
+    ("Light",     (0), 300),
+    ("Regular",  (21), 400),
+    ("Medium",   (44), 500),
+    ("Semibold", (70), 600),
+    ("Bold",    (100), 700),
 ]
 
 STYLES_ITF_CamelCase = [
-    ("Light",     0, 300),
-    ("Regular",  21, 400),
-    ("Medium",   44, 500),
-    ("SemiBold", 70, 600),
-    ("Bold",    100, 700),
+    ("Light",     (0), 300),
+    ("Regular",  (21), 400),
+    ("Medium",   (44), 500),
+    ("SemiBold", (70), 600),
+    ("Bold",    (100), 700),
 ]
 
 CONSONANT_STEMS = """

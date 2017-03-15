@@ -46,23 +46,23 @@ class Family(object):
         return kit.Client(self, self.client_name)
 
     def set_masters(self, value=None):
-        scheme = kit.fallback(value, [('Light', 0), ('Bold',  100)])
+        scheme = kit.fallback(value, [('Light', (0)), ('Bold',  (100))])
         self.masters = [
-            kit.Master(self, name, weight_location)
-            for name, weight_location in scheme
+            kit.Master(self, name, location)
+            for name, location in scheme
         ]
 
     def set_styles(self, value=None):
         scheme = kit.fallback(value, self.get_client_data().style_scheme)
         self.styles = [
-            kit.Style(self, name, weight_location, weight_class)
-            for name, weight_location, weight_class in scheme
+            kit.Style(self, name, location, weight_class)
+            for name, location, weight_class in scheme
         ]
         if self.masters is None:
-            self.set_masters((i.name, i.weight_location) for i in self.styles)
+            self.set_masters((i.name, i.location) for i in self.styles)
         for master in self.masters:
             for style in self.styles:
-                if style.weight_location == master.weight_location:
+                if style.location == master.location:
                     style.master = master
                     break
 
@@ -139,7 +139,10 @@ class DesignSpace(kit.BaseFile):
 
                 path = os.path.abspath(kit.relative_to_cwd(master.get_path())),
                 name = 'master ' + master.name,
-                location = {'weight': master.weight_location},
+                location = {
+                    "axis " + str(axis_number): axis_position
+                    for axis_number, axis_position in enumerate(master.location)
+                },
 
                 copyLib    = i == 0,
                 copyGroups = i == 0,
@@ -152,11 +155,14 @@ class DesignSpace(kit.BaseFile):
             )
 
         for product in self.project.products:
-            if product.file_format == 'OTF':
+            if not product.subsidiary:
                 style = product.style
                 doc.startInstance(
                     name = 'instance ' + style.name,
-                    location = {'weight': style.weight_location},
+                    location = {
+                        "axis " + str(axis_number): axis_position
+                        for axis_number, axis_position in enumerate(style.location)
+                    },
                     familyName = self.project.family.name,
                     styleName = style.name,
                     fileName = os.path.abspath(
