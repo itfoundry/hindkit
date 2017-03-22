@@ -42,8 +42,8 @@ def makedirs(path):
             raise
 
 def copy(src, dst):
+    remove(dst)
     if os.path.isdir(src):
-        remove(dst)
         shutil.copytree(src, dst)
     else:
         shutil.copy(src, dst)

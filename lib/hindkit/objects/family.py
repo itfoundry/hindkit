@@ -59,7 +59,7 @@ class Family(object):
             for name, location, weight_and_width_class in scheme
         ]
         if self.masters is None:
-            self.set_masters((i.name, i.location) for i in self.styles)
+            self.masters = []
         for master in self.masters:
             for style in self.styles:
                 if style.location == master.location:
@@ -80,15 +80,16 @@ class Family(object):
         p = self.project
         styles = [i.style for i in p.products if not i.subsidiary]
 
-        p.glyph_data.glyph_order_trimmed = p.trim_glyph_names(
-            p.glyph_data.glyph_order,
-            self.masters[0].open().glyphOrder,
-        )
+        if self.masters:
+            p.glyph_data.glyph_order_trimmed = p.trim_glyph_names(
+                p.glyph_data.glyph_order,
+                self.masters[0].open().glyphOrder,
+            )
 
         if p.options['run_makeinstances']:
             p.update_glyphOrder(self.masters[0])
             self.generate_styles()
-        else:
+        elif self.masters:
             for style in styles:
                 if os.path.exists(style.master.get_path()):
                     p.update_glyphOrder(style.master)
@@ -98,6 +99,9 @@ class Family(object):
                 if style.file_format == "UFO":
                     style.open().info.postscriptFontName = style.full_name_postscript
                     style.dirty = True
+        else:
+            for style in styles:
+                style.prepare(whole_directory=True)
 
         for style in styles:
             try:

@@ -3,6 +3,7 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import os, argparse, subprocess, collections
+import fontTools.ttLib
 import hindkit as kit
 
 class Project(object):
@@ -120,8 +121,10 @@ class Project(object):
 
         if self.options['run_makeinstances']:
             styles = self.family.styles
-        else:
+        elif self.family.masters:
             styles = [i for i in self.family.styles if i.master]
+        else:
+            styles = self.family.styles
 
         self.products = [i.produce(self, file_format='OTF') for i in styles]
         if self.options['build_ttf']:
@@ -197,6 +200,10 @@ class Project(object):
             if self.family.styles[0].file_format == "UFO":
                 reference_font = self.products[0].style.open()
                 self.family.info.unitsPerEm = reference_font.info.unitsPerEm
+            elif self.family.styles[0].file_format == "OTF":
+                reference_font = fontTools.ttLib.TTFont(self.products[0].style.get_path())
+                self.family.info.unitsPerEm = reference_font["head"].unitsPerEm
+                print(self.family.info.unitsPerEm)
 
             self.feature_classes = kit.Feature(
                 self, 'classes',
