@@ -102,7 +102,15 @@ class BaseFont(kit.BaseFile):
 
         return
 
-    def __init__(self, family, name, file_format='UFO', abstract_directory='', location=0):
+    def __init__(
+        self,
+        family,
+        name,
+        file_format = 'UFO',
+        abstract_directory = '',
+        location = 0,
+        weight_and_width_class = (400, 5),
+    ):
 
         super(BaseFont, self).__init__(
             name,
@@ -115,6 +123,12 @@ class BaseFont(kit.BaseFile):
             self.location = location
         else:
             self.location = (location,)
+
+        if isinstance(weight_and_width_class, tuple):
+            self.weight_class, self.width_class = weight_and_width_class
+        else:
+            self.weight_class = weight_and_width_class
+            self.width_class = 5
 
         self._name_postscript = None
         self._full_name = None
@@ -280,13 +294,16 @@ class Style(BaseFont):
         family,
         name,
         location = 0,
-        weight_class = 400,
+        weight_and_width_class = (400, 5),
     ):
 
-        super(Style, self).__init__(family, name, location=location)
+        super(Style, self).__init__(
+            family,
+            name,
+            location = location,
+            weight_and_width_class = weight_and_width_class,
+        )
         self.abstract_directory = os.path.join(kit.Project.directories['styles'], self.name)
-
-        self.weight_class = weight_class
 
         self.master = None
         self.dirty = False
@@ -308,6 +325,7 @@ class Product(BaseFont):
         self.style = style
         self.location = self.style.location
         self.weight_class = self.style.weight_class
+        self.width_class = self.style.width_class
 
         super(Product, self).__init__(
             self.style.family,

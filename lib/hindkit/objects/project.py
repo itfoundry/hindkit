@@ -232,6 +232,9 @@ class Project(object):
                 self.feature_weight_class = kit.Feature(
                     self, 'WeightClass', product.style,
                 )
+                self.feature_width_class = kit.Feature(
+                    self, 'WidthClass', product.style,
+                )
                 self.features_references = kit.Feature(
                     self, 'features', product.style,
                 )
@@ -244,6 +247,7 @@ class Project(object):
                 if self.options['match_mI_variants']:
                     self.feature_matches.prepare()
                 self.feature_weight_class.prepare()
+                self.feature_width_class.prepare()
                 self.features_references.prepare()
 
         if self.options['compile']:

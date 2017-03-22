@@ -55,8 +55,8 @@ class Family(object):
     def set_styles(self, value=None):
         scheme = kit.fallback(value, self.get_client_data().style_scheme)
         self.styles = [
-            kit.Style(self, name, location, weight_class)
-            for name, location, weight_class in scheme
+            kit.Style(self, name, location, weight_and_width_class)
+            for name, location, weight_and_width_class in scheme
         ]
         if self.masters is None:
             self.set_masters((i.name, i.location) for i in self.styles)

@@ -108,6 +108,8 @@ class FeatureTables(BaseFeature):
         ])
 
         tables["OS/2"].append("include (WeightClass.fea);")
+        tables["OS/2"].append("include (WidthClass.fea);")
+
         tables["OS/2"].append("fsType {};".format(client_data.tables["OS/2"]["fsType"]))
 
         unicode_range_bits = set(
@@ -285,10 +287,17 @@ class FeatureKern(BaseFeature):
                 with open(kern_path, "w") as f:
                     f.write(self.postprocess(content))
 
+
 class FeatureWeightClass(BaseFeature):
     def generate(self):
         with open(self.get_path(), "w") as f:
             f.write("WeightClass {};\n".format(str(self.style.weight_class)))
+
+
+class FeatureWidthClass(BaseFeature):
+    def generate(self):
+        with open(self.get_path(), "w") as f:
+            f.write("WidthClass {};\n".format(str(self.style.width_class)))
 
 
 class FeatureMatches(BaseFeature):
@@ -669,6 +678,7 @@ class Feature(object):
         "mark": FeatureMark,
         "mI_variant_matches": FeatureMatches,
         "WeightClass": FeatureWeightClass,
+        "WidthClass": FeatureWidthClass,
         "features": FeatureReferences,
     }
     def __new__(cls, project, name, style=None, filename_group=None):
