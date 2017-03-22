@@ -16,7 +16,7 @@ project = kit.Project(
     fontrevision = "0.100",
     options = {
         "prepare_mark_positioning": True,
-        "match_mI_variants": "single",
+        "match_mI_variants": 1,
         "position_marks_for_mI_variants": True,
         # "build_ttf": True,
         # "do_style_linking": True,

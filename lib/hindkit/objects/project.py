@@ -44,7 +44,7 @@ class Project(object):
             'prepare_mark_positioning': False,
                 'prepare_mark_to_mark_positioning': True,
 
-            'match_mI_variants': False, # 'single' or 'sequence'
+            'match_mI_variants': 0,
                 'position_marks_for_mI_variants': False,
 
             'run_makeinstances': True,

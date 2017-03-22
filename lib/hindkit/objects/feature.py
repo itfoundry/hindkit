@@ -61,7 +61,7 @@ class FeatureClasses(BaseFeature):
                     (m.CLASS_NAME_BASES_ALIVE, f.bases_alive, m.BASE_NAMES_ALIVE),
                     (m.CLASS_NAME_BASES_FOR_LONG_mII, f.bases_for_long_mII, m.BASE_NAMES_FOR_LONG_mII),
                 ])
-                if self.project.options["match_mI_variants"] == "sequence":
+                if self.project.options["match_mI_variants"] > 1:
                     glyph_classes.extend([
                         (m.CLASS_NAME_BASES_DEAD, f.bases_dead, m.BASE_NAMES_DEAD),
                     ])
@@ -417,7 +417,7 @@ class FeatureMatches(BaseFeature):
             ])
 
         if self.project.options["position_marks_for_mI_variants"] and \
-        self.project.options["match_mI_variants"] == "single":
+        self.project.options["match_mI_variants"] == 1:
             self.output_mark_positioning_for_mI_variants()
 
     def _get_adjustment_extremes(self):
@@ -475,12 +475,10 @@ class FeatureMatches(BaseFeature):
     def _base_glyph_sequences(self):
 
         bases_alive = self.bases_alive
-        if self.project.options["match_mI_variants"] == "single":
+        if self.project.options["match_mI_variants"] == 1:
             bases_dead = [None]
-        elif self.project.options["match_mI_variants"] == "sequence":
+        elif self.project.options["match_mI_variants"] > 1:
             bases_dead = [None] + self.bases_dead
-        else:
-            raise ValueError("[WARNING] Project.options[\"match_mI_variants\"] is not set to \"single\" or \"sequence\".")
 
         seeds = [bases_dead] * (self.BASE_GLYPH_SEQUENCE_LENGTH - 1) + [bases_alive]
         for raw_sequence in itertools.product(*seeds):
