@@ -426,19 +426,22 @@ class FeatureMatches(BaseFeature):
         except AttributeError:
             return None
         else:
-            light_min, light_max = light
-            bold_min, bold_max = bold
-            axis_start = self.project.family.masters[0].location[0]
-            axis_end = self.project.family.masters[-1].location[0]
-            axis_range = axis_end - axis_start
-            if axis_range == 0:
-                ratio = 1
+            if self.project.family.masters:
+                light_min, light_max = light
+                bold_min, bold_max = bold
+                axis_start = self.project.family.masters[0].location[0]
+                axis_end = self.project.family.masters[-1].location[0]
+                axis_range = axis_end - axis_start
+                if axis_range == 0:
+                    ratio = 1
+                else:
+                    ratio = (self.style.location[0] - axis_start) / axis_range
+                return (
+                    light_min + (bold_min - light_min) * ratio,
+                    light_max + (bold_max - light_max) * ratio,
+                )
             else:
-                ratio = (self.style.location[0] - axis_start) / axis_range
-            return (
-                light_min + (bold_min - light_min) * ratio,
-                light_max + (bold_max - light_max) * ratio,
-            )
+                return None
 
     def _get_abvm_position(self, glyph, in_base=True):
         anchor_name_prefix = "" if in_base else "_"
