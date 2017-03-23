@@ -119,12 +119,12 @@ class Project(object):
             self.options['run_autohint'] = False
             self.options['build_ttf'] = False
 
-        if self.options['run_makeinstances']:
-            styles = self.family.styles
-        elif self.family.masters:
-            styles = [i for i in self.family.styles if i.master]
+        styles = self.family.styles
+        if self.family.masters:
+            if not self.options['run_makeinstances']:
+                styles = [i for i in self.family.styles if i.master]
         else:
-            styles = self.family.styles
+            self.options['run_makeinstances'] = False
 
         self.products = [i.produce(self, file_format='OTF') for i in styles]
         if self.options['build_ttf']:
@@ -203,7 +203,6 @@ class Project(object):
             elif self.family.styles[0].file_format == "OTF":
                 reference_font = fontTools.ttLib.TTFont(self.products[0].style.get_path())
                 self.family.info.unitsPerEm = reference_font["head"].unitsPerEm
-                print(self.family.info.unitsPerEm)
 
             self.feature_classes = kit.Feature(
                 self, 'classes',

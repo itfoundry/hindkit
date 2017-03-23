@@ -85,20 +85,16 @@ class Family(object):
                 p.glyph_data.glyph_order,
                 self.masters[0].open().glyphOrder,
             )
-
-        if p.options['run_makeinstances']:
-            p.update_glyphOrder(self.masters[0])
-            self.generate_styles()
-        elif self.masters:
-            for style in styles:
-                if os.path.exists(style.master.get_path()):
+            if p.options['run_makeinstances']:
+                p.update_glyphOrder(self.masters[0])
+                self.generate_styles()
+            else:
+                for style in styles:
                     p.update_glyphOrder(style.master)
                     kit.copy(style.master.get_path(), style.get_path())
-                else:
-                    style.prepare(whole_directory=True)
-                if style.file_format == "UFO":
-                    style.open().info.postscriptFontName = style.full_name_postscript
-                    style.dirty = True
+                    if style.file_format == "UFO":
+                        style.open().info.postscriptFontName = style.full_name_postscript
+                        style.dirty = True
         else:
             for style in styles:
                 style.prepare(whole_directory=True)
