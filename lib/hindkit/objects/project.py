@@ -124,7 +124,11 @@ class Project(object):
             if not self.options['run_makeinstances']:
                 styles = [i for i in self.family.styles if i.master]
         else:
+            self.options['prepare_masters'] = False
             self.options['run_makeinstances'] = False
+
+        if not styles:
+            self.options['prepare_styles'] = False
 
         self.products = [i.produce(self, file_format='OTF') for i in styles]
         if self.options['build_ttf']:
@@ -132,6 +136,9 @@ class Project(object):
                 i.produce(self, file_format='TTF', subsidiary=True)
                 for i in styles
             )
+
+        if not self.products:
+            self.options['compile'] = False
 
         if len(set(i.file_format for i in self.products)) > 1:
             for product in self.products:
@@ -176,10 +183,10 @@ class Project(object):
     def build(self):
 
         self.reset_directory("temp")
-        for name in ["masters", "styles", "features", "products"]: # The whole "temp" directory has already been cleared.
-            self.reset_directory(name, temp=True)
 
         if self.options['prepare_masters']:
+
+            self.reset_directory("masters", temp=True)
 
             for master in self.family.masters:
                 master.prepare()
@@ -193,9 +200,13 @@ class Project(object):
 
         if self.options['prepare_styles']:
 
+            self.reset_directory("styles", temp=True)
+
             self.family.prepare_styles()
 
         if self.options['prepare_features']:
+
+            self.reset_directory("features", temp=True)
 
             if self.family.styles[0].file_format == "UFO":
                 reference_font = self.products[0].style.open()
@@ -258,6 +269,8 @@ class Project(object):
 
         if self.options['compile']:
 
+            self.reset_directory("products", temp=True)
+
             self.fmndb.prepare()
 
             for product in self.products:
@@ -266,15 +279,13 @@ class Project(object):
             products_built = [i for i in self.products if i.built]
 
             output_dir = self.directories["output"]
-            if os.path.isdir(output_dir):
-                do_output = True
-            else:
-                do_output = False
-
             for product in products_built:
                 product.copy_out_of_temp()
-                if do_output:
-                    kit.copy(product.get_path(), output_dir)
+                if os.path.isdir(output_dir):
+                    kit.copy(
+                        product.get_path(),
+                        os.path.join(output_dir, product.filename_with_extension),
+                    )
                     print("[COPIED TO OUPUT DIRECTORY]", product.get_path())
 
         client_data = self.family.get_client_data()
