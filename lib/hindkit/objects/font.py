@@ -188,12 +188,15 @@ class BaseFont(kit.BaseFile):
         importing_names = None,
         excluding_names = None,
         import_kerning = False,
+        renaming_dict = None,
     ):
 
         if importing_names is None:
             importing_names = []
         if excluding_names is None:
             excluding_names = []
+        if renaming_dict is None:
+            renaming_dict = {}
 
         source = defcon.Font(source_path)
 
@@ -209,28 +212,31 @@ class BaseFont(kit.BaseFile):
             target = self.open()
 
         if importing_names:
-            new_names = set(importing_names)
+            names_imported = set(importing_names)
         else:
-            new_names = set(source.keys())
+            names_imported = set(source.keys())
 
-        existing_names = set(target.keys())
-        new_names.difference_update(existing_names)
-        new_names.difference_update(set(excluding_names))
-        new_names = (
-            [i for i in source.glyphOrder if i in new_names] +
-            [i for i in new_names if i not in source.glyphOrder]
+        names_imported.difference_update(set(target.keys()))
+        names_imported.difference_update(set(excluding_names))
+        names_imported = (
+            [i for i in source.glyphOrder if i in names_imported] +
+            [i for i in names_imported if i not in source.glyphOrder]
         )
 
         print('\n[NOTE] Importing glyphs from `{}` to `{}`:'.format(source_path, self.name))
-        for new_name in new_names:
-            target.newGlyph(new_name)
-            source_glyph = source[new_name]
+        for name_source in names_imported:
+            name_target = renaming_dict.get(name_source, name_source)
+            target.newGlyph(name_target)
+            source_glyph = source[name_source]
             for component in source_glyph.components:
-                if component.baseGlyph not in new_names:
+                if component.baseGlyph not in names_imported:
                     source_glyph.decomposeComponent(component)
-                    print("(decomposed {} in {})".format(component.baseGlyph, new_name), end=' ')
-            target[new_name].copyDataFromGlyph(source_glyph)
-            print(new_name, end=', ')
+                    print("(decomposed {} in {})".format(component.baseGlyph, name_source), end=' ')
+            target[name_target].copyDataFromGlyph(source_glyph)
+            if name_target == name_source:
+                print(name_target, end=", ")
+            else:
+                print("{} -> {}".format(name_source, name_target), end=", ")
 
         if import_kerning:
             target.groups.update(source.groups)
@@ -258,7 +264,7 @@ class BaseFont(kit.BaseFile):
             target.newGlyph(deriving_name)
             if source_name:
                 target[deriving_name].width = target[source_name].width
-            print('{} (from {})'.format(deriving_name, source_name), end=', ')
+            print("{} -> {}".format(source_name, deriving_name), end=", ")
 
 
 class Master(BaseFont):
