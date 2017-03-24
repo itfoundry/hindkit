@@ -5,26 +5,26 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import os, sys, StringIO
 import hindkit as kit
 
-sys.path.insert(0, kit.relative_to_interpreter('../SharedData/FDKScripts'))
+sys.path.insert(0, kit.relative_to_interpreter("../SharedData/FDKScripts"))
 import agd
 
 class GlyphData(object):
 
-    with open(kit.relative_to_interpreter('../SharedData/AGD.txt'), 'rU') as f:
+    with open(kit.relative_to_interpreter("../SharedData/AGD.txt"), "rU") as f:
         agd_content = f.read()
     agd_dictionary = agd.dictionary(agd_content)
 
     ITFDG = []
 
-    goadb_path = 'GlyphOrderAndAliasDB'
+    goadb_path = "GlyphOrderAndAliasDB"
 
     @staticmethod
     def split(line):
-        return line.partition('#')[0].split()
+        return line.partition("#")[0].split()
 
     def __init__(
         self,
-        glyph_order_name = 'glyphorder.txt',
+        glyph_order_name = "glyphorder.txt",
     ):
 
         self.glyph_order = []
@@ -36,7 +36,7 @@ class GlyphData(object):
 
             with open(self.goadb_path) as f:
                 self.goadb.writelines(
-                    '\t'.join(self.split(line)) + '\n'
+                    "\t".join(self.split(line)) + "\n"
                     for line in f
                 )
 
@@ -73,20 +73,20 @@ class GlyphData(object):
     def generate_goadb(self, names=None):
         if names is None:
             names = self.glyph_order
-        return StringIO.StringIO(self.dictionary.aliasfile(names) + '\n')
+        return StringIO.StringIO(self.dictionary.aliasfile(names) + "\n")
 
 
 class Goadb(kit.BaseFile):
 
     TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP = {
-        'CR\tCR\tuni000D\n': 'CR\tuni000D\tuni000D\n',
-        'uni00A0\tnonbreakingspace\tuni00A0\n': 'uni00A0\tuni00A0\tuni00A0\n',
+        "CR\tCR\tuni000D\n": "CR\tuni000D\tuni000D\n",
+        "uni00A0\tnonbreakingspace\tuni00A0\n": "uni00A0\tuni00A0\tuni00A0\n",
     }
 
     def __init__(
         self,
         project,
-        name = 'GlyphOrderAndAliasDB',
+        name = "GlyphOrderAndAliasDB",
         for_ttf = False,
     ):
         super(Goadb, self).__init__(name, project=project)
@@ -96,7 +96,7 @@ class Goadb(kit.BaseFile):
         goadb_trimmed = self.project.glyph_data.generate_goadb(
             self.project.glyph_data.glyph_order_trimmed
         )
-        with open(self.get_path(), 'w') as f:
+        with open(self.get_path(), "w") as f:
             for line in goadb_trimmed:
                 if self.for_ttf:
                     line = self.TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP.get(

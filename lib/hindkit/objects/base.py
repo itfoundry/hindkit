@@ -71,7 +71,7 @@ class BaseFile(object):
     def filename_with_extension(self):
         return kit.fallback(
             self._filename_with_extension,
-            self.filename + (('.' + self.extension) if self.extension else ''),
+            self.filename + (("." + self.extension) if self.extension else ""),
         )
 
     def get_directory(self, temp=True):

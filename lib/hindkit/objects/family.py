@@ -29,8 +29,8 @@ class Family(object):
         else:
             self.name = self.name_script_independent
             if script_name and append_script_name:
-                self.name += ' ' + script_name
-        self.name_postscript = self.name.replace(' ', '')
+                self.name += " " + script_name
+        self.name_postscript = self.name.replace(" ", "")
 
         self.masters = None
         self.styles = None
@@ -46,7 +46,7 @@ class Family(object):
         return kit.Client(self, self.client_name)
 
     def set_masters(self, value=None):
-        scheme = kit.fallback(value, [('Light', 0), ('Bold',  100)])
+        scheme = kit.fallback(value, [("Light", 0), ("Bold",  100)])
         self.masters = [
             kit.Master(self, name, location)
             for name, location in scheme
@@ -85,7 +85,7 @@ class Family(object):
                 p.glyph_data.glyph_order,
                 self.masters[0].open().glyphOrder,
             )
-            if p.options['run_makeinstances']:
+            if p.options["run_makeinstances"]:
                 p.update_glyphOrder(self.masters[0])
                 self.generate_styles()
             else:
@@ -121,11 +121,11 @@ class Family(object):
 
 class DesignSpace(kit.BaseFile):
 
-    def __init__(self, project, name='font'):
+    def __init__(self, project, name="font"):
         super(DesignSpace, self).__init__(
             name,
             project = project,
-            file_format = 'DesignSpace',
+            file_format = "DesignSpace",
         )
 
     def generate(self):
@@ -139,7 +139,7 @@ class DesignSpace(kit.BaseFile):
             doc.addSource(
 
                 path = os.path.abspath(kit.relative_to_cwd(master.get_path())),
-                name = 'master ' + master.name,
+                name = "master " + master.name,
                 location = {
                     "axis " + str(axis_number): axis_position
                     for axis_number, axis_position in enumerate(master.location)
@@ -159,7 +159,7 @@ class DesignSpace(kit.BaseFile):
             if not product.subsidiary:
                 style = product.style
                 doc.startInstance(
-                    name = 'instance ' + style.name,
+                    name = "instance " + style.name,
                     location = {
                         "axis " + str(axis_number): axis_position
                         for axis_number, axis_position in enumerate(style.location)
@@ -174,7 +174,7 @@ class DesignSpace(kit.BaseFile):
                     # styleMapStyleName = None,
                 )
                 doc.writeInfo()
-                if self.project.options['prepare_kerning']:
+                if self.project.options["prepare_kerning"]:
                     doc.writeKerning()
                 doc.endInstance()
         doc.save()

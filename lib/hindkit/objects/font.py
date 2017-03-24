@@ -106,8 +106,8 @@ class BaseFont(kit.BaseFile):
         self,
         family,
         name,
-        file_format = 'UFO',
-        abstract_directory = '',
+        file_format = "UFO",
+        abstract_directory = "",
         location = 0,
         weight_and_width_class = (400, 5),
     ):
@@ -138,17 +138,17 @@ class BaseFont(kit.BaseFile):
 
     @property
     def name_postscript(self):
-        return kit.fallback(self._name_postscript, self.name.replace(' ', ''))
+        return kit.fallback(self._name_postscript, self.name.replace(" ", ""))
 
     @property
     def full_name(self):
-        return kit.fallback(self._full_name, self.family.name + ' ' + self.name)
+        return kit.fallback(self._full_name, self.family.name + " " + self.name)
 
     @property
     def full_name_postscript(self):
         return kit.fallback(
             self._full_name_postscript,
-            self.family.name_postscript + '-' + self.name_postscript,
+            self.family.name_postscript + "-" + self.name_postscript,
         )
 
     def open(self, from_disk=False):
@@ -156,7 +156,7 @@ class BaseFont(kit.BaseFile):
             return self.font_in_memory
         else:
             if os.path.exists(self.get_path()):
-                if self.file_format == 'UFO':
+                if self.file_format == "UFO":
                     self.font_in_memory = defcon.Font(self.get_path())
                     print("[OPENED]", self.get_path())
                     return self.font_in_memory
@@ -174,7 +174,7 @@ class BaseFont(kit.BaseFile):
         self.counter += 1
         if as_filename is None:
             self._filename = None
-            self._filename = self.filename + '--{}'.format(self.counter)
+            self._filename = self.filename + "--{}".format(self.counter)
         else:
             self._filename = as_filename
         defcon_font.save(self.get_path())
@@ -201,7 +201,7 @@ class BaseFont(kit.BaseFile):
         source = defcon.Font(source_path)
 
         if target_dir:
-            target_filename_pattern = '{}*-{}.ufo'.format(target_dir, self.name)
+            target_filename_pattern = "{}*-{}.ufo".format(target_dir, self.name)
             target_paths = glob.glob(target_filename_pattern)
             if target_paths:
                 target_path = target_paths[0]
@@ -223,7 +223,7 @@ class BaseFont(kit.BaseFile):
             [i for i in names_imported if i not in source.glyphOrder]
         )
 
-        print('\n[NOTE] Importing glyphs from `{}` to `{}`:'.format(source_path, self.name))
+        print("\n[NOTE] Importing glyphs from `{}` to `{}`:".format(source_path, self.name))
         for name_source in names_imported:
             name_target = renaming_dict.get(name_source, name_source)
             target.newGlyph(name_target)
@@ -231,7 +231,7 @@ class BaseFont(kit.BaseFile):
             for component in source_glyph.components:
                 if component.baseGlyph not in names_imported:
                     source_glyph.decomposeComponent(component)
-                    print("(decomposed {} in {})".format(component.baseGlyph, name_source), end=' ')
+                    print("(decomposed {} in {})".format(component.baseGlyph, name_source), end=" ")
             target[name_target].copyDataFromGlyph(source_glyph)
             if name_target == name_source:
                 print(name_target, end=", ")
@@ -250,16 +250,16 @@ class BaseFont(kit.BaseFile):
 
         target = self.open()
 
-        print('\n[NOTE] Deriving glyphs in `{}`:'.format(self.name))
+        print("\n[NOTE] Deriving glyphs in `{}`:".format(self.name))
         for deriving_name in deriving_names:
             source_name = {
-                'CR': 'space',
-                'uni000D': 'space',
-                'nonbreakingspace': 'space',
-                'uni00A0': 'space',
-                'NULL': None,
-                'zerowidthspace': None,
-                'uni200B': None,
+                "CR": "space",
+                "uni000D": "space",
+                "nonbreakingspace": "space",
+                "uni00A0": "space",
+                "NULL": None,
+                "zerowidthspace": None,
+                "uni200B": None,
             }[deriving_name]
             target.newGlyph(deriving_name)
             if source_name:
@@ -274,18 +274,18 @@ class Master(BaseFont):
         super(Master, self).__init__(
             family,
             name,
-            abstract_directory = kit.Project.directories['masters'],
+            abstract_directory = kit.Project.directories["masters"],
             location = location,
         )
 
     @BaseFont.filename.getter
     def filename(self):
-        '''According to the Glyphs app's convention.'''
+        """According to the Glyphs app's convention."""
         if self._filename is None:
-            path_pattern = '{}/*-{}.ufo'.format(self.get_directory(temp=False), self.name)
+            path_pattern = "{}/*-{}.ufo".format(self.get_directory(temp=False), self.name)
             paths = glob.glob(path_pattern)
             if paths:
-                self._filename = os.path.basename(paths[0]).partition('.')[0]
+                self._filename = os.path.basename(paths[0]).partition(".")[0]
                 return self._filename
             else:
                 raise SystemExit("`{}` is missing.".format(path_pattern))
@@ -309,7 +309,7 @@ class Style(BaseFont):
             location = location,
             weight_and_width_class = weight_and_width_class,
         )
-        self.abstract_directory = os.path.join(kit.Project.directories['styles'], self.name)
+        self.abstract_directory = os.path.join(kit.Project.directories["styles"], self.name)
 
         self.master = None
         self.dirty = False
@@ -318,15 +318,15 @@ class Style(BaseFont):
 
     @BaseFont.filename.getter
     def filename(self):
-        return kit.fallback(self._filename, 'font')
+        return kit.fallback(self._filename, "font")
 
-    def produce(self, project, file_format='OTF', subsidiary=False):
+    def produce(self, project, file_format="OTF", subsidiary=False):
         return Product(project, self, file_format=file_format, subsidiary=subsidiary)
 
 
 class Product(BaseFont):
 
-    def __init__(self, project, style, file_format='OTF', subsidiary=False):
+    def __init__(self, project, style, file_format="OTF", subsidiary=False):
 
         self.style = style
         self.location = self.style.location
@@ -337,7 +337,7 @@ class Product(BaseFont):
             self.style.family,
             self.style.name,
             file_format = file_format,
-            abstract_directory = kit.Project.directories['products'],
+            abstract_directory = kit.Project.directories["products"],
         )
 
         self.project = project
@@ -361,11 +361,11 @@ class Product(BaseFont):
 
     def generate(self):
 
-        if self.file_format == 'OTF':
+        if self.file_format == "OTF":
 
             goadb = self.project.goadb_trimmed
 
-            if self.style.file_format == 'UFO':
+            if self.style.file_format == "UFO":
 
                 defcon_font = self.style.open()
                 for i in """
@@ -390,15 +390,15 @@ class Product(BaseFont):
                 defcon_font.info.postscriptFontName = self.full_name_postscript
                 self.style.save()
 
-                if self.project.options['run_checkoutlines'] or self.project.options['run_autohint']:
+                if self.project.options["run_checkoutlines"] or self.project.options["run_autohint"]:
                     options = {
-                        'doOverlapRemoval': self.project.options['run_checkoutlines'],
-                        'doAutoHint': self.project.options['run_autohint'],
-                        'allowDecimalCoords': False,
+                        "doOverlapRemoval": self.project.options["run_checkoutlines"],
+                        "doAutoHint": self.project.options["run_autohint"],
+                        "allowDecimalCoords": False,
                     }
                     self._updateInstance(options, self.style.get_path())
 
-        elif self.file_format == 'TTF':
+        elif self.file_format == "TTF":
 
             goadb = self.project.goadb_trimmed_ttf
 
@@ -408,50 +408,50 @@ class Product(BaseFont):
                 os.path.abspath(self.style.get_path()),
             ])
 
-            self.style.file_format = 'TTF' #TODO: Should restore the original file format afterwards. Or the styles should just seperate.
+            self.style.file_format = "TTF" #TODO: Should restore the original file format afterwards. Or the styles should just seperate.
 
             while not os.path.exists(self.style.get_path()):
                 print(
                     "\n[PROMPT] Input file {} is missing. Try again? [Y/n]: ".format(self.style.get_path()),
-                    end = '',
+                    end = "",
                 )
-                if raw_input().upper().startswith('N'):
+                if raw_input().upper().startswith("N"):
                     return
 
         goadb.prepare()
         kit.makedirs(self.get_directory())
 
         arguments = [
-            '-f', self.style.get_path(),
-            '-o', self.get_path(),
-            '-mf', self.project.fmndb.get_path(),
-            '-gf', goadb.get_path(),
-            '-rev', self.project.fontrevision,
-            '-ga',
+            "-f", self.style.get_path(),
+            "-o", self.get_path(),
+            "-mf", self.project.fmndb.get_path(),
+            "-gf", goadb.get_path(),
+            "-rev", self.project.fontrevision,
+            "-ga",
         ]
-        if self.project.options['omit_mac_name_records']:
-            arguments.append('-omitMacNames')
+        if self.project.options["omit_mac_name_records"]:
+            arguments.append("-omitMacNames")
         if not self.project.args.test:
-            arguments.append('-r')
-        if not self.project.options['run_autohint']:
-            arguments.append('-shw')
+            arguments.append("-r")
+        if not self.project.options["run_autohint"]:
+            arguments.append("-shw")
         if self.family.is_serif is not None:
-            arguments.append('-serif' if self.family.is_serif else '-sans')
-        if self.project.options['do_style_linking']:
+            arguments.append("-serif" if self.family.is_serif else "-sans")
+        if self.project.options["do_style_linking"]:
             if self.is_bold:
-                arguments.append('-b')
+                arguments.append("-b")
             if self.is_italic:
-                arguments.append('-i')
-        if self.project.options['use_os_2_version_4']:
+                arguments.append("-i")
+        if self.project.options["use_os_2_version_4"]:
             for digit, boolean in [
-                ('7', self.project.options['prefer_typo_metrics']),
-                ('8', self.project.options['is_width_weight_slope_only']),
-                ('9', self.is_oblique),
+                ("7", self.project.options["prefer_typo_metrics"]),
+                ("8", self.project.options["is_width_weight_slope_only"]),
+                ("9", self.is_oblique),
             ]:
-                arguments.append('-osbOn' if boolean else '-osbOff')
+                arguments.append("-osbOn" if boolean else "-osbOff")
                 arguments.append(digit)
 
-        subprocess.call(['makeotf'] + arguments)
+        subprocess.call(["makeotf"] + arguments)
 
         if os.path.exists(self.get_path()):
             self.built = True
