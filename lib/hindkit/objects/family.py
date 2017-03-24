@@ -10,11 +10,11 @@ class Family(object):
 
     def __init__(
         self,
-        name = None,
         trademark = None,
-        name_stem = None,
+        name_script_independent = None,
         script_name = "Latin",
         append_script_name = False,
+        name = None,
         client_name = None,
         variant_tag = None,
         initial_release_year = None,
@@ -22,12 +22,12 @@ class Family(object):
     ):
 
         self.trademark = trademark
-        self.name_stem = kit.fallback(name_stem, self.trademark)
+        self.name_script_independent = kit.fallback(name_script_independent, self.trademark)
         self.script = kit.constants.SCRIPT_NAMES_TO_SCRIPTS.get(script_name)
         if name:
             self.name = name
         else:
-            self.name = self.name_stem
+            self.name = self.name_script_independent
             if script_name and append_script_name:
                 self.name += ' ' + script_name
         self.name_postscript = self.name.replace(' ', '')
