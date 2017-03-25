@@ -9,10 +9,13 @@ class GlyphSet(object):
     def __init__(self, development_names = []):
         self.glyphs = [Glyph(name) for name in development_names]
 
-    def to_goadb(self):
+    def to_goadb(self, convert_to_production_name=True):
         goadb_lines = []
         for glyph in self.glyphs:
-            row = [glyph.production_name, glyph.name]
+            if convert_to_production_name:
+                row = [glyph.production_name, glyph.name]
+            else:
+                row = [glyph.name, glyph.name]
             if glyph.unicode_mapping:
                 row.append('uni' + glyph.unicode_mapping)
             line = ' '.join(row)
@@ -38,25 +41,26 @@ class Glyph(object):
         cv_map['KSS' + v] = 'KA_Virama_SSA_m' + v
 
     shorthand_flattening_map = {
-      'Reph': 'RA_Virama',
-      'Eyelash': 'RA_Virama_zerowidthjoiner',
-      'Rashtrasign': 'Virama_RA',
-      'Rakar': 'Virama_RA',
-      'RAphalaa': 'Virama_RA',
-      'BAphalaa': 'Virama_BA',
-      'YAphalaa': 'Virama_YA',
+        'Reph': 'RA_Virama',
+        'Eyelash': 'RA_Virama_zerowidthjoiner',
+        'Rashtrasign': 'Virama_RA',
+        'Rakar': 'Virama_RA',
+        'RAphalaa': 'Virama_RA',
+        'BAphalaa': 'Virama_BA',
+        'YAphalaa': 'Virama_YA',
     }
     for m in [half_map, nukta_map, half_nukta_map, c2_map, cv_map]:
         shorthand_flattening_map.update(m)
 
     name_to_scalar_map  = {
-      'rupee': '20A8',
-      'indianrupee': '20B9',
-      'apostrophemod': '02BC',
-      'zerowidthspace': '200B',
-      'zerowidthnonjoiner': '200C',
-      'zerowidthjoiner': '200D',
-      'dottedcircle': '25CC',
+        'space': '0020',
+        'rupee': '20A8',
+        'indianrupee': '20B9',
+        'apostrophemod': '02BC',
+        'zerowidthspace': '200B',
+        'zerowidthnonjoiner': '200C',
+        'zerowidthjoiner': '200D',
+        'dottedcircle': '25CC',
     }
     name_to_scalar_map.update({
         glyph_name: u_name_to_u_scalar[u_name]
@@ -180,11 +184,8 @@ class Glyph(object):
     def _get_name_from_production_name(self, production_name):
         pass
 
-# - - -
-
-gset = GlyphSet("""\
-.notdef
-space
-dvA
-""".splitlines())
-print(gset.to_goadb())
+with open("lab/input.txt") as f:
+    names = f.read().splitlines()
+gset = GlyphSet(names)
+with open("lab/output.txt", "w") as f:
+    f.write(gset.to_goadb(convert_to_production_name=False))
