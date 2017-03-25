@@ -151,6 +151,12 @@ class BaseFont(kit.BaseFile):
 
     def derive_glyphs(self, deriving_names):
 
+        DERIVED_NAME_TO_SOURCE_NAME = {
+            derived_name: source_name
+            for source_name, derived_names in kit.constants.DERIVABLE_GLYPHS.items()
+            for derived_name in derived_names
+        }
+
         if deriving_names is None:
             deriving_names = []
 
@@ -158,15 +164,7 @@ class BaseFont(kit.BaseFile):
 
         print("\n[NOTE] Deriving glyphs in `{}`:".format(self.name))
         for deriving_name in deriving_names:
-            source_name = {
-                "CR": "space",
-                "uni000D": "space",
-                "nonbreakingspace": "space",
-                "uni00A0": "space",
-                "NULL": None,
-                "zerowidthspace": None,
-                "uni200B": None,
-            }[deriving_name]
+            source_name = DERIVED_NAME_TO_SOURCE_NAME[deriving_name]
             target.newGlyph(deriving_name)
             if source_name:
                 target[deriving_name].width = target[source_name].width

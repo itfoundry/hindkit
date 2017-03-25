@@ -6,6 +6,19 @@ import os, collections
 
 import hindkit as kit
 
+DERIVABLE_GLYPHS = {
+    None: ["NULL", "zerowidthspace", "uni200B"],
+    "space": ["CR", "uni000D", "nonbreakingspace", "uni00A0"],
+    "hyphen": ["softhyphen"],
+}
+
+REQUIRED_GLYPHS = [
+    [".notdef"],
+    ["NULL", "CR"],
+    ["zerowidthnonjoiner", "zerowidthjoiner", "dottedcircle"],
+    ["zerowidthspace"],
+]
+
 STYLES_SINGLE = [
     ("Regular", 0, 400),
 ]
