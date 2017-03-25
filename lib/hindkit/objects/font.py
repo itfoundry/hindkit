@@ -3,104 +3,10 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import os, glob, subprocess
-import defcon, fontTools.ttLib
+import fontTools.ttLib
 import hindkit as kit
 
-# defcon.Glyph.insertAnchor
-
-def _insertAnchor(self, index, anchor):
-    # try:
-    #     assert anchor.glyph != self
-    # except AttributeError:
-    #     pass
-    if not isinstance(anchor, self._anchorClass):
-        anchor = self.instantiateAnchor(anchorDict=anchor)
-    assert anchor.glyph in (self, None), "This anchor belongs to another glyph."
-    if anchor.glyph is None:
-        if anchor.identifier is not None:
-            identifiers = self._identifiers
-            assert anchor.identifier not in identifiers
-            identifiers.add(anchor.identifier)
-        anchor.glyph = self
-        anchor.beginSelfNotificationObservation()
-    self.beginSelfAnchorNotificationObservation(anchor)
-    self._anchors.insert(index, anchor)
-    self.postNotification(notification="Glyph.AnchorsChanged")
-    self.dirty = True
-
-# defcon.Glyph.insertAnchor = _insertAnchor
-
-
 class BaseFont(kit.BaseFile):
-
-    # makeInstancesUFO.updateInstance
-    @staticmethod
-    def _updateInstance(options, fontInstancePath):
-        if options['doOverlapRemoval']:
-            print("\tdoing overlap removal with checkOutlinesUFO %s ..." % (fontInstancePath))
-            logList = []
-            opList = ["-e", fontInstancePath]
-            if options['allowDecimalCoords']:
-                opList.insert(0, "-dec")
-            if os.name == "nt":
-                opList.insert(0, 'checkOutlinesUFO.cmd')
-                proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
-            else:
-                opList.insert(0, 'checkOutlinesUFO')
-                proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
-            while 1:
-                output = proc.stdout.readline()
-                if output:
-                    print(".", end=' ')
-                    logList.append(output)
-                if proc.poll() != None:
-                    output = proc.stdout.readline()
-                    if output:
-                        print(output, end=' ')
-                        logList.append(output)
-                    break
-            log = "".join(logList)
-            if not ("Done with font" in log):
-                print()
-                print(log)
-                print("Error in checkOutlinesUFO %s" % (fontInstancePath))
-                # raise(SnapShotError)
-            else:
-                print()
-
-        if options['doAutoHint']:
-            print("\tautohinting %s ..." % (fontInstancePath))
-            logList = []
-            opList = ['-q', '-nb', fontInstancePath]
-            if options['allowDecimalCoords']:
-                opList.insert(0, "-dec")
-            if os.name == "nt":
-                opList.insert(0, 'autohint.cmd')
-                proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
-            else:
-                opList.insert(0, 'autohint')
-                proc = subprocess.Popen(opList, stdout=subprocess.PIPE)
-            while 1:
-                output = proc.stdout.readline()
-                if output:
-                    print(output, end=' ')
-                    logList.append(output)
-                if proc.poll() != None:
-                    output = proc.stdout.readline()
-                    if output:
-                        print(output, end=' ')
-                        logList.append(output)
-                    break
-            log = "".join(logList)
-            if not ("Done with font" in log):
-                print()
-                print(log)
-                print("Error in autohinting %s" % (fontInstancePath))
-                # raise(SnapShotError)
-            else:
-                print()
-
-        return
 
     def __init__(
         self,
@@ -157,7 +63,7 @@ class BaseFont(kit.BaseFile):
         else:
             if os.path.exists(self.get_path()):
                 if self.file_format == "UFO":
-                    self.font_in_memory = defcon.Font(self.get_path())
+                    self.font_in_memory = kit.patched.defcon.Font(self.get_path())
                     print("[OPENED]", self.get_path())
                     return self.font_in_memory
                 else:
@@ -165,10 +71,10 @@ class BaseFont(kit.BaseFile):
             else:
                 raise SystemExit("`{}` is missing.".format(self.get_path()))
 
-    def save(self, defcon_font=None, as_filename=None):
-        if not defcon_font:
+    def save(self, defconFont=None, as_filename=None):
+        if not defconFont:
             if self.font_in_memory:
-                defcon_font = self.font_in_memory
+                defconFont = self.font_in_memory
             else:
                 return
         self.counter += 1
@@ -177,7 +83,7 @@ class BaseFont(kit.BaseFile):
             self._filename = self.filename + "--{}".format(self.counter)
         else:
             self._filename = as_filename
-        defcon_font.save(self.get_path())
+        defconFont.save(self.get_path())
         self.font_in_memory = None
         print("[SAVED]", self.get_path())
 
@@ -198,7 +104,7 @@ class BaseFont(kit.BaseFile):
         if renaming_dict is None:
             renaming_dict = {}
 
-        source = defcon.Font(source_path)
+        source = kit.patched.defcon.Font(source_path)
 
         if target_dir:
             target_filename_pattern = "{}*-{}.ufo".format(target_dir, self.name)
@@ -207,7 +113,7 @@ class BaseFont(kit.BaseFile):
                 target_path = target_paths[0]
             else:
                 raise SystemExit("`{}` is missing.".format(target_filename_pattern))
-            target = defcon.Font(target_path)
+            target = kit.patched.defcon.Font(target_path)
         else:
             target = self.open()
 
@@ -367,7 +273,7 @@ class Product(BaseFont):
 
             if self.style.file_format == "UFO":
 
-                defcon_font = self.style.open()
+                defconFont = self.style.open()
                 for i in """
                     versionMajor
                     versionMinor
@@ -384,10 +290,10 @@ class Product(BaseFont):
                     openTypeOS2WeightClass
                     openTypeOS2WidthClass
                 """.split():
-                    setattr(defcon_font.info, i, None)
-                defcon_font.groups.clear()
-                defcon_font.kerning.clear()
-                defcon_font.info.postscriptFontName = self.full_name_postscript
+                    setattr(defconFont.info, i, None)
+                defconFont.groups.clear()
+                defconFont.kerning.clear()
+                defconFont.info.postscriptFontName = self.full_name_postscript
                 self.style.save()
 
                 if self.project.options["run_checkoutlines"] or self.project.options["run_autohint"]:
@@ -396,7 +302,7 @@ class Product(BaseFont):
                         "doAutoHint": self.project.options["run_autohint"],
                         "allowDecimalCoords": False,
                     }
-                    self._updateInstance(options, self.style.get_path())
+                    kit.patched.updateInstance(options, self.style.get_path())
 
         elif self.file_format == "TTF":
 

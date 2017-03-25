@@ -167,9 +167,9 @@ class Project(object):
         return names_trimmed
 
     def update_glyphOrder(self, font):
-        defcon_font = font.open()
-        defcon_font.lib["public.glyphOrder"] = self.glyph_data.glyph_order_trimmed
-        defcon_font.lib.pop("com.schriftgestaltung.glyphOrder", None)
+        defconFont = font.open()
+        defconFont.lib["public.glyphOrder"] = self.glyph_data.glyph_order_trimmed
+        defconFont.lib.pop("com.schriftgestaltung.glyphOrder", None)
         font.save()
 
     def reset_directory(self, name, temp=False):

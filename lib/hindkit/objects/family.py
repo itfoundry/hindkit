@@ -3,7 +3,7 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import os, subprocess
-import defcon, mutatorMath.ufo.document
+import mutatorMath.ufo.document
 import hindkit as kit
 
 class Family(object):
@@ -35,7 +35,7 @@ class Family(object):
         self.masters = None
         self.styles = None
 
-        self.info = defcon.Font().info
+        self.info = kit.patched.defcon.Font().info
 
         self.client_name = client_name
         self.variant_tag = variant_tag

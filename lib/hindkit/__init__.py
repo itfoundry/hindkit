@@ -55,6 +55,7 @@ def fallback(*candidates):
 
 from hindkit import constants
 from hindkit import filters
+from hindkit import patched
 
 from hindkit.objects.base import BaseFile
 from hindkit.objects.family import Family, DesignSpace, Fmndb
