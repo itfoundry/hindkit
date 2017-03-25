@@ -40,7 +40,7 @@ class BaseFont(kit.BaseFile):
         self._full_name = None
         self._full_name_postscript = None
 
-        self.font_in_memory = None
+        self.defconFont = None
 
     @property
     def name_postscript(self):
@@ -58,14 +58,14 @@ class BaseFont(kit.BaseFile):
         )
 
     def open(self, from_disk=False):
-        if not from_disk and self.font_in_memory:
-            return self.font_in_memory
+        if not from_disk and self.defconFont:
+            return self.defconFont
         else:
             if os.path.exists(self.get_path()):
                 if self.file_format == "UFO":
-                    self.font_in_memory = kit.patched.defcon.Font(self.get_path())
+                    self.defconFont = kit.patched.defcon.Font(self.get_path())
                     print("[OPENED]", self.get_path())
-                    return self.font_in_memory
+                    return self.defconFont
                 else:
                     raise SystemExit("`{}` is not supported by defcon.".format(self.get_path()))
             else:
@@ -73,8 +73,8 @@ class BaseFont(kit.BaseFile):
 
     def save(self, defconFont=None, as_filename=None):
         if not defconFont:
-            if self.font_in_memory:
-                defconFont = self.font_in_memory
+            if self.defconFont:
+                defconFont = self.defconFont
             else:
                 return
         self.counter += 1
@@ -84,7 +84,7 @@ class BaseFont(kit.BaseFile):
         else:
             self._filename = as_filename
         defconFont.save(self.get_path())
-        self.font_in_memory = None
+        self.defconFont = None
         print("[SAVED]", self.get_path())
 
     def import_glyphs_from(
