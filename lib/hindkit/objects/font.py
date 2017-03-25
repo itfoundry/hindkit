@@ -170,6 +170,18 @@ class BaseFont(kit.BaseFile):
                 target[deriving_name].width = target[source_name].width
             print("{} -> {}".format(source_name, deriving_name), end=", ")
 
+    def remove_glyphs(self, names):
+        defconFont = self.open()
+        print("\n[NOTE] Removing glyphs in `{}`:".format(self.name))
+        for glyph in defconFont:
+            for component in glyph.components:
+                if component.baseGlyph in names:
+                    glyph.decomposeComponent(component)
+                    print("(decomposed {} in {})".format(component.baseGlyph, glyph.name), end=" ")
+        for name in names:
+            del defconFont[name]
+            print(name, end=", ")
+
 
 class Master(BaseFont):
 
