@@ -105,7 +105,7 @@ for item in DATA.split(",")[:-1]:
 Consonant = LetterEnum(letters)
 c = Consonant
 
-with open("temp/output.txt", "w") as f:
+with open("lab/output.txt", "w") as f:
 
     for c2 in c.letters:
 
