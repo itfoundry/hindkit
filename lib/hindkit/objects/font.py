@@ -87,62 +87,54 @@ class BaseFont(kit.BaseFile):
         self.defconFont = None
         print("[SAVED]", self.get_path())
 
-    def import_glyphs_from(
+    def import_from_font(
         self,
         source_path,
-        target_dir = None,
-        importing_names = None,
-        excluding_names = None,
-        import_kerning = False,
-        renaming_dict = None,
+        target_path = None,
+        import_glyphs = True,
+        import_kerning = True,
+        glyph_names_included = None,
+        glyph_names_excluded = None,
+        glyph_renaming_map = None,
     ):
 
-        if importing_names is None:
-            importing_names = []
-        if excluding_names is None:
-            excluding_names = []
-        if renaming_dict is None:
-            renaming_dict = {}
+        glyph_names_included = kit.fallback(glyph_names_included, [])
+        glyph_names_excluded = kit.fallback(glyph_names_excluded, [])
+        glyph_renaming_map = kit.fallback(glyph_renaming_map, {})
 
-        source = kit.patched.defcon.Font(source_path)
-
-        if target_dir:
-            target_filename_pattern = "{}*-{}.ufo".format(target_dir, self.name)
-            target_paths = glob.glob(target_filename_pattern)
-            if target_paths:
-                target_path = target_paths[0]
-            else:
-                raise SystemExit("`{}` is missing.".format(target_filename_pattern))
-            target = kit.patched.defcon.Font(target_path)
+        source_font = kit.patched.defcon.Font(source_path)
+        if target_path:
+            target_font = kit.patched.defcon.Font(target_path)
         else:
-            target = self.open()
+            target_font = self.open()
 
-        if importing_names:
-            names_imported = set(importing_names)
-        else:
-            names_imported = set(source.keys())
+        if import_glyphs:
 
-        names_imported.difference_update(set(target.keys()))
-        names_imported.difference_update(set(excluding_names))
-        names_imported = (
-            [i for i in source.glyphOrder if i in names_imported] +
-            [i for i in names_imported if i not in source.glyphOrder]
-        )
-
-        print("\n[NOTE] Importing glyphs from `{}` to `{}`:".format(source_path, self.name))
-        for name_source in names_imported:
-            name_target = renaming_dict.get(name_source, name_source)
-            target.newGlyph(name_target)
-            source_glyph = source[name_source]
-            for component in source_glyph.components:
-                if component.baseGlyph not in names_imported:
-                    source_glyph.decomposeComponent(component)
-                    print("(decomposed {} in {})".format(component.baseGlyph, name_source), end=" ")
-            target[name_target].copyDataFromGlyph(source_glyph)
-            if name_target == name_source:
-                print(name_target, end=", ")
+            if glyph_names_included:
+                glyph_names_importing = set(glyph_names_included)
             else:
-                print("{} -> {}".format(name_source, name_target), end=", ")
+                glyph_names_importing = set(source_font.keys())
+            glyph_names_importing.difference_update(set(glyph_names_excluded))
+            glyph_names_importing.difference_update(set(target_font.keys()))
+            glyph_names_importing = (
+                [i for i in source_font.glyphOrder if i in glyph_names_importing] +
+                [i for i in glyph_names_importing if i not in source_font.glyphOrder]
+            )
+
+            print("\n[NOTE] Importing glyphs from `{}` to `{}`:".format(source_path, self.name))
+            for source_glyph_name in glyph_names_importing:
+                source_glyph = source_font[source_glyph_name]
+                for component in source_glyph.components:
+                    if component.baseGlyph not in glyph_names_importing:
+                        source_glyph.decomposeComponent(component)
+                        print("(decomposed {} in {})".format(component.baseGlyph, source_glyph_name), end=" ")
+                target_glyph_name = glyph_renaming_map.get(source_glyph_name, target_glyph_name) # TODO: Might break component reference.
+                target_glyph = target_font.newGlyph(target_glyph_name)
+                target_glyph.copyDataFromGlyph(source_glyph)
+                if target_glyph_name == source_glyph_name:
+                    print(target_glyph_name, end=", ")
+                else:
+                    print("{} -> {}".format(source_glyph_name, target_glyph_name), end=", ")
 
         if import_kerning:
             target.groups.update(source.groups)
