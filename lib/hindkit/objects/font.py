@@ -92,10 +92,10 @@ class BaseFont(kit.BaseFile):
         source_path,
         target_path = None,
         import_glyphs = True,
-        import_kerning = True,
         glyph_names_included = None,
         glyph_names_excluded = None,
         glyph_renaming_map = None,
+        import_kerning = True,
     ):
 
         glyph_names_included = kit.fallback(glyph_names_included, [])
@@ -108,19 +108,18 @@ class BaseFont(kit.BaseFile):
         else:
             target_font = self.open()
 
-        if import_glyphs:
+        if glyph_names_included:
+            glyph_names_importing = set(glyph_names_included)
+        else:
+            glyph_names_importing = set(source_font.keys())
 
-            if glyph_names_included:
-                glyph_names_importing = set(glyph_names_included)
-            else:
-                glyph_names_importing = set(source_font.keys())
+        if import_glyphs and glyph_names_importing:
             glyph_names_importing.difference_update(set(glyph_names_excluded))
             glyph_names_importing.difference_update(set(target_font.keys()))
             glyph_names_importing = (
                 [i for i in source_font.glyphOrder if i in glyph_names_importing] +
                 [i for i in glyph_names_importing if i not in source_font.glyphOrder]
             )
-
             print("\n[NOTE] Importing glyphs from `{}` to `{}`:".format(source_path, self.name))
             for source_glyph_name in glyph_names_importing:
                 source_glyph = source_font[source_glyph_name]
@@ -128,7 +127,7 @@ class BaseFont(kit.BaseFile):
                     if component.baseGlyph not in glyph_names_importing:
                         source_glyph.decomposeComponent(component)
                         print("(decomposed {} in {})".format(component.baseGlyph, source_glyph_name), end=" ")
-                target_glyph_name = glyph_renaming_map.get(source_glyph_name, target_glyph_name) # TODO: Might break component reference.
+                target_glyph_name = glyph_renaming_map.get(source_glyph_name, source_glyph_name) # TODO: Might break component reference.
                 target_glyph = target_font.newGlyph(target_glyph_name)
                 target_glyph.copyDataFromGlyph(source_glyph)
                 if target_glyph_name == source_glyph_name:
@@ -136,9 +135,9 @@ class BaseFont(kit.BaseFile):
                 else:
                     print("{} -> {}".format(source_glyph_name, target_glyph_name), end=", ")
 
-        if import_kerning:
-            target.groups.update(source.groups)
-            target.kerning.update(source.kerning)
+        if import_kerning and source_font.kerning:
+            target_font.groups.update(source_font.groups)
+            target_font.kerning.update(source_font.kerning)
             print("\n[NOTE] Imported kerning.")
 
     def derive_glyphs(self, deriving_names):
