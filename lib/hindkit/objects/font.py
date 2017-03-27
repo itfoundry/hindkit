@@ -10,8 +10,8 @@ class BaseFont(kit.BaseFile):
 
     def __init__(
         self,
-        family,
-        name,
+        family = None,
+        name = "",
         file_format = "UFO",
         abstract_directory = "",
         location = 0,
@@ -62,7 +62,16 @@ class BaseFont(kit.BaseFile):
             return self.defconFont
         else:
             if os.path.exists(self.get_path()):
-                if self.file_format == "UFO":
+                if self.file_format in ["UFO", "VFB"]:
+                    if self.file_format == "VFB":
+                        kit.makedirs(self.get_directory())
+                        input_path = self.get_path()
+                        self._path = None
+                        self._filename = os.path.basename(input_path)
+                        self.file_format = "UFO"
+                        subprocess.call([
+                            "vfb2ufo", "-fo", input_path, self.get_path(),
+                        ])
                     self.defconFont = kit.patched.defcon.Font(self.get_path())
                     print("[OPENED]", self.get_path())
                     return self.defconFont
@@ -102,9 +111,23 @@ class BaseFont(kit.BaseFile):
         glyph_names_excluded = kit.fallback(glyph_names_excluded, [])
         glyph_renaming_map = kit.fallback(glyph_renaming_map, {})
 
-        source_font = kit.patched.defcon.Font(source_path)
+        if source_path.endswith(".ufo"):
+            source_format = "UFO"
+        elif source_path.endswith(".vfb"):
+            source_format = "VFB"
+        else:
+            raise SystemExit("The format of {} is not supported.".format(source_path))
+        source_file = BaseFont(
+            family = self.family,
+            abstract_directory = kit.Project.directories["misc"],
+            file_format = source_format,
+        )
+        source_file._path = source_path
+        source_font = source_file.open()
         if target_path:
-            target_font = kit.patched.defcon.Font(target_path)
+            target_file = BaseFont()
+            target_file._path = target_path
+            target_font = target_file.open()
         else:
             target_font = self.open()
 
