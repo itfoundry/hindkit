@@ -107,9 +107,9 @@ class BaseFont(kit.BaseFile):
         import_kerning = True,
     ):
 
-        glyph_names_included = kit.fallback(glyph_names_included, [])
-        glyph_names_excluded = kit.fallback(glyph_names_excluded, [])
-        glyph_renaming_map = kit.fallback(glyph_renaming_map, {})
+        g_names_included = kit.fallback(glyph_names_included, [])
+        g_names_excluded = kit.fallback(glyph_names_excluded, [])
+        self.glyph_renaming_map = kit.fallback(glyph_renaming_map, {})
 
         if source_path.endswith(".ufo"):
             source_format = "UFO"
@@ -125,81 +125,101 @@ class BaseFont(kit.BaseFile):
         source_file._path = source_path
         source_font = source_file.open()
         if target_path:
-            target_file = BaseFont()
-            target_file._path = target_path
-            target_font = target_file.open()
-        else:
-            target_font = self.open()
+            self._path = target_path
+        target_font = self.open()
 
-        if glyph_names_included:
-            glyph_names_importing = set(glyph_names_included)
+        if g_names_included:
+            g_names_importing = set(g_names_included)
         else:
-            glyph_names_importing = set(source_font.keys())
+            g_names_importing = set(source_font.keys())
 
-        if import_glyphs and glyph_names_importing:
-            glyph_names_importing.difference_update(set(glyph_names_excluded))
-            glyph_names_importing.difference_update(set(target_font.keys()))
-            glyph_names_importing = (
-                [i for i in source_font.glyphOrder if i in glyph_names_importing] +
-                [i for i in glyph_names_importing if i not in source_font.glyphOrder]
+        if import_glyphs and g_names_importing:
+            g_names_importing.difference_update(set(g_names_excluded))
+            g_names_importing.difference_update(set(target_font.keys()))
+            g_names_importing = (
+                [i for i in source_font.glyphOrder if i in g_names_importing] +
+                [i for i in g_names_importing if i not in source_font.glyphOrder]
             )
             print("\n[NOTE] Importing glyphs from `{}` to `{}`:".format(source_path, self.name))
-            for source_glyph_name in glyph_names_importing:
-                source_glyph = source_font[source_glyph_name]
-                for component in source_glyph.components:
-                    if component.baseGlyph not in glyph_names_importing:
-                        source_glyph.decomposeComponent(component)
-                        print("(decomposed {} in {})".format(component.baseGlyph, source_glyph_name), end=" ")
-                target_glyph_name = glyph_renaming_map.get(source_glyph_name, source_glyph_name) # TODO: Might break component reference.
-                target_glyph = target_font.newGlyph(target_glyph_name)
-                target_glyph.copyDataFromGlyph(source_glyph)
-                if target_glyph_name == source_glyph_name:
-                    print(target_glyph_name, end=", ")
+            for source_g_name in g_names_importing:
+                source_g = source_font[source_g_name]
+                for component in source_g.components:
+                    if component.baseGlyph not in g_names_importing:
+                        source_g.decomposeComponent(component)
+                        print("(decomposed {} in {})".format(component.baseGlyph, source_g_name), end=" ")
+                target_g_name = self.glyph_renaming_map.get(source_g_name, source_g_name)
+                target_g = target_font.newGlyph(target_g_name)
+                target_g.copyDataFromGlyph(source_g)
+                if target_g_name == source_g_name:
+                    print(target_g_name, end=", ")
                 else:
-                    print("{} -> {}".format(source_glyph_name, target_glyph_name), end=", ")
+                    print("{} -> {}".format(source_g_name, target_g_name), end=", ")
+
+        # TODO: Component reference and glyph group reference both need to be updated.
 
         if import_kerning and source_font.kerning:
             target_font.groups.update(source_font.groups)
             target_font.kerning.update(source_font.kerning)
-            for key, group_value in target_font.groups.items():
-                if key.startswith(("public.kern", "_KERN_")):
-                    if key.startswith("public.kern"):
-                        key_modified = key[13:]
-                        target_font.groups[key_modified] = group_value
-                        for (key_l, key_r), value in target_font.kerning.items():
-                            if key in (key_l, key_r):
-                                if key_l == key:
-                                    target_font.kerning[key_modified, key_r] = value
-                                elif key_r == key:
-                                    target_font.kerning[key_l, key_modified] = value
-                                del target_font.kerning[key_l, key_r]
-                    elif key.startswith("_KERN_"):
-                        parts = key.split("_")
-                        if len(parts) == 3:
-                            _, _, name= parts
-                            key_modified = "@MMK_L_" + name, "@MMK_R_" + name
-                        else:
-                            _, _, name, side = parts
-                            if side == "1ST":
-                                key_modified = "@MMK_L_" + name, None
-                            elif side == "2ND":
-                                key_modified = None, "@MMK_R_" + name
-                        key_l_modified, key_r_modified = key_modified
-                        if key_l_modified:
-                            target_font.groups[key_l_modified] = group_value
-                        if key_r_modified:
-                            target_font.groups[key_r_modified] = group_value
-                        for (key_l, key_r), value in target_font.kerning.items():
-                            if name in (key_l, key_r):
-                                if key_l_modified and key_r_modified and key_l == name and key_r == name:
-                                    target_font.kerning[key_l_modified, key_r_modified] = value
-                                elif key_l_modified and key_l == name:
-                                    target_font.kerning[key_l_modified, key_r] = value
-                                elif key_r_modified and key_r == name:
-                                    target_font.kerning[key_l, key_r_modified] = value
-                                del target_font.kerning[key_l, key_r]
-                    del target_font.groups[key]
             print("\n[NOTE] Imported kerning.")
+
+    def refresh_groups(self):
+
+        f = self.open()
+        kerning_modifications = {}
+
+        for key, g_names in f.groups.items():
+            del f.groups[key]
+            g_names_modified = [
+                self.glyph_renaming_map.get(i, i) for i in g_names
+                if self.glyph_renaming_map.get(i, i) in f
+            ]
+            if not key.startswith(("public.kern", "_KERN_")) and g_names_modified:
+                f.groups[key] = g_names_modified
+            else:
+                key_pair_modified = [None, None]
+                g_name = None
+                if key.startswith("public.kern"):
+                    key_modified = key[13:]
+                    if key_modified.startswith("@MMK_L_"):
+                        side = 0
+                    elif key_modified.startswith("@MMK_R_"):
+                        side = 1
+                    key_pair_modified[side] = key_modified
+                elif key.startswith("_KERN_"):
+                    parts = key.split("_")
+                    if len(parts) == 3:
+                        _, _, g_name = parts
+                        key_pair_modified = "@MMK_L_" + g_name, "@MMK_R_" + g_name
+                    else:
+                        _, _, g_name, side_tag = parts
+                        if side_tag == "1ST":
+                            key_pair_modified[0] = "@MMK_L_" + g_name
+                        elif side_tag == "2ND":
+                            key_pair_modified[1] = "@MMK_R_" + g_name
+                for side, key_modified in enumerate(key_pair_modified):
+                    if key_modified:
+                        if g_names_modified:
+                            f.groups[key_modified] = g_names_modified
+                        if g_name:
+                            kerning_modifications[side, g_name] = key_modified
+                        else:
+                            kerning_modifications[side, key] = key_modified
+        print("\n[NOTE] Refreshed glyph groups.")
+
+        available_keys = f.keys() + f.groups.keys()
+        for key_pair, value in f.kerning.items():
+            del f.kerning[key_pair]
+            key_pair_refreshed = []
+            for side, key in enumerate(key_pair):
+                key_refreshed = kerning_modifications.get((side, key), key)
+                key_refreshed = self.glyph_renaming_map.get(key_refreshed, key_refreshed)
+                if key_refreshed in available_keys:
+                    key_pair_refreshed.append(key_refreshed)
+                else:
+                    break
+            else:
+                f.kerning[tuple(key_pair_refreshed)] = value
+        print("\n[NOTE] Refreshed kerning.")
 
     def derive_glyphs(self, deriving_names):
 
@@ -225,11 +245,11 @@ class BaseFont(kit.BaseFile):
     def remove_glyphs(self, names):
         defconFont = self.open()
         print("\n[NOTE] Removing glyphs in `{}`:".format(self.name))
-        for glyph in defconFont:
-            for component in glyph.components:
+        for g in defconFont:
+            for component in g.components:
                 if component.baseGlyph in names:
-                    glyph.decomposeComponent(component)
-                    print("(decomposed {} in {})".format(component.baseGlyph, glyph.name), end=" ")
+                    g.decomposeComponent(component)
+                    print("(decomposed {} in {})".format(component.baseGlyph, g.name), end=" ")
         for name in names:
             del defconFont[name]
             print(name, end=", ")

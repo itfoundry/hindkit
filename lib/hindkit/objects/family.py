@@ -102,6 +102,7 @@ class Family(object):
         for style in styles:
             if hasattr(style, "postprocess"):
                 style.postprocess()
+                style.refresh_groups()
                 style.dirty = True
             style.save()
 
