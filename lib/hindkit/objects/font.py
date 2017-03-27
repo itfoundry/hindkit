@@ -213,10 +213,10 @@ class Style(BaseFont):
         super(Style, self).__init__(
             family,
             name,
+            abstract_directory = os.path.join(kit.Project.directories["styles"], name),
             location = location,
             weight_and_width_class = weight_and_width_class,
         )
-        self.abstract_directory = os.path.join(kit.Project.directories["styles"], self.name)
 
         self.master = None
         self.dirty = False

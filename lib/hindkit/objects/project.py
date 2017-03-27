@@ -13,8 +13,9 @@ class Project(object):
         "masters": "masters",
         "styles": "styles",
         "features": "features",
-        "temp": "intermediates",
+        "intermediates": "intermediates",
         "products": "products",
+        "misc": "misc",
         "output": "/Library/Application Support/Adobe/Fonts",
     }
 
@@ -81,7 +82,7 @@ class Project(object):
         self._finalize_options()
 
     def temp(self, abstract_path):
-        return os.path.join(self.directories["temp"], abstract_path)
+        return os.path.join(kit.Project.directories["intermediates"], abstract_path)
 
     def _finalize_options(self):
 
@@ -174,15 +175,15 @@ class Project(object):
 
     def reset_directory(self, name, temp=False):
         if temp:
-            path = self.temp(self.directories[name])
+            path = self.temp(kit.Project.directories[name])
         else:
-            path = self.directories[name]
+            path = kit.Project.directories[name]
         kit.remove(path)
         kit.makedirs(path)
 
     def build(self):
 
-        self.reset_directory("temp")
+        self.reset_directory("intermediates")
 
         if self.options["prepare_masters"]:
 
@@ -276,7 +277,7 @@ class Project(object):
 
             products_built = [i for i in self.products if i.built]
 
-            output_dir = self.directories["output"]
+            output_dir = kit.Project.directories["output"]
             for product in products_built:
                 product.copy_out_of_temp()
                 if os.path.isdir(output_dir):
@@ -304,7 +305,7 @@ class Project(object):
                     self.fontrevision.replace(".", ""),
                     file_format,
                 )
-                archive_path = os.path.join(self.directories["products"], archive_filename)
+                archive_path = os.path.join(kit.Project.directories["products"], archive_filename)
                 kit.remove(archive_path)
                 subprocess.call(["zip", "-j", archive_path] + paths)
                 print("[ZIPPED]", archive_path)

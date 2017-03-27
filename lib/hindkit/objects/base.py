@@ -19,21 +19,24 @@ class BaseFile(object):
 
         self.name = name
         self.file_format = file_format
-        if abstract_directory is None:
+
+        if project and family is None:
+            self.project = project
+            self.family = self.project.family
+        else:
+            self.project = project
+            self.family = family
+
+        if abstract_directory is None and self.project:
             self.abstract_directory = kit.Project.directories["sources"]
         else:
             self.abstract_directory = abstract_directory
 
-        self.project = project
-        if family is None:
-            self.family = self.project.family
-        else:
-            self.family = family
-
-        if self.family.variant_tag:
-            self.abstract_directory_variant = os.path.join(self.abstract_directory, self.family.variant_tag)
-            if os.path.exists(self.abstract_directory_variant):
-                self.abstract_directory = self.abstract_directory_variant
+        if self.family:
+            if self.family.variant_tag:
+                self.abstract_directory_variant = os.path.join(self.abstract_directory, self.family.variant_tag)
+                if os.path.exists(self.abstract_directory_variant):
+                    self.abstract_directory = self.abstract_directory_variant
 
         self.file_group = []
         for filename in kit.fallback(filename_group, [self.name]):
@@ -75,7 +78,7 @@ class BaseFile(object):
         )
 
     def get_directory(self, temp=True):
-        if temp:
+        if self.family and temp:
             directory = self.family.project.temp(self.abstract_directory)
         else:
             directory = self.abstract_directory
