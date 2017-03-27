@@ -363,11 +363,7 @@ class Product(BaseFont):
         if os.path.exists(self.get_path()):
             self.built = True
             print("[FONT SUCCESSFULLY BUILT]", self.get_path())
-            try:
-                self.postprocess
-            except AttributeError:
-                pass
-            else:
+            if hasattr(self, "postprocess"):
                 original = fontTools.ttLib.TTFont(self.get_path(), recalcTimestamp=True)
                 postprocessed = self.postprocess(original)
                 postprocessed.save(self.get_path(), reorderTables=False)

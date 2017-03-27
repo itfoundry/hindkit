@@ -190,10 +190,8 @@ class Project(object):
 
             for master in self.family.masters:
                 master.prepare()
-                try:
+                if hasattr(master, "postprocess"):
                     master.postprocess()
-                except AttributeError:
-                    pass
 
             for master in self.family.masters:
                 master.save()

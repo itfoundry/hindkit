@@ -275,11 +275,7 @@ class FeatureKern(BaseFeature):
             font = self.style.open(),
             folderPath = self.style.get_directory(),
         )
-        try:
-            self.postprocess
-        except AttributeError:
-            pass
-        else:
+        if hasattr(self, "postprocess"):
             kern_path = self.get_path()
             if os.path.exists(kern_path):
                 with open(kern_path) as f:
@@ -421,27 +417,23 @@ class FeatureMatches(BaseFeature):
             self.output_mark_positioning_for_mI_variants()
 
     def _get_adjustment_extremes(self):
-        try:
-            light, bold = self.project.adjustment_for_matching_mI_variants
-        except AttributeError:
-            return None
-        else:
-            if self.project.family.masters:
-                light_min, light_max = light
-                bold_min, bold_max = bold
-                axis_start = self.project.family.masters[0].location[0]
-                axis_end = self.project.family.masters[-1].location[0]
-                axis_range = axis_end - axis_start
-                if axis_range == 0:
-                    ratio = 1
-                else:
-                    ratio = (self.style.location[0] - axis_start) / axis_range
-                return (
-                    light_min + (bold_min - light_min) * ratio,
-                    light_max + (bold_max - light_max) * ratio,
-                )
+        light, bold = self.project.adjustment_for_matching_mI_variants
+        if self.project.family.masters:
+            light_min, light_max = light
+            bold_min, bold_max = bold
+            axis_start = self.project.family.masters[0].location[0]
+            axis_end = self.project.family.masters[-1].location[0]
+            axis_range = axis_end - axis_start
+            if axis_range == 0:
+                ratio = 1
             else:
-                return None
+                ratio = (self.style.location[0] - axis_start) / axis_range
+            return (
+                light_min + (bold_min - light_min) * ratio,
+                light_max + (bold_max - light_max) * ratio,
+            )
+        else:
+            return None
 
     def _get_abvm_position(self, glyph, in_base=True):
         anchor_name_prefix = "" if in_base else "_"

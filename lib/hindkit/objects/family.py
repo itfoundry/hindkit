@@ -100,11 +100,8 @@ class Family(object):
                 style.prepare(whole_directory=True)
 
         for style in styles:
-            try:
+            if hasattr(style, "postprocess"):
                 style.postprocess()
-            except AttributeError:
-                pass
-            else:
                 style.dirty = True
             style.save()
 
