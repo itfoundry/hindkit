@@ -161,6 +161,44 @@ class BaseFont(kit.BaseFile):
         if import_kerning and source_font.kerning:
             target_font.groups.update(source_font.groups)
             target_font.kerning.update(source_font.kerning)
+            for key, group_value in target_font.groups.items():
+                if key.startswith(("public.kern", "_KERN_")):
+                    if key.startswith("public.kern"):
+                        key_modified = key[13:]
+                        target_font.groups[key_modified] = group_value
+                        for (key_l, key_r), value in target_font.kerning.items():
+                            if key in (key_l, key_r):
+                                if key_l == key:
+                                    target_font.kerning[key_modified, key_r] = value
+                                elif key_r == key:
+                                    target_font.kerning[key_l, key_modified] = value
+                                del target_font.kerning[key_l, key_r]
+                    elif key.startswith("_KERN_"):
+                        parts = key.split("_")
+                        if len(parts) == 3:
+                            _, _, name= parts
+                            key_modified = "@MMK_L_" + name, "@MMK_R_" + name
+                        else:
+                            _, _, name, side = parts
+                            if side == "1ST":
+                                key_modified = "@MMK_L_" + name, None
+                            elif side == "2ND":
+                                key_modified = None, "@MMK_R_" + name
+                        key_l_modified, key_r_modified = key_modified
+                        if key_l_modified:
+                            target_font.groups[key_l_modified] = group_value
+                        if key_r_modified:
+                            target_font.groups[key_r_modified] = group_value
+                        for (key_l, key_r), value in target_font.kerning.items():
+                            if name in (key_l, key_r):
+                                if key_l_modified and key_r_modified and key_l == name and key_r == name:
+                                    target_font.kerning[key_l_modified, key_r_modified] = value
+                                elif key_l_modified and key_l == name:
+                                    target_font.kerning[key_l_modified, key_r] = value
+                                elif key_r_modified and key_r == name:
+                                    target_font.kerning[key_l, key_r_modified] = value
+                                del target_font.kerning[key_l, key_r]
+                    del target_font.groups[key]
             print("\n[NOTE] Imported kerning.")
 
     def derive_glyphs(self, deriving_names):
