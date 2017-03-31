@@ -623,7 +623,7 @@ class FeatureMatches(BaseFeature):
 class FeatureReferences(BaseFeature):
     def generate(self):
         with open(self.get_path(), "w") as f:
-            lines = ["table head { FontRevision 1.000; } head;"]
+            lines = ["table head { FontRevision %s; } head;" % self.project.fontrevision]
             for feature in [
                 self.project.feature_classes,
                 self.project.feature_tables,
@@ -659,7 +659,9 @@ class FeatureReferences(BaseFeature):
                             "path": filename,
                         }
                     )
-            f.writelines(i + "\n" for i in lines)
+            for line in lines:
+                print(line)
+                f.write(line + "\n")
 
 
 class Feature(object):
