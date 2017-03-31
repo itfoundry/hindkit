@@ -17,29 +17,6 @@ def draw(self, pen):
     pointPen = PointToSegmentPen(pen)
     self.drawPoints(pointPen)
 
-def insertAnchor(self, index, anchor):
-    # try:
-    #     assert anchor.glyph != self
-    # except AttributeError:
-    #     pass
-    if not isinstance(anchor, self._anchorClass):
-        anchor = self.instantiateAnchor(anchorDict=anchor)
-    assert anchor.glyph in (self, None), "This anchor belongs to another glyph."
-    if anchor.glyph is None:
-        if anchor.identifier is not None:
-            identifiers = self._identifiers
-            assert anchor.identifier not in identifiers
-            identifiers.add(anchor.identifier)
-        anchor.glyph = self
-        anchor.beginSelfNotificationObservation()
-    self.beginSelfAnchorNotificationObservation(anchor)
-    self._anchors.insert(index, anchor)
-    self.postNotification(notification="Glyph.AnchorsChanged")
-    self.dirty = True
-
-defcon.Contour.draw = draw
-# defcon.Glyph.insertAnchor = insertAnchor
-
 
 def updateInstance(options, fontInstancePath):
     """
