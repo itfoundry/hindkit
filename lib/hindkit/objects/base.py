@@ -79,7 +79,7 @@ class BaseFile(object):
 
     def get_directory(self, temp=True):
         if self.family and temp:
-            directory = self.family.project.temp(self.abstract_directory)
+            directory = kit.Project.temp(self.abstract_directory)
         else:
             directory = self.abstract_directory
         return kit.fallback(self._directory, directory)

@@ -372,15 +372,20 @@ class FeatureMatches(BaseFeature):
         if not self.bases:
             raise ValueError("[WARNING] No bases.")
 
-        self.adjustment_extremes = self._get_adjustment_extremes()
-        if self.adjustment_extremes:
+        adjustment = self._get_adjustment()
+        if adjustment is None:
+            pass
+        elif isinstance(adjustment, tuple):
+            extremes = adjustment
             targets = [base.target for base in self.bases]
             TARGET_MIN = min(targets)
             TARGET_MAX = max(targets)
             for i, base in enumerate(self.bases):
                 ratio = (base.target - TARGET_MIN) / (TARGET_MAX - TARGET_MIN)
-                ae = self.adjustment_extremes
-                adjustment = ae[0] + (ae[-1] - ae[0]) * ratio
+                adjustment = extremes[0] + (extremes[1] - extremes[0]) * ratio
+                self.bases[i].target += adjustment
+        else:
+            for i, base in enumerate(self.bases):
                 self.bases[i].target += adjustment
 
         self.tolerance = self._get_stem_position(
@@ -416,11 +421,11 @@ class FeatureMatches(BaseFeature):
         self.project.options["match_mI_variants"] == 1:
             self.output_mark_positioning_for_mI_variants()
 
-    def _get_adjustment_extremes(self):
-        light, bold = self.project.adjustment_for_matching_mI_variants
-        if self.project.family.masters:
-            light_min, light_max = light
-            bold_min, bold_max = bold
+    def _get_adjustment(self):
+        if self.style.adjustment_for_matching_mI_variants:
+            return self.style.adjustment_for_matching_mI_variants
+        elif self.project.family.masters and self.project.adjustment_for_matching_mI_variants:
+            (light_min, light_max), (bold_min, bold_max) = self.project.adjustment_for_matching_mI_variants
             axis_start = self.project.family.masters[0].location[0]
             axis_end = self.project.family.masters[-1].location[0]
             axis_range = axis_end - axis_start
@@ -491,8 +496,8 @@ class FeatureMatches(BaseFeature):
                 i += 1
             candidate_enough = self.matches[i]
             if (
-                abs(candidate_enough.overhanging - base.target) <
-                abs(candidate_short.overhanging - base.target) * 0.5
+                (candidate_enough.overhanging - base.target) <
+                (base.target - candidate_short.overhanging) / 3
             ):
                 return candidate_enough
             else:

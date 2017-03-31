@@ -42,6 +42,8 @@ class BaseFont(kit.BaseFile):
 
         self.defconFont = None
 
+        self.adjustment_for_matching_mI_variants = None
+
     @property
     def name_postscript(self):
         return kit.fallback(self._name_postscript, self.name.replace(" ", ""))

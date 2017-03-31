@@ -19,6 +19,10 @@ class Project(object):
         "output": "/Library/Application Support/Adobe/Fonts",
     }
 
+    @classmethod
+    def temp(cls, abstract_path):
+        return os.path.join(cls.directories["intermediates"], abstract_path)
+
     def __init__(
         self,
         family,
@@ -32,7 +36,7 @@ class Project(object):
         self.fontrevision = fontrevision
 
         # (light_min, light_max), (bold_min, bold_max)
-        self.adjustment_for_matching_mI_variants = (0, 0), (0, 0)
+        self.adjustment_for_matching_mI_variants = None
 
         self.options = {
 
@@ -80,9 +84,6 @@ class Project(object):
             )
 
         self._finalize_options()
-
-    def temp(self, abstract_path):
-        return os.path.join(kit.Project.directories["intermediates"], abstract_path)
 
     def _finalize_options(self):
 
@@ -175,9 +176,9 @@ class Project(object):
 
     def reset_directory(self, name, temp=False):
         if temp:
-            path = self.temp(kit.Project.directories[name])
+            path = self.temp(self.directories[name])
         else:
-            path = kit.Project.directories[name]
+            path = self.directories[name]
         kit.remove(path)
         kit.makedirs(path)
 
@@ -277,7 +278,7 @@ class Project(object):
 
             products_built = [i for i in self.products if i.built]
 
-            output_dir = kit.Project.directories["output"]
+            output_dir = self.directories["output"]
             for product in products_built:
                 product.copy_out_of_temp()
                 if os.path.isdir(output_dir):
@@ -305,7 +306,7 @@ class Project(object):
                     self.fontrevision.replace(".", ""),
                     file_format,
                 )
-                archive_path = os.path.join(kit.Project.directories["products"], archive_filename)
+                archive_path = os.path.join(self.directories["products"], archive_filename)
                 kit.remove(archive_path)
                 subprocess.call(["zip", "-j", archive_path] + paths)
                 print("[ZIPPED]", archive_path)
