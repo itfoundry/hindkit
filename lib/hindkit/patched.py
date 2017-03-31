@@ -17,6 +17,7 @@ def draw(self, pen):
     pointPen = PointToSegmentPen(pen)
     self.drawPoints(pointPen)
 
+defcon.Contour.draw = draw
 
 def updateInstance(options, fontInstancePath):
     """
