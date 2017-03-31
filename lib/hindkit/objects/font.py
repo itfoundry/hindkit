@@ -104,7 +104,8 @@ class BaseFont(kit.BaseFile):
         glyph_names_included = None,
         glyph_names_excluded = None,
         glyph_renaming_map = None,
-        import_kerning = True,
+        import_anchors = False,
+        import_kerning = False,
     ):
 
         g_names_included = kit.fallback(glyph_names_included, [])
@@ -143,6 +144,8 @@ class BaseFont(kit.BaseFile):
             print("\n[NOTE] Importing glyphs from `{}` to `{}`:".format(source_path, self.name))
             for source_g_name in g_names_importing:
                 source_g = source_font[source_g_name]
+                if not import_anchors:
+                    source_g.clearAnchors()
                 for component in source_g.components:
                     if component.baseGlyph not in g_names_importing:
                         source_g.decomposeComponent(component)
