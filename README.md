@@ -2,7 +2,7 @@
 
 `AFDKOPython build.py`
 
-This package hosts the build system for the Hind multiscript project:
+This package was originally developed and released as the build system for the Hind multiscript project:
 
 - [Hind Vadodara](https://github.com/itfoundry/hind-vadodara) (Gujarati)
 - [Hind Jalandhar](https://github.com/itfoundry/hind-jalandhar) (Gurmukhi)
@@ -16,7 +16,10 @@ This package hosts the build system for the Hind multiscript project:
 ## Dependencies
 
 - AFDKO http://adobe.com/devnet/opentype/afdko.html
+- vfb2ufo https://blog.fontlab.com/font-utility/vfb2ufo/ (If deal with VFB files.)
 
 ## Installation
+
+Need to be installed to AFDKO's Python:
 
 `AFDKOPython setup.py install`
