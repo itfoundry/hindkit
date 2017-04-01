@@ -341,8 +341,6 @@ class FeatureMatches(BaseFeature):
 
     mI_ANCHOR_NAME = "abvm.i"
 
-    BASE_GLYPH_SEQUENCE_LENGTH = 2
-
     def __init__(self, project, name, style, filename_group):
         super(FeatureMatches, self).__init__(project, name, style, filename_group)
         self._bases_alive = None
@@ -473,18 +471,9 @@ class FeatureMatches(BaseFeature):
         )
 
     def _base_glyph_sequences(self):
-
-        bases_alive = self.bases_alive
-        if self.project.options["match_mI_variants"] == 1:
-            bases_dead = [None]
-        elif self.project.options["match_mI_variants"] > 1:
-            bases_dead = [None] + self.bases_dead
-
-        seeds = [bases_dead] * (self.BASE_GLYPH_SEQUENCE_LENGTH - 1) + [bases_alive]
-        for raw_sequence in itertools.product(*seeds):
-            sequence = [i for i in raw_sequence if i is not None]
-            if sequence:
-                yield sequence
+        seeds = [self.bases_dead] * (self.project.options["match_mI_variants"] - 1) + [self.bases_alive]
+        for sequence in itertools.product(*seeds):
+            yield sequence
 
     def match_mI_variants(self, base):
         if base.target <= self.matches[0].overhanging:
@@ -542,8 +531,6 @@ class FeatureMatches(BaseFeature):
                 else:
                     compressed[k] = v
             return compressed
-
-        # self.BASE_GLYPH_SEQUENCE_LENGTH = 2
 
         compressed = compress(
             (tuple(i.glyphs[:1]), i.glyphs[1:]) for i in multiple_glyph_bases
