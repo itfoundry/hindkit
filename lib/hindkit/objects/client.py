@@ -40,7 +40,7 @@ class Client(object):
             19: self.family.script.sample_text,
         }
         self.tables["OS/2"] = {
-            "fsType": kit.fallback(self.family.info.openTypeOS2Type, 4),
+            "fsType": kit.fallback(self.family.info.openTypeOS2Type, 0),
             "Vendor": "ITFO",
         }
 
@@ -58,7 +58,4 @@ class Client(object):
                 7: None,
                 13: "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL",
                 14: "http://scripts.sil.org/OFL",
-            })
-            self.tables["OS/2"].update({
-                "fsType": 0,
             })
