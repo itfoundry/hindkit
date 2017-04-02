@@ -5,9 +5,13 @@ from __future__ import division, absolute_import, print_function, unicode_litera
 import hindkit as k
 import functools
 
+ODIA_STEMS = "K KH G GH NG C CH J JH NY TT TTH DD DDH NN T TH D DH N P PH B V BH M Y YY R LL L SH SS S H W".split()
+
+# STEMS = k.constants.CONSONANT_STEMS
+STEMS = ODIA_STEMS
 STEMS_AKHAND = ["K_SS", "J_NY"]
 ORDER = []
-for stem in k.constants.CONSONANT_STEMS + STEMS_AKHAND:
+for stem in STEMS + STEMS_AKHAND:
     for i in ["A", "", "Ac2"]:
         part = stem + i
         ORDER.append(part)
@@ -50,7 +54,7 @@ names.sort(
     key = functools.partial(
         get_key,
         # akhands = STEMS_AKHAND,
-        reverse = False,
+        # reverse = True,
     ),
 )
 with open("lab/output.txt", "w") as f:

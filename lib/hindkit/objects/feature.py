@@ -415,8 +415,7 @@ class FeatureMatches(BaseFeature):
                 "} %s;\n" % self.name,
             ])
 
-        if self.project.options["position_marks_for_mI_variants"] and \
-        self.project.options["match_mI_variants"] == 1:
+        if self.project.options["match_mI_variants"] == 1 and self.project.options["position_marks_for_mI_variants"]:
             self.output_mark_positioning_for_mI_variants()
 
     def _get_adjustment(self):
