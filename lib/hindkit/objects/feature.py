@@ -318,11 +318,6 @@ class FeatureMatches(BaseFeature):
                 self.overhanging = abs(self.mI_variant.rightMargin)
             self.bases = []
 
-    # POTENTIAL_MODES = [
-    #     "single glyph", "glyph sequence",
-    #     "position marks", "ligate marks",
-    # ]
-
     CLASS_NAME_mI_VARIANTS = "mI_VARIANTS"
     CLASS_NAME_BASES_ALIVE = "BASES_ALIVE"
     CLASS_NAME_BASES_DEAD = "BASES_DEAD"
@@ -340,6 +335,7 @@ class FeatureMatches(BaseFeature):
     BASE_NAMES_FOR_LONG_mII = None
 
     mI_ANCHOR_NAME = "abvm.i"
+    POTENTIAL_abvm_ANCHOR_NAMES = ["abvm.e", "abvm"]
 
     def __init__(self, project, name, style, filename_group):
         super(FeatureMatches, self).__init__(project, name, style, filename_group)
@@ -439,7 +435,7 @@ class FeatureMatches(BaseFeature):
 
     def _get_abvm_position(self, glyph, in_base=True):
         anchor_name_prefix = "" if in_base else "_"
-        for potential_anchor_name in ["abvm.candra", "abvm.e", "abvm"]:
+        for potential_anchor_name in self.POTENTIAL_abvm_ANCHOR_NAMES:
             for anchor in glyph.anchors:
                 if anchor.name == anchor_name_prefix + potential_anchor_name:
                     return anchor.x
