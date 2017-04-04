@@ -43,6 +43,7 @@ class BaseFont(kit.BaseFile):
         self.defconFont = None
 
         self.adjustment_for_matching_mI_variants = None
+        self.glyph_renaming_map = {}
 
     @property
     def name_postscript(self):
@@ -112,7 +113,9 @@ class BaseFont(kit.BaseFile):
 
         g_names_included = kit.fallback(glyph_names_included, [])
         g_names_excluded = kit.fallback(glyph_names_excluded, [])
-        self.glyph_renaming_map = kit.fallback(glyph_renaming_map, {})
+
+        if glyph_renaming_map is not None:
+            self.glyph_renaming_map = glyph_renaming_map
 
         if source_path.endswith(".ufo"):
             source_format = "UFO"
@@ -174,10 +177,8 @@ class BaseFont(kit.BaseFile):
 
         for key, g_names in f.groups.items():
             del f.groups[key]
-            g_names_modified = [
-                self.glyph_renaming_map.get(i, i) for i in g_names
-                if self.glyph_renaming_map.get(i, i) in f
-            ]
+            g_names_modified = [self.glyph_renaming_map.get(i, i) for i in g_names]
+            g_names_modified = [i for i in g_names_modified if i in f]
             if not key.startswith(("public.kern", "_KERN_")) and g_names_modified:
                 f.groups[key] = g_names_modified
             else:
