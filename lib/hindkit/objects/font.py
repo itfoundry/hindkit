@@ -448,10 +448,21 @@ class Product(BaseFont):
         subprocess.call(["makeotf"] + arguments)
 
         if os.path.exists(self.get_path()):
+
             self.built = True
             print("[FONT SUCCESSFULLY BUILT]", self.get_path())
+
+            font = fontTools.ttLib.TTFont(self.get_path(), recalcTimestamp=True)
+            dirty = False
+            for table_tag in [
+                "STAT", # Introduced by Glyphs.
+            ]:
+                if table_tag in font:
+                    del font[table_tag]
+                    dirty = True
             if hasattr(self, "postprocess"):
-                original = fontTools.ttLib.TTFont(self.get_path(), recalcTimestamp=True)
-                postprocessed = self.postprocess(original)
-                postprocessed.save(self.get_path(), reorderTables=False)
+                font = self.postprocess(font)
+                dirty = True
+            if dirty:
+                font.save(self.get_path(), reorderTables=False)
                 print("[FONT POSTPROCESSED]", self.get_path())
