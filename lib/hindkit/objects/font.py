@@ -396,11 +396,11 @@ class Product(BaseFont):
 
             goadb = self.project.goadb_trimmed_ttf
 
-            subprocess.call([
-                "osascript", "-l", "JavaScript",
-                kit.relative_to_package("data/generate_ttf.js"),
-                os.path.abspath(self.style.get_path()),
-            ])
+            # subprocess.call([
+            #     "osascript", "-l", "JavaScript",
+            #     kit.relative_to_package("data/generate_ttf.js"),
+            #     os.path.abspath(self.style.get_path()),
+            # ])
 
             self.style.file_format = "TTF" #TODO: Should restore the original file format afterwards. Or the styles should just seperate.
 

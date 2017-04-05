@@ -274,7 +274,15 @@ class Project(object):
             self.fmndb.prepare()
 
             for product in self.products:
-                product.generate()
+                if not product.subsidiary:
+                    product.generate()
+
+            for product in self.products:
+                if product.file_format == "TTF":
+                    subprocess.call(["open", product.style.get_path()])
+            for product in self.products:
+                if product.file_format == "TTF":
+                    product.generate()
 
             products_built = [i for i in self.products if i.built]
 
