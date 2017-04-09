@@ -488,3 +488,15 @@ class Product(BaseFont):
             if dirty:
                 font.save(self.get_path(), reorderTables=False)
                 print("[FONT POSTPROCESSED]", self.get_path())
+
+        if self.built:
+
+            self.copy_out_of_temp()
+
+            output_dir = self.project.directories["output"]
+            if os.path.isdir(output_dir):
+                kit.copy(
+                    self.get_path(),
+                    os.path.join(output_dir, self.filename_with_extension),
+                )
+                print("[COPIED TO OUPUT DIRECTORY]", self.get_path())

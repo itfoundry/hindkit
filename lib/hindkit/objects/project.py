@@ -264,16 +264,6 @@ class Project(object):
 
             products_built = [i for i in self.products if i.built]
 
-            output_dir = self.directories["output"]
-            for product in products_built:
-                product.copy_out_of_temp()
-                if os.path.isdir(output_dir):
-                    kit.copy(
-                        product.get_path(),
-                        os.path.join(output_dir, product.filename_with_extension),
-                    )
-                    print("[COPIED TO OUPUT DIRECTORY]", product.get_path())
-
         client_data = self.family.get_client_data()
 
         if client_data.name == "Google Fonts":
