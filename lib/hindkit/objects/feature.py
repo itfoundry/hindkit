@@ -8,16 +8,18 @@ import hindkit as kit
 
 class BaseFeature(kit.BaseFile):
 
-    def __init__(self, project, name, style, filename_group):
+    _name = "features"
+
+    def __init__(self, project, name=None, style=None):
         if style:
             abstract_directory = style.abstract_directory
         else:
             abstract_directory = kit.Project.directories["features"]
         super(BaseFeature, self).__init__(
-            name,
+            name = kit.fallback(name, self._name),
             file_format = "FEA",
             project = project,
-            filename_group = filename_group,
+            extra_filenames = self._extra_filenames,
             abstract_directory = abstract_directory,
         )
         self.style = style
@@ -43,6 +45,9 @@ class BaseFeature(kit.BaseFile):
 
 
 class FeatureClasses(BaseFeature):
+
+    _name = "classes"
+    _extra_filenames = [], ["classes_suffixing"]
 
     def generate(self):
 
@@ -93,6 +98,8 @@ class FeatureClasses(BaseFeature):
 
 
 class FeatureTables(BaseFeature):
+
+    _name = "tables"
 
     def generate(self):
 
@@ -246,6 +253,9 @@ class FeatureTables(BaseFeature):
 
 
 class FeatureLanguagesystems(BaseFeature):
+
+    _name = "languagesystems"
+
     def generate(self):
         lines = ["languagesystem DFLT dflt;"]
         for tag in self.project.family.script.tags:
@@ -255,20 +265,16 @@ class FeatureLanguagesystems(BaseFeature):
                 f.writelines(i + "\n" for i in lines)
 
 
-class FeatureMark(BaseFeature):
-    def generate(self):
-        WriteFeaturesMarkFDK.kMarkFeatureFileName = self.filename_with_extension
-        WriteFeaturesMarkFDK.MarkDataClass(
-            font = self.style.open(),
-            folderPath = self.style.get_directory(),
-            trimCasingTags = False,
-            genMkmkFeature = self.project.options["prepare_mark_to_mark_positioning"],
-            writeClassesFile = True,
-            indianScriptsFormat = self.project.family.script.is_indic,
-        )
+class FeatureGSUB(BaseFeature):
+
+    _name = "GSUB"
+    _extra_filenames = ["GSUB_prefixing", "GSUB_lookups"], []
 
 
 class FeatureKern(BaseFeature):
+
+    _name = "kern"
+
     def generate(self):
         WriteFeaturesKernFDK.kKernFeatureFileName = self.filename_with_extension
         WriteFeaturesKernFDK.KernDataClass(
@@ -284,19 +290,43 @@ class FeatureKern(BaseFeature):
                     f.write(self.postprocess(content))
 
 
+class FeatureMark(BaseFeature):
+
+    _name = "mark"
+
+    def generate(self):
+        WriteFeaturesMarkFDK.kMarkFeatureFileName = self.filename_with_extension
+        WriteFeaturesMarkFDK.MarkDataClass(
+            font = self.style.open(),
+            folderPath = self.style.get_directory(),
+            trimCasingTags = False,
+            genMkmkFeature = self.project.options["prepare_mark_to_mark_positioning"],
+            writeClassesFile = True,
+            indianScriptsFormat = self.project.family.script.is_indic,
+        )
+
+
 class FeatureWeightClass(BaseFeature):
+
+    _name = "WeightClass"
+
     def generate(self):
         with open(self.get_path(), "w") as f:
             f.write("WeightClass {};\n".format(str(self.style.weight_class)))
 
 
 class FeatureWidthClass(BaseFeature):
+
+    _name = "WidthClass"
+
     def generate(self):
         with open(self.get_path(), "w") as f:
             f.write("WidthClass {};\n".format(str(self.style.width_class)))
 
 
 class FeatureMatches(BaseFeature):
+
+    _name = "mI_variant_matches"
 
     class Base(object):
         def __init__(self, feature, base_glyph_sequence):
@@ -337,8 +367,8 @@ class FeatureMatches(BaseFeature):
     mI_ANCHOR_NAME = "abvm.i"
     POTENTIAL_abvm_ANCHOR_NAMES = ["abvm.e", "abvm"]
 
-    def __init__(self, project, name, style, filename_group):
-        super(FeatureMatches, self).__init__(project, name, style, filename_group)
+    def __init__(self, project, style=None):
+        super(FeatureMatches, self).__init__(project, style=style)
         self._bases_alive = None
         self._bases_dead = None
 
@@ -608,6 +638,9 @@ class FeatureMatches(BaseFeature):
 
 
 class FeatureReferences(BaseFeature):
+
+    _name = "features"
+
     def generate(self):
         with open(self.get_path(), "w") as f:
             lines = ["table head { FontRevision %s; } head;" % self.project.fontrevision]
@@ -649,20 +682,3 @@ class FeatureReferences(BaseFeature):
             for line in lines:
                 print(line)
                 f.write(line + "\n")
-
-
-class Feature(object):
-    NAME_TO_CLASS_MAP = {
-        "classes": FeatureClasses,
-        "tables": FeatureTables,
-        "languagesystems": FeatureLanguagesystems,
-        "kern": FeatureKern,
-        "mark": FeatureMark,
-        "mI_variant_matches": FeatureMatches,
-        "WeightClass": FeatureWeightClass,
-        "WidthClass": FeatureWidthClass,
-        "features": FeatureReferences,
-    }
-    def __new__(cls, project, name, style=None, filename_group=None):
-        F = cls.NAME_TO_CLASS_MAP.get(name, BaseFeature)
-        return F(project, name, style, filename_group)

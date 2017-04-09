@@ -215,20 +215,10 @@ class Project(object):
                 reference_font = fontTools.ttLib.TTFont(self.products[0].style.get_path())
                 self.family.info.unitsPerEm = reference_font["head"].unitsPerEm
 
-            self.feature_classes = kit.Feature(
-                self, "classes",
-                filename_group = ["classes", "classes_suffixing"],
-            )
-            self.feature_tables = kit.Feature(
-                self, "tables",
-            )
-            self.feature_languagesystems = kit.Feature(
-                self, "languagesystems",
-            )
-            self.feature_gsub = kit.Feature(
-                self, "GSUB",
-                filename_group = ["GSUB_prefixing", "GSUB_lookups", "GSUB"],
-            )
+            self.feature_classes = kit.FeatureClasses(self)
+            self.feature_tables = kit.FeatureTables(self)
+            self.feature_languagesystems = kit.FeatureLanguagesystems(self)
+            self.feature_gsub = kit.FeatureGSUB(self)
 
             self.feature_classes.prepare()
             self.feature_tables.prepare()
@@ -237,24 +227,12 @@ class Project(object):
 
             for product in (i for i in self.products if i.file_format == "OTF"):
 
-                self.feature_kern = kit.Feature(
-                    self, "kern", product.style,
-                )
-                self.feature_mark = kit.Feature(
-                    self, "mark", product.style,
-                )
-                self.feature_matches = kit.Feature(
-                    self, "mI_variant_matches", product.style,
-                )
-                self.feature_weight_class = kit.Feature(
-                    self, "WeightClass", product.style,
-                )
-                self.feature_width_class = kit.Feature(
-                    self, "WidthClass", product.style,
-                )
-                self.features_references = kit.Feature(
-                    self, "features", product.style,
-                )
+                self.feature_kern = kit.FeatureKern(self, style=product.style)
+                self.feature_mark = kit.FeatureMark(self, style=product.style)
+                self.feature_matches = kit.FeatureMatches(self, style=product.style)
+                self.feature_weight_class = kit.FeatureWeightClass(self, style=product.style)
+                self.feature_width_class = kit.FeatureWidthClass(self, style=product.style)
+                self.features_references = kit.FeatureReferences(self, style=product.style)
                 self.features_references._extension = ""
 
                 if self.options["prepare_kerning"]:

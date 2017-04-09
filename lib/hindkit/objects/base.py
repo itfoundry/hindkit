@@ -7,6 +7,8 @@ import hindkit as kit
 
 class BaseFile(object):
 
+    _extra_filenames = ([], [])
+
     def __init__(
         self,
         name,
@@ -14,7 +16,7 @@ class BaseFile(object):
         abstract_directory = None,
         project = None,
         family = None,
-        filename_group = None,
+        extra_filenames = None,
     ):
 
         self.name = name
@@ -32,14 +34,14 @@ class BaseFile(object):
         else:
             self.abstract_directory = abstract_directory
 
-        if self.family:
-            if self.family.variant_tag:
-                self.abstract_directory_variant = os.path.join(self.abstract_directory, self.family.variant_tag)
-                if os.path.exists(self.abstract_directory_variant):
-                    self.abstract_directory = self.abstract_directory_variant
+        if self.family and self.family.variant_tag:
+            self.abstract_directory_variant = os.path.join(self.abstract_directory, self.family.variant_tag)
+            if os.path.exists(self.abstract_directory_variant):
+                self.abstract_directory = self.abstract_directory_variant
 
+        self.extra_filenames = kit.fallback(extra_filenames, self._extra_filenames)
         self.file_group = []
-        for filename in kit.fallback(filename_group, [self.name]):
+        for filename in self.extra_filenames[0] + [self.name] + self.extra_filenames[1]:
             if filename == self.name:
                 self.file_group.append(self)
             else:
@@ -78,10 +80,9 @@ class BaseFile(object):
         )
 
     def get_directory(self, temp=True):
-        if self.family and temp:
-            directory = kit.Project.temp(self.abstract_directory)
-        else:
-            directory = self.abstract_directory
+        directory = self.abstract_directory
+        if temp:
+            directory = kit.Project.temp(directory)
         return kit.fallback(self._directory, directory)
 
     def get_path(self, temp=True):
