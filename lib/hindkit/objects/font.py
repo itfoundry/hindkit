@@ -2,8 +2,8 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, glob, subprocess
-import fontTools.ttLib
+import os, glob, subprocess, itertools
+import fontTools.ttLib, getKerningPairsFromFEA
 import hindkit as kit
 
 class BaseFont(kit.BaseFile):
@@ -113,40 +113,62 @@ class BaseFont(kit.BaseFile):
 
         g_names_included = kit.fallback(glyph_names_included, [])
         g_names_excluded = kit.fallback(glyph_names_excluded, [])
+        g_names_included = set(g_names_included)
+        g_names_excluded = set(g_names_excluded)
 
         if glyph_renaming_map is not None:
-            self.glyph_renaming_map = glyph_renaming_map
+            self.glyph_renaming_map.update(glyph_renaming_map)
 
-        if source_path.endswith(".ufo"):
-            source_format = "UFO"
-        elif source_path.endswith(".vfb"):
-            source_format = "VFB"
+        if source_path.endswith((".ufo", ".vfb")):
+            source_file = BaseFont(
+                family = self.family,
+                abstract_directory = kit.Project.directories["misc"],
+                file_format = source_path[-3:].upper(),
+            )
+            source_file._path = source_path
+            source_font = source_file.open()
+        elif (not import_glyphs) and import_kerning and source_path.endswith(".fea"):
+            kern_fea_reader = getKerningPairsFromFEA.FEAKernReader([source_path])
+            source_font = kit.patched.defcon.Font()
+            source_font.groups.update(kern_fea_reader.kernClasses)
+            kern_classes_reversed = {tuple(v): k for k, v in kern_fea_reader.kernClasses.items()}
+            if len(kern_fea_reader.kernClasses) != len(kern_classes_reversed):
+                raise SystemExit()
+            for enum, (left, right), value in reversed(kern_fea_reader.foundKerningPairs):
+                pair = []
+                for side in left, right:
+                    parts = side.split()
+                    if tuple(parts) in kern_classes_reversed:
+                        parts = [kern_classes_reversed[tuple(parts)]]
+                    pair.append(parts)
+                pairs = list(itertools.product(*pair))
+                for pair in pairs:
+                    source_font.kerning[pair] = float(value)
         else:
             raise SystemExit("The format of {} is not supported.".format(source_path))
-        source_file = BaseFont(
-            family = self.family,
-            abstract_directory = kit.Project.directories["misc"],
-            file_format = source_format,
-        )
-        source_file._path = source_path
-        source_font = source_file.open()
+
         if target_path:
             self._path = target_path
         target_font = self.open()
 
         if g_names_included:
-            g_names_importing = set(g_names_included)
+            g_names_importing = g_names_included
         else:
             g_names_importing = set(source_font.keys())
 
         if import_glyphs and g_names_importing:
-            g_names_importing.difference_update(set(g_names_excluded))
-            g_names_importing.difference_update(set(target_font.keys()))
+            print("\n[NOTE] Importing glyphs from `{}` to `{}`:".format(source_path, self.name))
+            if g_names_excluded:
+                g_names_importing.difference_update(g_names_excluded)
+                print("Excluding: {}".format(", ".join(g_names_excluded)))
+            g_names_already_existing = g_names_importing.intersection(set(target_font.keys()))
+            if g_names_already_existing:
+                g_names_importing.difference_update(g_names_already_existing)
+                print("Already existing; will not overwrite: {}".format(", ".join(g_names_already_existing)))
             g_names_importing = (
                 [i for i in source_font.glyphOrder if i in g_names_importing] +
                 [i for i in g_names_importing if i not in source_font.glyphOrder]
             )
-            print("\n[NOTE] Importing glyphs from `{}` to `{}`:".format(source_path, self.name))
             for source_g_name in g_names_importing:
                 source_g = source_font[source_g_name]
                 if not import_anchors:
