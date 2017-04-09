@@ -122,6 +122,7 @@ class BaseFile(object):
                     f.copy_into_temp()
             else:
                 try:
+                    kit.makedirs(f.get_directory())
                     f.generate()
                     print("[GENERATED]", f.get_path())
                 except NotImplementedError:

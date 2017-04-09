@@ -27,10 +27,16 @@ def remove(path):
     try:
         os.remove(path)
     except OSError:
-        if os.path.isdir(path):
-            shutil.rmtree(path)
-        elif not os.path.exists(path):
+        if not os.path.exists(path):
             pass
+        elif os.path.isdir(path):
+            try:
+                shutil.rmtree(path)
+            except OSError as e:
+                if e.errno == errno.ENOTEMPTY:
+                    shutil.rmtree(path)
+                else:
+                    raise
         else:
             raise
 
