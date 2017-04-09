@@ -143,7 +143,7 @@ class BaseFont(kit.BaseFile):
                     pair.append(parts)
                 pairs = list(itertools.product(*pair))
                 for pair in pairs:
-                    source_font.kerning[pair] = float(value)
+                    source_font.kerning[pair] = int(value)
         else:
             raise SystemExit("The format of {} is not supported.".format(source_path))
 
