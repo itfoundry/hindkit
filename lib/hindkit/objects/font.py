@@ -184,6 +184,7 @@ class BaseFont(kit.BaseFile):
                     print(target_g_name, end=", ")
                 else:
                     print("{} -> {}".format(source_g_name, target_g_name), end=", ")
+            print()
 
         # TODO: Component reference and glyph group reference both need to be updated.
 

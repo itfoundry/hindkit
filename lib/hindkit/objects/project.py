@@ -193,6 +193,7 @@ class Project(object):
                 master.prepare()
                 if hasattr(master, "postprocess"):
                     master.postprocess()
+                    master.refresh_groups()
 
             for master in self.family.masters:
                 master.save()
