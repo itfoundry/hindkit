@@ -298,7 +298,10 @@ class Master(BaseFont):
     def filename(self):
         """According to the Glyphs app's convention."""
         if self._filename is None:
-            path_pattern = "{}/*-{}.ufo".format(self.get_directory(temp=False), self.name)
+            path_pattern = os.path.join(
+                self.get_directory(temp=False),
+                "*-{}.ufo".format(self.name),
+            )
             paths = glob.glob(path_pattern)
             if paths:
                 self._filename = os.path.basename(paths[0]).partition(".")[0]

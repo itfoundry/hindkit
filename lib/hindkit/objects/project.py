@@ -175,10 +175,9 @@ class Project(object):
         font.save()
 
     def reset_directory(self, name, temp=False):
+        path = self.directories[name]
         if temp:
-            path = self.temp(self.directories[name])
-        else:
-            path = self.directories[name]
+            path = self.temp(path)
         kit.remove(path)
         kit.makedirs(path)
 
@@ -188,7 +187,7 @@ class Project(object):
 
         if self.options["prepare_masters"]:
 
-            self.reset_directory("masters", temp=True)
+            # self.reset_directory("masters", temp=True)
 
             for master in self.family.masters:
                 master.prepare()
@@ -200,13 +199,13 @@ class Project(object):
 
         if self.options["prepare_styles"]:
 
-            self.reset_directory("styles", temp=True)
+            # self.reset_directory("styles", temp=True)
 
             self.family.prepare_styles()
 
         if self.options["prepare_features"]:
 
-            self.reset_directory("features", temp=True)
+            # self.reset_directory("features", temp=True)
 
             if self.family.styles[0].file_format == "UFO":
                 reference_font = self.products[0].style.open()
@@ -247,7 +246,7 @@ class Project(object):
 
         if self.options["compile"]:
 
-            self.reset_directory("products", temp=True)
+            # self.reset_directory("products", temp=True)
 
             self.fmndb.prepare()
 

@@ -45,15 +45,15 @@ class Family(object):
     def get_client_data(self):
         return kit.Client(self, self.client_name)
 
-    def set_masters(self, value=None):
-        scheme = kit.fallback(value, [("Light", 0), ("Bold",  100)])
+    def set_masters(self, scheme=None):
+        scheme = kit.fallback(scheme, [("Light", 0), ("Bold",  100)])
         self.masters = [
             kit.Master(self, name, location)
             for name, location in scheme
         ]
 
-    def set_styles(self, value=None):
-        scheme = kit.fallback(value, self.get_client_data().style_scheme)
+    def set_styles(self, scheme=None):
+        scheme = kit.fallback(scheme, self.get_client_data().style_scheme)
         self.styles = [
             kit.Style(self, name, location, weight_and_width_class)
             for name, location, weight_and_width_class in scheme
