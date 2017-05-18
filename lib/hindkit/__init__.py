@@ -2,7 +2,7 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, sys, functools, shutil
+import os, sys, functools, shutil, errno
 
 def relative_to_interpreter(path):
     return os.path.join(os.path.dirname(sys.executable), path)
