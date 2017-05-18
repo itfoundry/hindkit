@@ -30,7 +30,7 @@ class Family(object):
             self.name = self.name_script_independent
             if script_name and append_script_name:
                 self.name += " " + script_name
-        self.name_postscript = self.name.replace(" ", "")
+        self.name_postscript = kit.remove_illegal_chars_for_postscript_name_part(self.name)
 
         self.masters = None
         self.styles = None

@@ -47,7 +47,7 @@ class BaseFont(kit.BaseFile):
 
     @property
     def name_postscript(self):
-        return kit.fallback(self._name_postscript, self.name.replace(" ", ""))
+        return kit.fallback(self._name_postscript, kit.remove_illegal_chars_for_postscript_name_part(self.name))
 
     @property
     def full_name(self):

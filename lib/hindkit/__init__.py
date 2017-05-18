@@ -59,6 +59,9 @@ def fallback(*candidates):
         if i is not None:
             return i
 
+def remove_illegal_chars_for_postscript_name_part(name):
+    return name.translate({ord(i): None for i in " -"})
+
 from hindkit import constants
 from hindkit import filters
 from hindkit import patched

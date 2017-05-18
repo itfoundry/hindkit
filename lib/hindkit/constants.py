@@ -56,6 +56,16 @@ TTT NNN YY RR RRR LL LLL
 TS DZ W ZH
 """.split()
 
+ALPHABET_GURMUKHI = """
+Ura Ara Iri S H
+K KH G GH NG
+C CH J JH NY
+TT TTH DD DDH NN
+T TH D DH N
+P PH B BH M
+Y R L V RR
+""".split()
+
 VOWEL_STEMS = """
 AA I II U UU vR vRR vL vLL
 E EE AI O OO AU
