@@ -58,6 +58,7 @@ class Project(object):
             "build_ttf": False,
 
             "override_GDEF": True,
+            "override_x_and_cap_heights": False,
 
             "do_style_linking": False,
             "omit_mac_name_records": True,
@@ -230,8 +231,7 @@ class Project(object):
                 self.feature_kern = kit.FeatureKern(self, style=product.style)
                 self.feature_mark = kit.FeatureMark(self, style=product.style)
                 self.feature_matches = kit.FeatureMatches(self, style=product.style)
-                self.feature_weight_class = kit.FeatureWeightClass(self, style=product.style)
-                self.feature_width_class = kit.FeatureWidthClass(self, style=product.style)
+                self.feature_OS2_extension = kit.FeatureOS2Extension(self, style=product.style)
                 self.features_references = kit.FeatureReferences(self, style=product.style)
                 self.features_references._extension = ""
 
@@ -241,8 +241,7 @@ class Project(object):
                     self.feature_mark.prepare()
                 if self.options["match_mI_variants"]:
                     self.feature_matches.prepare()
-                self.feature_weight_class.prepare()
-                self.feature_width_class.prepare()
+                self.feature_OS2_extension.prepare()
                 self.features_references.prepare()
 
         if self.options["compile"]:

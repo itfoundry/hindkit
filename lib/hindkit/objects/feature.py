@@ -114,8 +114,7 @@ class FeatureTables(BaseFeature):
             ("name", []),
         ])
 
-        tables["OS/2"].append("include (WeightClass.fea);")
-        tables["OS/2"].append("include (WidthClass.fea);")
+        tables["OS/2"].append("include (OS2Extension.fea);")
 
         tables["OS/2"].append("fsType {};".format(client_data.tables["OS/2"]["fsType"]))
 
@@ -306,22 +305,17 @@ class FeatureMark(BaseFeature):
         )
 
 
-class FeatureWeightClass(BaseFeature):
+class FeatureOS2Extension(BaseFeature):
 
-    _name = "WeightClass"
+    _name = "OS2Extension"
 
     def generate(self):
         with open(self.get_path(), "w") as f:
             f.write("WeightClass {};\n".format(str(self.style.weight_class)))
-
-
-class FeatureWidthClass(BaseFeature):
-
-    _name = "WidthClass"
-
-    def generate(self):
-        with open(self.get_path(), "w") as f:
             f.write("WidthClass {};\n".format(str(self.style.width_class)))
+            if self.project.options["override_x_and_cap_heights"]:
+                f.write("XHeight {};\n".format(str(self.style.x_height)))
+                f.write("CapHeight {};\n".format(str(self.style.cap_height)))
 
 
 class FeatureMatches(BaseFeature):

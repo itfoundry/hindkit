@@ -36,6 +36,9 @@ class BaseFont(kit.BaseFile):
             self.weight_class = weight_and_width_class
             self.width_class = 5
 
+        self.x_height = 0
+        self.cap_height = 0
+
         self._name_postscript = None
         self._full_name = None
         self._full_name_postscript = None
@@ -109,6 +112,8 @@ class BaseFont(kit.BaseFile):
         glyph_renaming_map = None,
         import_anchors = False,
         import_kerning = False,
+        import_blue_zones = False,
+        import_x_and_cap_heights = False,
     ):
 
         g_names_included = kit.fallback(glyph_names_included, [])
@@ -119,7 +124,7 @@ class BaseFont(kit.BaseFile):
         if glyph_renaming_map is not None:
             self.glyph_renaming_map.update(glyph_renaming_map)
 
-        if source_path.endswith((".ufo", ".vfb")):
+        if import_glyphs and source_path.endswith((".ufo", ".vfb")):
             source_file = BaseFont(
                 family = self.family,
                 abstract_directory = kit.Project.directories["misc"],
@@ -127,7 +132,7 @@ class BaseFont(kit.BaseFile):
             )
             source_file._path = source_path
             source_font = source_file.open()
-        elif (not import_glyphs) and import_kerning and source_path.endswith(".fea"):
+        elif import_kerning and source_path.endswith(".fea"):
             kern_fea_reader = getKerningPairsFromFEA.FEAKernReader([source_path])
             source_font = kit.patched.defcon.Font()
             source_font.groups.update(kern_fea_reader.kernClasses)
@@ -150,6 +155,27 @@ class BaseFont(kit.BaseFile):
         if target_path:
             self._path = target_path
         target_font = self.open()
+
+        if import_blue_zones:
+
+            source_blue_values = source_font.info.postscriptBlueValues
+            source_other_blues = source_font.info.postscriptOtherBlues
+            target_blue_values = target_font.info.postscriptBlueValues
+            target_other_blues = target_font.info.postscriptOtherBlues
+
+            blue_values = [min(source_blue_values[0], target_blue_values[0]), 0]
+            blue_values.extend(source_blue_values[2:4] + target_blue_values[2:4] + source_blue_values[6:10])
+            other_blues = source_other_blues
+
+            target_font.info.postscriptBlueValues = blue_values
+            target_font.info.postscriptOtherBlues = other_blues
+            print(source_other_blues, source_blue_values)
+            print(target_other_blues, target_blue_values)
+            print(other_blues, blue_values)
+
+        if import_x_and_cap_heights:
+            self.x_height = source_font.info.xHeight
+            self.cap_height = source_font.info.capHeight
 
         if g_names_included:
             g_names_importing = g_names_included
