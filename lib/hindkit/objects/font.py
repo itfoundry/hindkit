@@ -324,17 +324,19 @@ class Master(BaseFont):
     @BaseFont.filename.getter
     def filename(self):
         """According to the Glyphs app's convention."""
+        filename = "{}-{}".format(self.family.name, self.name)
+        filename_pattern = "*-{}".format(self.name)
+        path = os.path.join(self.get_directory(temp=False), filename + ".ufo")
+        path_pattern = os.path.join(self.get_directory(temp=False), filename_pattern + ".ufo")
         if self._filename is None:
-            path_pattern = os.path.join(
-                self.get_directory(temp=False),
-                "*-{}.ufo".format(self.name),
-            )
-            paths = glob.glob(path_pattern)
-            if paths:
-                self._filename = os.path.basename(paths[0]).partition(".")[0]
-                return self._filename
+            if os.path.exists(path):
+                self._filename = filename
             else:
-                raise SystemExit("`{}` is missing.".format(path_pattern))
+                paths = glob.glob(path_pattern)
+                if paths:
+                    self._filename = os.path.basename(paths[0]).partition(".")[0]
+        if self._filename is None:
+            raise SystemExit("`{}` is missing.".format(path_pattern))
         else:
             return self._filename
 
