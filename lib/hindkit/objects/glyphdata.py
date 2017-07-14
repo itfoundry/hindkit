@@ -16,8 +16,6 @@ class GlyphData(object):
 
     ITFDG = []
 
-    goadb_path = "GlyphOrderAndAliasDB"
-
     @staticmethod
     def split(line):
         return line.partition("#")[0].split()
@@ -31,6 +29,7 @@ class GlyphData(object):
         self.glyph_order_trimmed = None
         self.dictionary = agd.dictionary()
         self.goadb = StringIO.StringIO()
+        self.goadb_path = kit.Project.directories["GOADB"]
 
         if os.path.exists(self.goadb_path):
 

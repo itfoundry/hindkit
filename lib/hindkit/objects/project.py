@@ -12,6 +12,7 @@ class Project(object):
         "sources": "",
         "masters": "masters",
         "styles": "styles",
+        "GOADB": "GlyphOrderAndAliasDB",
         "features": "features",
         "intermediates": "intermediates",
         "products": "products",
