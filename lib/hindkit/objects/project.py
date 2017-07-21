@@ -268,7 +268,7 @@ class Project(object):
 
         client_data = self.family.get_client_data()
 
-        if client_data.name == "Google Fonts":
+        if client_data.name == "Google Fonts" and not self.args.test:
 
             with open(kit.relative_to_package("data/template-OFL.txt")) as f:
                 template = f.read()
