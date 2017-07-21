@@ -477,7 +477,9 @@ class Product(BaseFont):
             "-rev", self.project.fontrevision,
             "-ga",
         ]
-        if self.project.options["omit_mac_name_records"]:
+        if self.project.options["use_mac_name_records"]:
+            arguments.append("-useMacNames")
+        else:
             arguments.append("-omitMacNames")
         if not self.project.args.test:
             arguments.append("-r")
