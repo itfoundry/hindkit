@@ -476,6 +476,7 @@ class Product(BaseFont):
             "-gf", goadb.get_path(),
             "-rev", self.project.fontrevision,
             "-ga",
+            "-overrideMenuNames",
         ]
         if self.project.options["use_mac_name_records"]:
             arguments.append("-useMacNames")
@@ -487,11 +488,13 @@ class Product(BaseFont):
             arguments.append("-shw")
         if self.family.is_serif is not None:
             arguments.append("-serif" if self.family.is_serif else "-sans")
-        if self.project.options["do_style_linking"]:
+        if self.project.options["do_style_linking"] and (self.is_bold or self.is_italic):
             if self.is_bold:
                 arguments.append("-b")
             if self.is_italic:
                 arguments.append("-i")
+        else:
+            arguments.extend(["-osbOn", "6"])
         if self.project.options["use_os_2_version_4"]:
             for digit, boolean in [
                 ("7", self.project.options["prefer_typo_metrics"]),
