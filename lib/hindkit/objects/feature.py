@@ -231,6 +231,7 @@ class FeatureTables(BaseFeature):
                 "GlyphClassDef {bases}, {ligatures}, {marks}, {components};".format(**GDEF_records)
             ])
 
+        tables["name"].append("include (nameExtension.fea);")
         tables["name"].extend(
             "nameid {} \"{}\";".format(
                 name_id,
@@ -316,6 +317,14 @@ class FeatureOS2Extension(BaseFeature):
             if self.project.options["override_x_and_cap_heights"]:
                 f.write("XHeight {};\n".format(str(self.style.x_height)))
                 f.write("CapHeight {};\n".format(str(self.style.cap_height)))
+
+class FeatureNameExtension(BaseFeature):
+
+    _name = "nameExtension"
+
+    def generate(self):
+        with open(self.get_path(), "w") as f:
+            f.write('nameid 4 "{}";'.format(self.style.full_name))
 
 
 class FeatureMatches(BaseFeature):

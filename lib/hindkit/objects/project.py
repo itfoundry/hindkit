@@ -233,6 +233,7 @@ class Project(object):
                 self.feature_mark = kit.FeatureMark(self, style=product.style)
                 self.feature_matches = kit.FeatureMatches(self, style=product.style)
                 self.feature_OS2_extension = kit.FeatureOS2Extension(self, style=product.style)
+                self.feature_name_extension = kit.FeatureNameExtension(self, style=product.style)
                 self.features_references = kit.FeatureReferences(self, style=product.style)
                 self.features_references._extension = ""
 
@@ -243,6 +244,7 @@ class Project(object):
                 if self.options["match_mI_variants"]:
                     self.feature_matches.prepare()
                 self.feature_OS2_extension.prepare()
+                self.feature_name_extension.prepare()
                 self.features_references.prepare()
 
         if self.options["compile"]:
