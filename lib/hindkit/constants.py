@@ -7,9 +7,13 @@ import os, collections
 import hindkit as kit
 
 DERIVABLE_GLYPHS = {
-    None: ["NULL", "zerowidthspace", "uni200B"],
-    "space": ["CR", "uni000D", "nonbreakingspace", "uni00A0"],
+    None: ["NULL", ".null", "zerowidthspace", "uni200B"],
+    "space": ["CR", "nonmarkingreturn", "uni000D", "nonbreakingspace", "uni00A0"],
     "hyphen": ["softhyphen"],
+    "slash": ["divisionslash"],
+    "periodcentered": ["bulletoperator"],
+    "macron": ["macronmod"],
+    "quoteright": ["apostrophemod"],
 }
 
 REQUIRED_GLYPHS = [
