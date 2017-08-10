@@ -297,9 +297,10 @@ class BaseFont(kit.BaseFile):
                 source_glyph = target[source_name]
                 deriving_glyph = target[deriving_name]
                 deriving_glyph.width = source_glyph.width
-                component_source_glyph = deriving_glyph.instantiateComponent()
-                component_source_glyph.baseGlyph = source_name
-                deriving_glyph.appendComponent(component_source_glyph)
+                if len(source_glyph) > 0 or source_glyph.components:
+                    component_source_glyph = deriving_glyph.instantiateComponent()
+                    component_source_glyph.baseGlyph = source_name
+                    deriving_glyph.appendComponent(component_source_glyph)
             print("{} -> {}".format(source_name, deriving_name), end=", ")
 
     def remove_glyphs(self, names):
