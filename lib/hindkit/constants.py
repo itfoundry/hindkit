@@ -241,7 +241,7 @@ def get_adobe_latin(number, get_combined=False):
         for line in f:
             parts = line.strip().split("\t")[:4]
             u_scalar, u_character, production_name, u_name = parts
-            adobe_latin[production_name] = u_name
+            adobe_latin[production_name] = u_scalar
     return adobe_latin
 
 ITF_GENERAL = "exclam quotedbl numbersign dollar percent ampersand quotesingle parenleft parenright asterisk plus comma hyphen period slash zero one two three four five six seven eight nine colon semicolon less equal greater question at bracketleft backslash bracketright asciicircum underscore grave braceleft bar braceright asciitilde cent sterling yen copyright guillemotleft registered degree periodcentered guillemotright endash emdash quoteleft quoteright quotedblleft quotedblright dagger daggerdbl bullet ellipsis guilsinglleft guilsinglright Euro trademark".split()
