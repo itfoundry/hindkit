@@ -23,3 +23,8 @@ This package was originally developed and released as the build system for the H
 Need to be installed to AFDKO's Python:
 
 `AFDKOPython setup.py install`
+
+## Branch Layout
+
+This package provides an API but it is not maintained in a stable way for users outside ITF.
+The Develop branch is the most unstable, but the most up to date. 
