@@ -60,7 +60,13 @@ def fallback(*candidates):
             return i
 
 def remove_illegal_chars_for_postscript_name_part(name):
-    return name.translate({ord(i): None for i in " -"})
+    """
+    Conforming The Compact Font Format Specification (version 1.0), section 7 "Name INDEX".
+    Also removing "-".
+    """
+    return name.translate({
+        ord(i): None for i in "[](){}<>/%\u0000\u0020\u0009\u000D\u000A\u000C-"
+    })
 
 from hindkit import constants
 from hindkit import filters
