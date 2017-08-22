@@ -190,11 +190,13 @@ class Project(object):
             self.feature_tables = kit.FeatureTables(self)
             self.feature_languagesystems = kit.FeatureLanguagesystems(self)
             self.feature_gsub = kit.FeatureGSUB(self)
+            self.feature_gpos = kit.FeatureGPOS(self)
 
             self.feature_classes.prepare()
             self.feature_tables.prepare()
             self.feature_languagesystems.prepare()
             self.feature_gsub.prepare()
+            self.feature_gpos.prepare()
 
             for product in (i for i in self.products if i.file_format == "OTF"):
 
