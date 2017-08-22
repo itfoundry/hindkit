@@ -79,11 +79,6 @@ class Project(object):
 
         self.designspace = kit.DesignSpace(self)
         self.fmndb = kit.Fmndb(self)
-        self.goadb_trimmed = kit.Goadb(self, "GlyphOrderAndAliasDB_trimmed")
-        if self.options["build_ttf"]:
-            self.goadb_trimmed_ttf = kit.Goadb(
-                self, "GlyphOrderAndAliasDB_trimmed_ttf", for_ttf = True,
-            )
 
         self._finalize_options()
 
@@ -149,32 +144,6 @@ class Project(object):
                 product.abstract_directory = os.path.join(
                     product.abstract_directory, product.extension,
                 )
-
-    def trim_glyph_names(self, names, reference_names):
-        not_covered_glyphs = [
-            name
-            for name in reference_names
-            if name not in names
-        ]
-        if not_covered_glyphs:
-            print(
-                "[WARNING] Some glyphs are not covered by the GOADB: " +
-                " ".join(not_covered_glyphs)
-            )
-            if self.options["build_ttf"]:
-                raise SystemExit("[EXIT] GOADB must match the glyph set exactly for compiling TTFs.")
-        names_trimmed = [
-            name
-            for name in names
-            if name in reference_names
-        ]
-        return names_trimmed
-
-    def update_glyphOrder(self, font):
-        defconFont = font.open()
-        defconFont.lib["public.glyphOrder"] = self.glyph_data.glyph_order_trimmed
-        defconFont.lib.pop("com.schriftgestaltung.glyphOrder", None)
-        font.save()
 
     def reset_directory(self, name, temp=False):
         path = self.directories[name]

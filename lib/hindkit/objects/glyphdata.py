@@ -26,7 +26,6 @@ class GlyphData(object):
     ):
 
         self.glyph_order = []
-        self.glyph_order_trimmed = None
         self.dictionary = agd.dictionary()
         self.goadb = StringIO.StringIO()
         self.goadb_path = kit.Project.directories["GOADB"]
@@ -86,18 +85,47 @@ class Goadb(kit.BaseFile):
         self,
         project,
         name = "GlyphOrderAndAliasDB",
-        for_ttf = False,
+        product=None,
     ):
-        super(Goadb, self).__init__(name, project=project)
-        self.for_ttf = for_ttf
+        if product:
+            abstract_directory = product.style.abstract_directory
+        else:
+            abstract_directory = kit.Project.directories["sources"]
+        super(Goadb, self).__init__(
+            name,
+            project = project,
+            abstract_directory = abstract_directory,
+        )
+        self.product = product
+
+        if self.product:
+            names = self.project.glyph_data.glyph_order
+            reference_names = self.product.style.open().glyphOrder
+            not_covered_glyphs = [
+                name
+                for name in reference_names
+                if name not in names
+            ]
+            if not_covered_glyphs:
+                print(
+                    "[WARNING] Some glyphs are not covered by the GOADB: " +
+                    " ".join(not_covered_glyphs)
+                )
+                if self.options["build_ttf"]:
+                    raise SystemExit("[EXIT] GOADB must match the glyph set exactly for compiling TTFs.")
+            self.names = [
+                name
+                for name in names
+                if name in reference_names
+            ]
+        else:
+            self.names = None
 
     def generate(self):
-        goadb_trimmed = self.project.glyph_data.generate_goadb(
-            self.project.glyph_data.glyph_order_trimmed
-        )
+        goadb = self.project.glyph_data.generate_goadb(names=self.names)
         with open(self.get_path(), "w") as f:
-            for line in goadb_trimmed:
-                if self.for_ttf:
+            for line in goadb:
+                if self.product.file_format == "TTF":
                     line = self.TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP.get(
                         line,
                         line,

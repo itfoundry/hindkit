@@ -415,46 +415,46 @@ class Product(BaseFont):
 
     def generate(self):
 
-        if self.file_format == "OTF":
+        self.goadb_trimmed = kit.Goadb(self.project, product=self)
+        self.goadb_trimmed.prepare()
 
-            goadb = self.project.goadb_trimmed
+        if self.file_format == "OTF" and self.style.file_format == "UFO":
 
-            if self.style.file_format == "UFO":
+            defconFont = self.style.open()
+            defconFont.info.postscriptFontName = self.full_name_postscript
+            defconFont.lib["public.glyphOrder"] = self.goadb_trimmed.names
+            for k in ["com.schriftgestaltung.glyphOrder", "com.schriftgestaltung.font.glyphOrder"]:
+                defconFont.lib.pop(k, None)
+            for i in """
+                versionMajor
+                versionMinor
+                copyright
+                familyName
+                styleName
+                styleMapFamilyName
+                styleMapStyleName
+                postscriptWeightName
+                openTypeHeadCreated
+                openTypeNamePreferredFamilyName
+                openTypeNamePreferredSubfamilyName
+                openTypeNameDesigner
+                openTypeOS2WeightClass
+                openTypeOS2WidthClass
+            """.split():
+                setattr(defconFont.info, i, None)
+            defconFont.groups.clear()
+            defconFont.kerning.clear()
+            self.style.save()
 
-                defconFont = self.style.open()
-                for i in """
-                    versionMajor
-                    versionMinor
-                    copyright
-                    familyName
-                    styleName
-                    styleMapFamilyName
-                    styleMapStyleName
-                    postscriptWeightName
-                    openTypeHeadCreated
-                    openTypeNamePreferredFamilyName
-                    openTypeNamePreferredSubfamilyName
-                    openTypeNameDesigner
-                    openTypeOS2WeightClass
-                    openTypeOS2WidthClass
-                """.split():
-                    setattr(defconFont.info, i, None)
-                defconFont.groups.clear()
-                defconFont.kerning.clear()
-                defconFont.info.postscriptFontName = self.full_name_postscript
-                self.style.save()
-
-                if self.project.options["run_checkoutlines"] or self.project.options["run_autohint"]:
-                    options = {
-                        "doOverlapRemoval": self.project.options["run_checkoutlines"],
-                        "doAutoHint": self.project.options["run_autohint"],
-                        "allowDecimalCoords": False,
-                    }
-                    kit.patched.updateInstance(options, self.style.get_path())
+            if self.project.options["run_checkoutlines"] or self.project.options["run_autohint"]:
+                options = {
+                    "doOverlapRemoval": self.project.options["run_checkoutlines"],
+                    "doAutoHint": self.project.options["run_autohint"],
+                    "allowDecimalCoords": False,
+                }
+                kit.patched.updateInstance(options, self.style.get_path())
 
         elif self.file_format == "TTF":
-
-            goadb = self.project.goadb_trimmed_ttf
 
             # subprocess.call([
             #     "osascript", "-l", "JavaScript",
@@ -472,14 +472,13 @@ class Product(BaseFont):
                 if raw_input().upper().startswith("N"):
                     return
 
-        goadb.prepare()
         kit.makedirs(self.get_directory())
 
         arguments = [
             "-f", self.style.get_path(),
             "-o", self.get_path(),
             "-mf", self.project.fmndb.get_path(),
-            "-gf", goadb.get_path(),
+            "-gf", self.goadb_trimmed.get_path(),
             "-rev", self.project.fontrevision,
             "-ga",
             "-overrideMenuNames",
