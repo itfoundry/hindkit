@@ -111,7 +111,7 @@ class Goadb(kit.BaseFile):
                     "[WARNING] Some glyphs are not covered by the GOADB: " +
                     " ".join(not_covered_glyphs)
                 )
-                if self.options["build_ttf"]:
+                if self.project.options["build_ttf"]:
                     raise SystemExit("[EXIT] GOADB must match the glyph set exactly for compiling TTFs.")
             self.names = [
                 name
