@@ -12,7 +12,6 @@ class Project(object):
         "sources": "",
         "masters": "masters",
         "styles": "styles",
-        "GOADB": "GlyphOrderAndAliasDB",
         "features": "features",
         "intermediates": "intermediates",
         "products": "products",
@@ -142,7 +141,7 @@ class Project(object):
         if len(set(i.file_format for i in self.products)) > 1:
             for product in self.products:
                 product.abstract_directory = os.path.join(
-                    product.abstract_directory, product.extension,
+                    product.abstract_directory, product.file_format,
                 )
 
     def reset_directory(self, name, temp=False):

@@ -28,7 +28,7 @@ class GlyphData(object):
         self.glyph_order = []
         self.dictionary = agd.dictionary()
         self.goadb = StringIO.StringIO()
-        self.goadb_path = kit.Project.directories["GOADB"]
+        self.goadb_path = kit.Goadb.NAME
 
         if os.path.exists(self.goadb_path):
 
@@ -76,6 +76,8 @@ class GlyphData(object):
 
 class Goadb(kit.BaseFile):
 
+    NAME = "GlyphOrderAndAliasDB"
+
     TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP = {
         "CR\tCR\tuni000D\n": "CR\tuni000D\tuni000D\n",
         "uni00A0\tnonbreakingspace\tuni00A0\n": "uni00A0\tuni00A0\tuni00A0\n",
@@ -85,7 +87,8 @@ class Goadb(kit.BaseFile):
         self,
         project,
         name = "GlyphOrderAndAliasDB",
-        product=None,
+        content = None,
+        product = None,
     ):
         if product:
             abstract_directory = product.style.abstract_directory
@@ -97,7 +100,6 @@ class Goadb(kit.BaseFile):
             abstract_directory = abstract_directory,
         )
         self.product = product
-
         if self.product:
             names = self.project.glyph_data.glyph_order
             reference_names = self.product.style.open().glyphOrder
@@ -120,14 +122,17 @@ class Goadb(kit.BaseFile):
             ]
         else:
             self.names = None
+        self.content = kit.fallback(
+            content,
+            self.project.glyph_data.generate_goadb(names=self.names),
+        )
+
+    def parse(self):
+        pass
 
     def generate(self):
-        goadb = self.project.glyph_data.generate_goadb(names=self.names)
         with open(self.get_path(), "w") as f:
-            for line in goadb:
-                if self.product.file_format == "TTF":
-                    line = self.TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP.get(
-                        line,
-                        line,
-                    )
+            for line in self.content:
+                if self.product and self.product.file_format == "TTF":
+                    line = self.TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP.get(line, line)
                 f.write(line)
