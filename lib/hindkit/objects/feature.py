@@ -291,9 +291,12 @@ class FeatureKern(BaseFeature):
             if os.path.exists(kern_path):
                 with open(kern_path) as f:
                     content = f.read()
+                kern_postprocessed, dist = self.postprocess(content)
                 with open(kern_path, "w") as f:
-                    f.write(self.postprocess(content))
-
+                    f.write(kern_postprocessed)
+                if dist:
+                    with open(os.path.join(self.get_directory(), "dist.fea"), "w") as f:
+                        f.write(dist)
 
 class FeatureMark(BaseFeature):
 
@@ -673,8 +676,15 @@ class FeatureReferences(BaseFeature):
                 if os.path.exists(self.project.feature_kern.get_path()):
                     lines.append(
                         "feature %(tag)s { include (%(path)s); } %(tag)s;" % {
-                            "tag": "kern", # "dist" if self.project.family.script.is_indic ?
+                            "tag": "kern",
                             "path": os.path.relpath(self.project.feature_kern.get_path(), self.style.get_directory()),
+                        }
+                    )
+                if os.path.exists(os.path.join(self.project.feature_kern.get_directory(), "dist.fea")):
+                    lines.append(
+                        "feature %(tag)s { include (%(path)s); } %(tag)s;" % {
+                            "tag": "dist",
+                            "path": os.path.relpath(os.path.join(self.project.feature_kern.get_directory(), "dist.fea"), self.style.get_directory()),
                         }
                     )
                 if os.path.exists(os.path.join(self.style.get_directory(), WriteFeaturesMarkFDK.kMarkClassesFileName)):
