@@ -196,6 +196,12 @@ SCRIPTS = [
         tags = ["arab"],
         unicode_range_bits = [13, 63, 67],
     ),
+    Script(
+        name = "Hebrew",
+        abbr = "hb",
+        tags = ["hebr"],
+        unicode_range_bits = [11],
+    ),
 ]
 
 SCRIPT_NAMES_TO_SCRIPTS = {}
