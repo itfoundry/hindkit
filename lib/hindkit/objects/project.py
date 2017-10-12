@@ -230,7 +230,11 @@ class Project(object):
 
             for product in self.products:
                 if product.file_format == "TTF":
-                    subprocess.call(["/Applications/Glyphs.app/Contents/MacOS/Glyphs", product.style.get_path()])
+                    subprocess.call([
+                        "open",
+                        "-a", "Glyphs",
+                        product.style.get_path()
+                    ])
             for product in self.products:
                 if product.file_format == "TTF":
                     product.generate()
