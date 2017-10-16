@@ -304,16 +304,32 @@ class BaseFont(kit.BaseFile):
             print("{} -> {}".format(source_name, deriving_name), end=", ")
 
     def remove_glyphs(self, names):
-        defconFont = self.open()
+        target = self.open()
+        existing_names = target.keys()
+        names_to_be_removed = []
+        for name in names:
+            if name in existing_names:
+                names_to_be_removed.append(name)
+            else:
+                print("[NOTE] `{}` is missing.".format(name))
         print("\n[NOTE] Removing glyphs in `{}`:".format(self.name))
-        for g in defconFont:
+        for g in target:
             for component in g.components:
-                if component.baseGlyph in names:
+                if component.baseGlyph in names_to_be_removed:
                     g.decomposeComponent(component)
                     print("(decomposed {} in {})".format(component.baseGlyph, g.name), end=" ")
-        for name in names:
-            del defconFont[name]
+        for name in names_to_be_removed:
+            del target[name]
             print(name, end=", ")
+
+    def rename_glyphs(self, mapping):
+        target = self.open()
+        for k, v in mapping.items():
+            if k in target:
+                target[k].name = "__temp"
+                if v in target:
+                    target[v].name = k
+                target["__temp"].name = v
 
 
 class Master(BaseFont):
