@@ -120,7 +120,7 @@ class BaseFile(object):
                     print("[TEMP FILE ALREADY EXISTS]", f.get_path())
                     continue
                 else:
-                    f.copy_into_temp()
+                    f.copy_into_temp(whole_directory=whole_directory)
             else:
                 try:
                     kit.makedirs(f.get_directory())
