@@ -41,6 +41,7 @@ class Client(object):
         }
         self.tables["OS/2"] = {
             "fsType": kit.fallback(self.family.info.openTypeOS2Type, 0),
+            "Panose": "0 0 0 0 0 0 0 0 0 0",
             "Vendor": "ITFO",
         }
 
