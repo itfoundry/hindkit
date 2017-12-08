@@ -114,7 +114,7 @@ class FeatureTables(BaseFeature):
             ("name", []),
         ])
 
-        tables["OS/2"].append("include (OS2Extension.fea);")
+        tables["OS/2"].append("include(OS2Extension.fea);")
 
         tables["OS/2"].append("fsType {};".format(client_data.tables["OS/2"]["fsType"]))
 
@@ -231,7 +231,7 @@ class FeatureTables(BaseFeature):
                 "GlyphClassDef {bases}, {ligatures}, {marks}, {components};".format(**GDEF_records)
             ])
 
-        tables["name"].append("include (nameExtension.fea);")
+        tables["name"].append("include(nameExtension.fea);")
         tables["name"].extend(
             "nameid {} \"{}\";".format(
                 name_id,
@@ -666,7 +666,7 @@ class FeatureReferences(BaseFeature):
                 for i in feature.file_group:
                     if os.path.exists(i.get_path()):
                         lines.append(
-                            "include ({});".format(
+                            "include({});".format(
                                 os.path.relpath(i.get_path(), self.style.get_directory())
                             )
                         )
@@ -675,20 +675,20 @@ class FeatureReferences(BaseFeature):
             if not has_referred_gpos:
                 if os.path.exists(self.project.feature_kern.get_path()):
                     lines.append(
-                        "feature %(tag)s { include (%(path)s); } %(tag)s;" % {
+                        "feature %(tag)s { include(%(path)s); } %(tag)s;" % {
                             "tag": "kern",
                             "path": os.path.relpath(self.project.feature_kern.get_path(), self.style.get_directory()),
                         }
                     )
                 if os.path.exists(os.path.join(self.project.feature_kern.get_directory(), "dist.fea")):
                     lines.append(
-                        "feature %(tag)s { include (%(path)s); } %(tag)s;" % {
+                        "feature %(tag)s { include(%(path)s); } %(tag)s;" % {
                             "tag": "dist",
                             "path": os.path.relpath(os.path.join(self.project.feature_kern.get_directory(), "dist.fea"), self.style.get_directory()),
                         }
                     )
                 if os.path.exists(os.path.join(self.style.get_directory(), WriteFeaturesMarkFDK.kMarkClassesFileName)):
-                    lines.append("include ({});".format(WriteFeaturesMarkFDK.kMarkClassesFileName))
+                    lines.append("include({});".format(WriteFeaturesMarkFDK.kMarkClassesFileName))
                 for feature_name, filename in [
                     ("mark", WriteFeaturesMarkFDK.kMarkFeatureFileName),
                     ("mkmk", WriteFeaturesMarkFDK.kMkmkFeatureFileName),
@@ -697,7 +697,7 @@ class FeatureReferences(BaseFeature):
                 ]:
                     if os.path.exists(os.path.join(self.style.get_directory(), filename)):
                         lines.append(
-                            "feature %(tag)s { include (%(path)s); } %(tag)s;" % {
+                            "feature %(tag)s { include(%(path)s); } %(tag)s;" % {
                                 "tag": feature_name,
                                 "path": filename,
                             }
