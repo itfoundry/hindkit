@@ -9,7 +9,7 @@ setuptools.setup(
     license="MIT",
     package_dir = {"": "lib"},
     py_modules = [
-        "getKerningPairsFromFEA"
+        "getKerningPairsFromFEA",
         "WriteFeaturesKernFDK",
         "WriteFeaturesMarkFDK",
     ],
