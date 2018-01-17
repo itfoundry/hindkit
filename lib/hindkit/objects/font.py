@@ -204,7 +204,8 @@ class BaseFont(kit.BaseFile):
                         source_g.decomposeComponent(component)
                         print("(decomposed {} in {})".format(component.baseGlyph, source_g_name), end=" ")
                 target_g_name = self.glyph_renaming_map.get(source_g_name, source_g_name)
-                target_g = target_font.newGlyph(target_g_name)
+                target_font.newGlyph(target_g_name)
+                target_g = target_font[target_g_name]
                 target_g.copyDataFromGlyph(source_g)
                 if target_g_name == source_g_name:
                     print(target_g_name, end=", ")
