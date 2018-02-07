@@ -2,17 +2,10 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, sys, StringIO
+import os, sys, collections
 import hindkit as kit
 
-sys.path.insert(0, kit.relative_to_interpreter("../SharedData/FDKScripts"))
-import agd
-
 class GlyphData(object):
-
-    with open(kit.relative_to_interpreter("../SharedData/AGD.txt"), "rU") as f:
-        agd_content = f.read()
-    agd_dictionary = agd.dictionary(agd_content)
 
     ITFDG = []
 
@@ -26,80 +19,104 @@ class GlyphData(object):
     ):
 
         self.glyph_order = []
-        self.glyph_order_trimmed = None
-        self.dictionary = agd.dictionary()
-        self.goadb = StringIO.StringIO()
+        self.dictionary = collections.OrderedDict()
         self.goadb_path = kit.Project.directories["GOADB"]
 
         if os.path.exists(self.goadb_path):
 
             with open(self.goadb_path) as f:
-                self.goadb.writelines(
-                    "\t".join(self.split(line)) + "\n"
-                    for line in f
-                )
-
-            for glyph in agd.parsealiasfile(self.goadb.getvalue()):
-                self.dictionary.add(glyph, priority=3)
-
-            self.glyph_order = self.dictionary.list
-
-        elif os.path.exists(glyph_order_name):
-
-            with open(glyph_order_name) as f:
                 for line in f:
-                    development_name = self.split(line)[0]
-                    if development_name:
-                        self.glyph_order.append(development_name)
+                    parts = self.split(line)
+                    if parts:
+                        development_name = parts[1]
+                        production_name = parts[0]
+                        if len(parts) >= 3:
+                            uni = parts[2]
+                        else:
+                            uni = None
+                        self.dictionary[development_name] = production_name, uni
 
-            self.dictionary = agd.dictionary(self.agd_content)
-            for glyph in self.ITFDG:
-                self.dictionary.add(glyph, priority=3)
-
-            self.goadb = self.generate_goadb()
-
-        # self.production_names = []
-        # self.development_names = []
-        # self.u_mappings = []
-
-    # def generate_name_order(self):
-    #     for section in self.name_order_raw:
-    #         if is_agd():
-    #             self.name_order.extend(kit.agd.cfforder(section))
-    #         else:
-    #             self.name_order.extend(section)
+            self.glyph_order = self.dictionary.keys()
 
     def generate_goadb(self, names=None):
         if names is None:
             names = self.glyph_order
-        return StringIO.StringIO(self.dictionary.aliasfile(names) + "\n")
+        lines = []
+        for development_name, data in self.dictionary.items():
+            if (names is None) or (development_name in names):
+                production_name, uni = data
+                if uni:
+                    lines.append(
+                        "{} {} {}".format(
+                            production_name.replace("-", "__"),
+                            development_name,
+                            uni,
+                        )
+                    )
+                else:
+                    lines.append(
+                        "{} {}".format(
+                            production_name.replace("-", "__"),
+                            development_name,
+                        )
+                    )
+        return lines
 
 
 class Goadb(kit.BaseFile):
 
     TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP = {
-        "CR\tCR\tuni000D\n": "CR\tuni000D\tuni000D\n",
-        "uni00A0\tnonbreakingspace\tuni00A0\n": "uni00A0\tuni00A0\tuni00A0\n",
+        "CR CR uni000D": "CR uni000D uni000D",
+        "uni00A0 nonbreakingspace uni00A0": "uni00A0 uni00A0 uni00A0",
     }
 
     def __init__(
         self,
         project,
         name = "GlyphOrderAndAliasDB",
-        for_ttf = False,
+        product=None,
     ):
-        super(Goadb, self).__init__(name, project=project)
-        self.for_ttf = for_ttf
+        if product:
+            abstract_directory = product.style.abstract_directory
+        else:
+            abstract_directory = kit.Project.directories["sources"]
+        super(Goadb, self).__init__(
+            name,
+            project = project,
+            abstract_directory = abstract_directory,
+        )
+        self.product = product
+
+        if self.product:
+            names = self.project.glyph_data.glyph_order
+            reference_names = self.product.style.open().glyphOrder
+            not_covered_glyphs = [
+                name
+                for name in reference_names
+                if name not in names
+            ]
+            if not_covered_glyphs:
+                print(
+                    "[WARNING] Some glyphs are not covered by the GOADB: " +
+                    " ".join(not_covered_glyphs)
+                )
+                if self.project.options["build_ttf"]:
+                    raise SystemExit("[EXIT] GOADB must match the glyph set exactly for compiling TTFs.")
+            self.names = [
+                name
+                for name in names
+                if name in reference_names
+            ]
+        else:
+            self.names = None
 
     def generate(self):
-        goadb_trimmed = self.project.glyph_data.generate_goadb(
-            self.project.glyph_data.glyph_order_trimmed
-        )
+        goadb_lines = self.project.glyph_data.generate_goadb(names=self.names)
         with open(self.get_path(), "w") as f:
-            for line in goadb_trimmed:
-                if self.for_ttf:
+            for line in goadb_lines:
+                if self.product.file_format == "TTF":
                     line = self.TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP.get(
                         line,
                         line,
                     )
-                f.write(line)
+                f.write(line + "\n")

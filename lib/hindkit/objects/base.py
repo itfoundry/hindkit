@@ -34,8 +34,8 @@ class BaseFile(object):
         else:
             self.abstract_directory = abstract_directory
 
-        if self.family and self.family.variant_tag:
-            self.abstract_directory_variant = os.path.join(self.abstract_directory, self.family.variant_tag)
+        if self.project and self.project.variant_tag:
+            self.abstract_directory_variant = os.path.join(self.abstract_directory, self.project.variant_tag)
             if os.path.exists(self.abstract_directory_variant):
                 self.abstract_directory = self.abstract_directory_variant
 
@@ -120,7 +120,7 @@ class BaseFile(object):
                     print("[TEMP FILE ALREADY EXISTS]", f.get_path())
                     continue
                 else:
-                    f.copy_into_temp()
+                    f.copy_into_temp(whole_directory=whole_directory)
             else:
                 try:
                     kit.makedirs(f.get_directory())

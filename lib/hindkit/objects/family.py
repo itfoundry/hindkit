@@ -16,9 +16,7 @@ class Family(object):
         append_script_name = False,
         name = None,
         client_name = None,
-        variant_tag = None,
         initial_release_year = None,
-        is_serif = None,
     ):
 
         self.trademark = trademark
@@ -38,9 +36,7 @@ class Family(object):
         self.info = kit.patched.defcon.Font().info
 
         self.client_name = client_name
-        self.variant_tag = variant_tag
         self.initial_release_year = initial_release_year
-        self.is_serif = is_serif
 
     def get_client_data(self):
         return kit.Client(self, self.client_name)
@@ -80,21 +76,15 @@ class Family(object):
         p = self.project
         styles = [i.style for i in p.products if not i.subsidiary]
 
-        if self.masters:
-            p.glyph_data.glyph_order_trimmed = p.trim_glyph_names(
-                p.glyph_data.glyph_order,
-                self.masters[0].open().glyphOrder,
-            )
-            if p.options["run_makeinstances"]:
-                p.update_glyphOrder(self.masters[0])
-                self.generate_styles()
-            else:
-                for style in styles:
-                    p.update_glyphOrder(style.master)
-                    kit.copy(style.master.get_path(), style.get_path())
-                    if style.file_format == "UFO":
-                        style.open().info.postscriptFontName = style.full_name_postscript
-                        style.dirty = True
+
+        if p.options["run_makeinstances"]:
+            self.generate_styles()
+        elif self.masters:
+            for style in styles:
+                kit.copy(style.master.get_path(), style.get_path())
+                if style.file_format == "UFO":
+                    style.open().info.postscriptFontName = style.full_name_postscript
+                    style.dirty = True
         else:
             for style in styles:
                 style.prepare(whole_directory=True)

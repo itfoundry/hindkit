@@ -204,7 +204,8 @@ class BaseFont(kit.BaseFile):
                         source_g.decomposeComponent(component)
                         print("(decomposed {} in {})".format(component.baseGlyph, source_g_name), end=" ")
                 target_g_name = self.glyph_renaming_map.get(source_g_name, source_g_name)
-                target_g = target_font.newGlyph(target_g_name)
+                target_font.newGlyph(target_g_name)
+                target_g = target_font[target_g_name]
                 target_g.copyDataFromGlyph(source_g)
                 if target_g_name == source_g_name:
                     print(target_g_name, end=", ")
@@ -304,16 +305,32 @@ class BaseFont(kit.BaseFile):
             print("{} -> {}".format(source_name, deriving_name), end=", ")
 
     def remove_glyphs(self, names):
-        defconFont = self.open()
+        target = self.open()
+        existing_names = target.keys()
+        names_to_be_removed = []
+        for name in names:
+            if name in existing_names:
+                names_to_be_removed.append(name)
+            else:
+                print("[NOTE] `{}` is missing.".format(name))
         print("\n[NOTE] Removing glyphs in `{}`:".format(self.name))
-        for g in defconFont:
+        for g in target:
             for component in g.components:
-                if component.baseGlyph in names:
+                if component.baseGlyph in names_to_be_removed:
                     g.decomposeComponent(component)
                     print("(decomposed {} in {})".format(component.baseGlyph, g.name), end=" ")
-        for name in names:
-            del defconFont[name]
+        for name in names_to_be_removed:
+            del target[name]
             print(name, end=", ")
+
+    def rename_glyphs(self, mapping):
+        target = self.open()
+        for k, v in mapping.items():
+            if k in target:
+                target[k].name = "__temp"
+                if v in target:
+                    target[v].name = k
+                target["__temp"].name = v
 
 
 class Master(BaseFont):
@@ -415,46 +432,46 @@ class Product(BaseFont):
 
     def generate(self):
 
-        if self.file_format == "OTF":
+        self.goadb_trimmed = kit.Goadb(self.project, product=self)
+        self.goadb_trimmed.prepare()
 
-            goadb = self.project.goadb_trimmed
+        if self.file_format == "OTF" and self.style.file_format == "UFO":
 
-            if self.style.file_format == "UFO":
+            defconFont = self.style.open()
+            defconFont.info.postscriptFontName = self.full_name_postscript
+            defconFont.lib["public.glyphOrder"] = self.goadb_trimmed.names
+            for k in ["com.schriftgestaltung.glyphOrder", "com.schriftgestaltung.font.glyphOrder"]:
+                defconFont.lib.pop(k, None)
+            for i in """
+                versionMajor
+                versionMinor
+                copyright
+                familyName
+                styleName
+                styleMapFamilyName
+                styleMapStyleName
+                postscriptWeightName
+                openTypeHeadCreated
+                openTypeNamePreferredFamilyName
+                openTypeNamePreferredSubfamilyName
+                openTypeNameDesigner
+                openTypeOS2WeightClass
+                openTypeOS2WidthClass
+            """.split():
+                setattr(defconFont.info, i, None)
+            defconFont.groups.clear()
+            defconFont.kerning.clear()
+            self.style.save()
 
-                defconFont = self.style.open()
-                for i in """
-                    versionMajor
-                    versionMinor
-                    copyright
-                    familyName
-                    styleName
-                    styleMapFamilyName
-                    styleMapStyleName
-                    postscriptWeightName
-                    openTypeHeadCreated
-                    openTypeNamePreferredFamilyName
-                    openTypeNamePreferredSubfamilyName
-                    openTypeNameDesigner
-                    openTypeOS2WeightClass
-                    openTypeOS2WidthClass
-                """.split():
-                    setattr(defconFont.info, i, None)
-                defconFont.groups.clear()
-                defconFont.kerning.clear()
-                defconFont.info.postscriptFontName = self.full_name_postscript
-                self.style.save()
-
-                if self.project.options["run_checkoutlines"] or self.project.options["run_autohint"]:
-                    options = {
-                        "doOverlapRemoval": self.project.options["run_checkoutlines"],
-                        "doAutoHint": self.project.options["run_autohint"],
-                        "allowDecimalCoords": False,
-                    }
-                    kit.patched.updateInstance(options, self.style.get_path())
+            if self.project.options["run_checkoutlines"] or self.project.options["run_autohint"]:
+                options = {
+                    "doOverlapRemoval": self.project.options["run_checkoutlines"],
+                    "doAutoHint": self.project.options["run_autohint"],
+                    "allowDecimalCoords": False,
+                }
+                kit.patched.updateInstance(options, self.style.get_path())
 
         elif self.file_format == "TTF":
-
-            goadb = self.project.goadb_trimmed_ttf
 
             # subprocess.call([
             #     "osascript", "-l", "JavaScript",
@@ -472,14 +489,13 @@ class Product(BaseFont):
                 if raw_input().upper().startswith("N"):
                     return
 
-        goadb.prepare()
         kit.makedirs(self.get_directory())
 
         arguments = [
             "-f", self.style.get_path(),
             "-o", self.get_path(),
             "-mf", self.project.fmndb.get_path(),
-            "-gf", goadb.get_path(),
+            "-gf", self.goadb_trimmed.get_path(),
             "-rev", self.project.fontrevision,
             "-ga",
             "-overrideMenuNames",
@@ -492,8 +508,6 @@ class Product(BaseFont):
             arguments.append("-r")
         if not self.project.options["run_autohint"]:
             arguments.append("-shw")
-        if self.family.is_serif is not None:
-            arguments.append("-serif" if self.family.is_serif else "-sans")
         if self.project.options["do_style_linking"] and (self.is_bold or self.is_italic):
             if self.is_bold:
                 arguments.append("-b")

@@ -27,6 +27,7 @@ class Project(object):
     def __init__(
         self,
         family,
+        variant_tag = None,
         fontrevision = "1.000",
         options = {},
     ):
@@ -34,6 +35,7 @@ class Project(object):
         self.family = family
         self.family.project = self
 
+        self.variant_tag = variant_tag
         self.fontrevision = fontrevision
 
         # (light_min, light_max), (bold_min, bold_max)
@@ -79,11 +81,6 @@ class Project(object):
 
         self.designspace = kit.DesignSpace(self)
         self.fmndb = kit.Fmndb(self)
-        self.goadb_trimmed = kit.Goadb(self, "GlyphOrderAndAliasDB_trimmed")
-        if self.options["build_ttf"]:
-            self.goadb_trimmed_ttf = kit.Goadb(
-                self, "GlyphOrderAndAliasDB_trimmed_ttf", for_ttf = True,
-            )
 
         self._finalize_options()
 
@@ -150,32 +147,6 @@ class Project(object):
                     product.abstract_directory, product.extension,
                 )
 
-    def trim_glyph_names(self, names, reference_names):
-        not_covered_glyphs = [
-            name
-            for name in reference_names
-            if name not in names
-        ]
-        if not_covered_glyphs:
-            print(
-                "[WARNING] Some glyphs are not covered by the GOADB: " +
-                " ".join(not_covered_glyphs)
-            )
-            if self.options["build_ttf"]:
-                raise SystemExit("[EXIT] GOADB must match the glyph set exactly for compiling TTFs.")
-        names_trimmed = [
-            name
-            for name in names
-            if name in reference_names
-        ]
-        return names_trimmed
-
-    def update_glyphOrder(self, font):
-        defconFont = font.open()
-        defconFont.lib["public.glyphOrder"] = self.glyph_data.glyph_order_trimmed
-        defconFont.lib.pop("com.schriftgestaltung.glyphOrder", None)
-        font.save()
-
     def reset_directory(self, name, temp=False):
         path = self.directories[name]
         if temp:
@@ -221,11 +192,13 @@ class Project(object):
             self.feature_tables = kit.FeatureTables(self)
             self.feature_languagesystems = kit.FeatureLanguagesystems(self)
             self.feature_gsub = kit.FeatureGSUB(self)
+            self.feature_gpos = kit.FeatureGPOS(self)
 
             self.feature_classes.prepare()
             self.feature_tables.prepare()
             self.feature_languagesystems.prepare()
             self.feature_gsub.prepare()
+            self.feature_gpos.prepare()
 
             for product in (i for i in self.products if i.file_format == "OTF"):
 
@@ -259,7 +232,11 @@ class Project(object):
 
             for product in self.products:
                 if product.file_format == "TTF":
-                    subprocess.call(["open", product.style.get_path()])
+                    subprocess.call([
+                        "open",
+                        "-a", "Glyphs 2.4.4 (1075).app",
+                        product.style.get_path()
+                    ])
             for product in self.products:
                 if product.file_format == "TTF":
                     product.generate()
