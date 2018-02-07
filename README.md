@@ -1,5 +1,9 @@
 # HindKit
 
+This package provides an API but it is _not_ maintained in a stable way for users outside ITF.
+
+The `develop` branch is the most unstable, but the most up to date.
+
 ## Dependencies
 
 - AFDKO (version 2.5 build 65781, April 3 2017) https://adobe.com/devnet/opentype/afdko.html
