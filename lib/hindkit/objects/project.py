@@ -27,7 +27,6 @@ class Project(object):
     def __init__(
         self,
         family,
-        variant_tag = None,
         fontrevision = "1.000",
         options = {},
     ):
@@ -35,7 +34,6 @@ class Project(object):
         self.family = family
         self.family.project = self
 
-        self.variant_tag = variant_tag
         self.fontrevision = fontrevision
 
         # (light_min, light_max), (bold_min, bold_max)

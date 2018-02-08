@@ -16,6 +16,7 @@ class Family(object):
         append_script_name = False,
         name = None,
         client_name = None,
+        source_variant_tag = None,
         initial_release_year = None,
     ):
 
@@ -36,6 +37,7 @@ class Family(object):
         self.info = kit.patched.defcon.Font().info
 
         self.client_name = client_name
+        self.source_variant_tag = source_variant_tag
         self.initial_release_year = initial_release_year
 
     def get_client_data(self):
