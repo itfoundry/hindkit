@@ -39,6 +39,9 @@ class Project(object):
         # (light_min, light_max), (bold_min, bold_max)
         self.adjustment_for_matching_mI_variants = None
 
+        self.abbrs_of_scripts_to_match_mI_variants = []
+        self.script_abbr_current = None
+
         self.options = {
 
             "prepare_masters": True,
@@ -51,6 +54,7 @@ class Project(object):
                 "prepare_mark_to_mark_positioning": True,
 
             "match_mI_variants": 0,
+                "match_mI_variants_for_scripts": None,
                 "position_marks_for_mI_variants": False,
 
             "run_makeinstances": True,
@@ -144,6 +148,19 @@ class Project(object):
                 product.abstract_directory = os.path.join(
                     product.abstract_directory, product.extension,
                 )
+
+        if self.options["match_mI_variants"]:
+            self.abbrs_of_scripts_to_match_mI_variants = [
+                kit.constants.SCRIPT_NAMES_TO_SCRIPTS[i].abbr
+                for i in kit.fallback(
+                    self.options["match_mI_variants_for_scripts"],
+                    [self.family.script.name],
+                )
+            ]
+            if len(self.abbrs_of_scripts_to_match_mI_variants) == 1:
+                self.script_abbr_current = self.abbrs_of_scripts_to_match_mI_variants[0]
+            else:
+                raise NotImplementedError("[NOT IMPLEMENTED] Can't match mI variants for more than one script.")
 
     def reset_directory(self, name, temp=False):
         path = self.directories[name]

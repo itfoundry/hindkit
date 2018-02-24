@@ -16,7 +16,7 @@ def marks(family, glyph):
 
 def mI_variants(family, glyph):
     match = re.match(
-        family.script.abbr + kit.FeatureMatches.mI_VARIANT_NAME_PATTERN + r"$",
+        family.project.script_abbr_current + kit.FeatureMatches.mI_VARIANT_NAME_PATTERN + r"$",
         glyph.name,
     )
     return bool(match)
@@ -24,7 +24,7 @@ def mI_variants(family, glyph):
 def get_end(family, glyph):
     name = glyph.name
     end = ""
-    if name.startswith(family.script.abbr):
+    if name.startswith(family.project.script_abbr_current):
         main, sep, suffix = name[2:].partition(".")
         end = main.split("_")[-1]
         if end.endswith("xA"):
@@ -49,8 +49,6 @@ K_TA.traditional
 
 def bases_for_long_mII(family, glyph):
     name = glyph.name
-    if name.startswith(
-        kit.constants.SCRIPT_NAMES_TO_SCRIPTS["Devanagari"].abbr
-    ):
+    if name.startswith(family.project.script_abbr_current):
         name = name[2:]
     return name in POTENTIAL_BASES_FOR_LONG_mII

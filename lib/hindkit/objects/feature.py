@@ -397,7 +397,7 @@ class FeatureMatches(BaseFeature):
         # self.not_matched = self.Match(self, None)
 
         abvm_position_in_mE = self._get_abvm_position(
-            self.font[self.style.family.script.abbr + "mE"],
+            self.font[self.project.script_abbr_current + "mE"],
             in_base = False,
         )
         if abvm_position_in_mE is None:
@@ -426,7 +426,7 @@ class FeatureMatches(BaseFeature):
                 self.bases[i].target += adjustment
 
         self.tolerance = self._get_stem_position(
-            self.font[self.style.family.script.abbr + "VA"]
+            self.font[self.project.script_abbr_current + "VA"]
         ) * 0.5
 
         for base in self.bases:
@@ -434,7 +434,7 @@ class FeatureMatches(BaseFeature):
             if match:
                 match.bases.append(base)
 
-        self.name_default = self.style.family.script.abbr + "mI"
+        self.name_default = self.project.script_abbr_current + "mI"
 
         self.substitute_rule_lines = []
         for match in self.matches:
@@ -632,7 +632,7 @@ class FeatureMatches(BaseFeature):
                     else:
                         line_modified = re.sub(
                             r"pos base ({}{}) <anchor (-?\d+)".format(
-                                self.style.family.script.abbr,
+                                self.project.script_abbr_current,
                                 self.mI_VARIANT_NAME_PATTERN,
                             ),
                             _modify,
