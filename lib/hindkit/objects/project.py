@@ -28,6 +28,7 @@ class Project(object):
         self,
         family,
         fontrevision = "1.000",
+        release_tag = None,
         options = {},
     ):
 
@@ -35,6 +36,7 @@ class Project(object):
         self.family.project = self
 
         self.fontrevision = fontrevision
+        self.release_tag = release_tag
 
         # (light_min, light_max), (bold_min, bold_max)
         self.adjustment_for_matching_mI_variants = None
@@ -143,11 +145,17 @@ class Project(object):
         if not self.products:
             self.options["compile"] = False
 
-        if len(set(i.file_format for i in self.products)) > 1:
-            for product in self.products:
-                product.abstract_directory = os.path.join(
-                    product.abstract_directory, product.extension,
-                )
+        for product in self.products:
+            directory_parts = [
+                self.family.name_postscript,
+                self.fontrevision,
+                self.release_tag,
+                product.file_format,
+            ]
+            product.abstract_directory = os.path.join(
+                product.abstract_directory,
+                "-".join(filter(None, directory_parts)),
+            )
 
         if self.options["match_mI_variants"]:
             self.abbrs_of_scripts_to_match_mI_variants = [
