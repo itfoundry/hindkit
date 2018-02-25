@@ -274,6 +274,7 @@ class FeatureGSUB(BaseFeature):
 class FeatureGPOS(BaseFeature):
 
     _name = "GPOS"
+    _extra_filenames = ["GPOS_lookups"], []
 
 
 class FeatureKern(BaseFeature):
