@@ -97,7 +97,7 @@ class Script(object):
 SCRIPTS = [
     Script(
         name = "Latin",
-        abbr = "",
+        abbr = "lt",
         tags = ["latn"],
         unicode_range_bits = [0],
     ),
