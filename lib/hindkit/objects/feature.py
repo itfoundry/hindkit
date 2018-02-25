@@ -334,9 +334,16 @@ class FeatureNameExtension(BaseFeature):
     _name = "nameExtension"
 
     def generate(self):
+        vender_id = self.project.family.get_client_data().tables["OS/2"]["Vendor"]
+        full_name = self.style.full_name
+        version_string = self.project.version_string
         with open(self.get_path(), "w") as f:
-            f.write('nameid 4 "{}";'.format(self.style.full_name))
-
+            for k, v in [
+                (3, "{}; {}; {}".format(vender_id, full_name, version_string)),
+                (4, full_name),
+                (5, version_string)
+            ]:
+                f.write("nameid {} \"{}\";\n".format(k, v))
 
 class FeatureMatches(BaseFeature):
 
@@ -657,7 +664,7 @@ class FeatureReferences(BaseFeature):
 
     def generate(self):
         with open(self.get_path(), "w") as f:
-            lines = ["table head { FontRevision %s; } head;" % self.project.fontrevision]
+            lines = []
             has_referred_gpos = False
             for feature in [
                 self.project.feature_classes,

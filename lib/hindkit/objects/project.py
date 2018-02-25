@@ -2,9 +2,15 @@
 # encoding: UTF-8
 from __future__ import division, absolute_import, print_function, unicode_literals
 
-import os, argparse, subprocess, collections
+import os, argparse, subprocess, collections, errno
 import fontTools.ttLib
 import hindkit as kit
+
+class Version(object):
+    def __init__(self, release, commit, build):
+        self.release = release
+        self.commit = commit
+        self.build = build
 
 class Project(object):
 
@@ -27,16 +33,47 @@ class Project(object):
     def __init__(
         self,
         family,
+        tag = None,
+        release_commit = None, # (65535, 999)
         fontrevision = "1.000",
-        release_tag = None,
         options = {},
     ):
 
         self.family = family
         self.family.project = self
 
-        self.fontrevision = fontrevision
-        self.release_tag = release_tag
+        self.tag = tag
+
+        if release_commit:
+            release, commit = release_commit
+            self.version = Version(release, commit, 1)
+            self.version_last = Version(None, None, None)
+            version_record_path = kit.relative_to_cwd("version.txt")
+            try:
+                with open(version_record_path, "r") as f:
+                    for line in f.read().splitlines():
+                        k, _, v = line.partition(" ")
+                        setattr(self.version_last, k, int(v))
+            except IOError as e:
+                if e.errno == errno.ENOENT:
+                    pass
+                else:
+                    raise
+            if (self.version.release, self.version.commit) == (self.version_last.release, self.version_last.commit):
+                self.version.build = self.version_last.build + 1
+            with open(version_record_path, "w") as f:
+                for k in ["release", "commit", "build"]:
+                    f.write("{} {}\n".format(k, getattr(self.version, k)))
+            self.fontrevision = "{}.{}".format(
+                self.version.release, str(self.version.commit).zfill(3),
+            )
+            self.version_string = "{}b{}".format(
+                self.fontrevision, self.version.build,
+            )
+        else:
+            self.version = None
+            self.version_last = None
+            self.fontrevision = fontrevision
 
         # (light_min, light_max), (bold_min, bold_max)
         self.adjustment_for_matching_mI_variants = None
@@ -149,7 +186,7 @@ class Project(object):
             directory_parts = [
                 self.family.name_postscript,
                 self.fontrevision,
-                self.release_tag,
+                self.tag,
                 product.file_format,
             ]
             product.abstract_directory = os.path.join(
