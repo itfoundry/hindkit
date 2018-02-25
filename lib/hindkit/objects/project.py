@@ -184,6 +184,7 @@ class Project(object):
 
         for product in self.products:
             directory_parts = [
+                "TEST" if self.args.test else None,
                 self.family.name_postscript,
                 self.fontrevision,
                 self.tag,
