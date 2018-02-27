@@ -295,7 +295,7 @@ class Project(object):
                 if product.file_format == "TTF":
                     subprocess.call([
                         "open",
-                        "-a", "Glyphs 2.4.4 (1075).app",
+                        "-a", "Glyphs.app",
                         product.style.get_path()
                     ])
             for product in self.products:
