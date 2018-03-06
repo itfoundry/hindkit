@@ -496,7 +496,6 @@ class Product(BaseFont):
             "-o", self.get_path(),
             "-mf", self.project.fmndb.get_path(),
             "-gf", self.goadb_trimmed.get_path(),
-            "-rev", self.project.fontrevision,
             "-ga",
             "-overrideMenuNames",
         ]

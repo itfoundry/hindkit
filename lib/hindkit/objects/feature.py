@@ -664,7 +664,10 @@ class FeatureReferences(BaseFeature):
 
     def generate(self):
         with open(self.get_path(), "w") as f:
-            lines = []
+            lines = [
+                "table head { FontRevision %s; } head;" %
+                    self.project.fontrevision,
+            ]
             has_referred_gpos = False
             for feature in [
                 self.project.feature_classes,
