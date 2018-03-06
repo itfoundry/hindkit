@@ -74,6 +74,7 @@ class Project(object):
             self.version = None
             self.version_last = None
             self.fontrevision = fontrevision
+            self.version_string = None
 
         # (light_min, light_max), (bold_min, bold_max)
         self.adjustment_for_matching_mI_variants = None

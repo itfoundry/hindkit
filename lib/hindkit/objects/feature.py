@@ -336,7 +336,10 @@ class FeatureNameExtension(BaseFeature):
     def generate(self):
         vender_id = self.project.family.get_client_data().tables["OS/2"]["Vendor"]
         full_name = self.style.full_name
-        version_string = self.project.version_string
+        if self.project.version_string:
+            version_string = self.project.version_string
+        else:
+            version_string = self.project.fontrevision
         with open(self.get_path(), "w") as f:
             for k, v in [
                 (3, "{}; {}; {}".format(vender_id, full_name, version_string)),
