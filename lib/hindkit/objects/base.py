@@ -34,8 +34,8 @@ class BaseFile(object):
         else:
             self.abstract_directory = abstract_directory
 
-        if self.family and self.family.source_variant_tag:
-            self.abstract_directory_variant = os.path.join(self.abstract_directory, self.family.source_variant_tag)
+        if self.family and self.family.source_tag:
+            self.abstract_directory_variant = os.path.join(self.abstract_directory, self.family.source_tag)
             if os.path.exists(self.abstract_directory_variant):
                 self.abstract_directory = self.abstract_directory_variant
 

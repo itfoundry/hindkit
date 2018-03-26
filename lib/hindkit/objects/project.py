@@ -33,7 +33,7 @@ class Project(object):
     def __init__(
         self,
         family,
-        tag = None,
+        target_tag = None,
         release_commit = None, # (65535, 999)
         fontrevision = "1.000",
         options = {},
@@ -42,13 +42,19 @@ class Project(object):
         self.family = family
         self.family.project = self
 
-        self.tag = tag
+        self.target_tag = kit.fallback(target_tag, self.family.source_tag)
 
         if release_commit:
             release, commit = release_commit
             self.version = Version(release, commit, 1)
             self.version_last = Version(None, None, None)
-            version_record_path = kit.relative_to_cwd("version.txt")
+            version_record_path = kit.relative_to_cwd(
+                "version{}.txt".format(
+                    "-" + self.target_tag
+                    if self.target_tag
+                    else ""
+                )
+            )
             try:
                 with open(version_record_path, "r") as f:
                     for line in f.read().splitlines():
@@ -188,7 +194,7 @@ class Project(object):
                 "TEST" if self.args.test else None,
                 self.family.name_postscript,
                 self.fontrevision,
-                self.tag,
+                self.target_tag,
                 product.file_format,
             ]
             product.abstract_directory = os.path.join(
