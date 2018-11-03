@@ -505,8 +505,10 @@ class Product(BaseFont):
             arguments.append("-omitMacNames")
         if not self.project.args.test:
             arguments.append("-r")
-        if not self.project.options["run_autohint"]:
+        if self.project.options["run_autohint"]:
             arguments.append("-shw")
+        else:
+            arguments.append("-nshw")
         if self.project.options["do_style_linking"] and (self.is_bold or self.is_italic):
             if self.is_bold:
                 arguments.append("-b")
