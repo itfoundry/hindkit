@@ -3,21 +3,6 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import collections, subprocess, os
-import defcon
-
-def draw(self, pen):
-    """
-    Draw the contour with **pen**.
-    """
-    # >>>
-    # from ufoLib.pointPen import PointToSegmentPen
-    # --- Patched with the line from defcon in FDK 64958 ---
-    from robofab.pens.adapterPens import PointToSegmentPen
-    # <<<
-    pointPen = PointToSegmentPen(pen)
-    self.drawPoints(pointPen)
-
-defcon.Contour.draw = draw
 
 def updateInstance(options, fontInstancePath):
     """

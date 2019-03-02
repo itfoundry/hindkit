@@ -3,7 +3,7 @@
 from __future__ import division, absolute_import, print_function, unicode_literals
 
 import os, glob, subprocess, itertools
-import fontTools.ttLib, getKerningPairsFromFEA
+import fontTools.ttLib, getKerningPairsFromFEA, defcon
 import hindkit as kit
 
 class BaseFont(kit.BaseFile):
@@ -78,7 +78,7 @@ class BaseFont(kit.BaseFile):
                         subprocess.call([
                             "vfb2ufo", "-fo", input_path, self.get_path(),
                         ])
-                    self.defconFont = kit.patched.defcon.Font(self.get_path())
+                    self.defconFont = defcon.Font(self.get_path())
                     print("[OPENED]", self.get_path())
                     return self.defconFont
                 else:
@@ -505,8 +505,10 @@ class Product(BaseFont):
             arguments.append("-omitMacNames")
         if not self.project.args.test:
             arguments.append("-r")
-        if not self.project.options["run_autohint"]:
+        if self.project.options["run_autohint"]:
             arguments.append("-shw")
+        else:
+            arguments.append("-nshw")
         if self.project.options["do_style_linking"] and (self.is_bold or self.is_italic):
             if self.is_bold:
                 arguments.append("-b")
