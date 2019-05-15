@@ -182,12 +182,17 @@ class BaseFont(kit.BaseFile):
         else:
             g_names_importing = set(source_font.keys())
 
+        g_names_importing_renamed = {
+            self.glyph_renaming_map.get(i, i) for i in g_names_importing
+        }
+
         if import_glyphs and g_names_importing:
             print("\n[NOTE] Importing glyphs from `{}` to `{}`:".format(source_path, self.name))
             if g_names_excluded:
                 g_names_importing.difference_update(g_names_excluded)
                 print("Excluding: {}".format(", ".join(g_names_excluded)))
-            g_names_already_existing = g_names_importing.intersection(set(target_font.keys()))
+            g_names_importing_renamed
+            g_names_already_existing = g_names_importing_renamed.intersection(set(target_font.keys()))
             if g_names_already_existing:
                 g_names_importing.difference_update(g_names_already_existing)
                 print("Already existing; will not overwrite: {}".format(", ".join(g_names_already_existing)))
