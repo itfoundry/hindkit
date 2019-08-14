@@ -61,7 +61,7 @@ class FEAKernReader(object):
             self.flatKerningPairs = self.convertNames(self.flatKerningPairs)
 
         self.output = []
-        for (left, right), value in self.flatKerningPairs.items():
+        for (left, right), value in list(self.flatKerningPairs.items()):
             self.output.append('/%s /%s %s' % (left, right, value))
         self.output.sort()
 
@@ -82,7 +82,7 @@ class FEAKernReader(object):
 
     def convertNames(self, pairDict):
         newPairDict = {}
-        for (left, right), value in pairDict.items():
+        for (left, right), value in list(pairDict.items()):
             newLeft = self.glyphNameDict.get(left)
             newRight = self.glyphNameDict.get(right)
 
@@ -182,7 +182,7 @@ class FEAKernReader(object):
 
         # Iterate through the kerning pairs in reverse order to
         # overwrite less specific pairs with more specific ones:
-        for pIndex, kerningPair in sorted(indexedPairs.items(), reverse=True):
+        for pIndex, kerningPair in sorted(list(indexedPairs.items()), reverse=True):
             for pair in kerningPair.pairList:
                 flatKerningPairs[pair] = kerningPair.value
 
@@ -194,7 +194,7 @@ class FEAKernReader(object):
         for line in goadbList:
             splitLine = line.split()
             if len(splitLine) < 2:
-                print 'Something is wrong with this GOADB line:\n', line
+                print('Something is wrong with this GOADB line:\n', line)
             else:
                 finalName, workingName = splitLine[0], splitLine[1]
                 self.glyphNameDict[workingName] = finalName
@@ -209,11 +209,11 @@ if __name__ == "__main__":
         if os.path.exists(kernFile) and os.path.splitext(kernFile)[-1] in ['.fea', '.kern']:
             kfr = FEAKernReader(options)
 
-            print '\n'.join(kfr.output)
-            print '\nTotal number of kerning pairs:\n', len(kfr.flatKerningPairs)
+            print('\n'.join(kfr.output))
+            print('\nTotal number of kerning pairs:\n', len(kfr.flatKerningPairs))
 
         else:
-            print "No valid kern feature file provided."
+            print("No valid kern feature file provided.")
 
     else:
-        print "No valid kern feature file provided."
+        print("No valid kern feature file provided.")
