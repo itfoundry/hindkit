@@ -136,7 +136,7 @@ class BaseFont(kit.BaseFile):
             kern_fea_reader = getKerningPairsFromFEA.FEAKernReader([source_path])
             source_font = kit.patched.defcon.Font()
             source_font.groups.update(kern_fea_reader.kernClasses)
-            kern_classes_reversed = {tuple(v): k for k, v in kern_fea_reader.kernClasses.items()}
+            kern_classes_reversed = {tuple(v): k for k, v in list(kern_fea_reader.kernClasses.items())}
             if len(kern_fea_reader.kernClasses) != len(kern_classes_reversed):
                 raise SystemExit()
             for enum, (left, right), value in reversed(kern_fea_reader.foundKerningPairs):
@@ -230,7 +230,7 @@ class BaseFont(kit.BaseFile):
         f = self.open()
         kerning_modifications = {}
 
-        for key, g_names in f.groups.items():
+        for key, g_names in list(f.groups.items()):
             del f.groups[key]
             g_names_modified = [self.glyph_renaming_map.get(i, i) for i in g_names]
             g_names_modified = [i for i in g_names_modified if i in f]
@@ -267,8 +267,8 @@ class BaseFont(kit.BaseFile):
                             kerning_modifications[side, key] = key_modified
         print("\n[NOTE] Refreshed glyph groups.")
 
-        available_keys = f.keys() + f.groups.keys()
-        for key_pair, value in f.kerning.items():
+        available_keys = list(f.keys()) + list(f.groups.keys())
+        for key_pair, value in list(f.kerning.items()):
             del f.kerning[key_pair]
             key_pair_refreshed = []
             for side, key in enumerate(key_pair):
@@ -286,7 +286,7 @@ class BaseFont(kit.BaseFile):
 
         DERIVED_NAME_TO_SOURCE_NAME = {
             derived_name: source_name
-            for source_name, derived_names in kit.constants.DERIVABLE_GLYPHS.items()
+            for source_name, derived_names in list(kit.constants.DERIVABLE_GLYPHS.items())
             for derived_name in derived_names
         }
 
@@ -311,7 +311,7 @@ class BaseFont(kit.BaseFile):
 
     def remove_glyphs(self, names):
         target = self.open()
-        existing_names = target.keys()
+        existing_names = list(target.keys())
         names_to_be_removed = []
         for name in names:
             if name in existing_names:
@@ -330,7 +330,7 @@ class BaseFont(kit.BaseFile):
 
     def rename_glyphs(self, mapping):
         target = self.open()
-        for k, v in mapping.items():
+        for k, v in list(mapping.items()):
             if k in target:
                 target[k].name = "__temp"
                 if v in target:
@@ -491,7 +491,7 @@ class Product(BaseFont):
                     "\n[PROMPT] Input file {} is missing. Try again? [Y/n]: ".format(self.style.get_path()),
                     end = "",
                 )
-                if raw_input().upper().startswith("N"):
+                if input().upper().startswith("N"):
                     return
 
         kit.makedirs(self.get_directory())

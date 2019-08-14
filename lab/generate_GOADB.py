@@ -23,7 +23,7 @@ class GlyphSet(object):
         goadb = "\n".join(goadb_lines) + "\n"
         return goadb
 
-u_name_to_u_scalar = {v: k for k, v in k.constants.get_u_scalar_to_u_name().items()}
+u_name_to_u_scalar = {v: k for k, v in list(k.constants.get_u_scalar_to_u_name().items())}
 
 class Glyph(object):
 
@@ -64,7 +64,7 @@ class Glyph(object):
     }
     name_to_scalar_map.update({
         glyph_name: u_name_to_u_scalar[u_name]
-        for glyph_name, u_name in k.constants.get_glyph_list("itfgl.txt").items()
+        for glyph_name, u_name in list(k.constants.get_glyph_list("itfgl.txt").items())
     })
 
     def __init__(
@@ -108,7 +108,7 @@ class Glyph(object):
         prefix = ""
         if name.startswith(
             tuple(
-                i.abbr for i in k.constants.SCRIPT_NAMES_TO_SCRIPTS.values()
+                i.abbr for i in list(k.constants.SCRIPT_NAMES_TO_SCRIPTS.values())
             )
         ):
             prefix = name[:2]
@@ -152,7 +152,7 @@ class Glyph(object):
         suffixes = self.suffixes[:]
         if self.stem_pieces == ["Reph"]: # Information lost in scalars gets into suffixes
             suffixes.insert(0, "reph")
-        suffixes = filter(None, suffixes)
+        suffixes = [_f for _f in suffixes if _f]
 
         return scalars, suffixes
 

@@ -11,7 +11,7 @@ def relative_to_package(path):
     return os.path.join(__path__[0], path)
 
 def relative_to_cwd(path):
-    return os.path.join(os.getcwdu(), path)
+    return os.path.join(os.getcwd(), path)
 
 def memoize(obj):
     memoized = {}

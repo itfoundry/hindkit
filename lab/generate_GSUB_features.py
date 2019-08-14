@@ -38,15 +38,15 @@ class Font(object):
 
     def dump(self):
         lines = []
-        for f in self.features.values():
+        for f in list(self.features.values()):
             lines.extend(f.dump())
         return lines
 
     @property
     def lookups(self):
         lookups = collections.OrderedDict()
-        for k, v in self.features.items():
-            for k, v in v.lookups.items():
+        for k, v in list(self.features.items()):
+            for k, v in list(v.lookups.items()):
                 lookups[k] = v
         return lookups
 
@@ -62,8 +62,8 @@ class Feature(object):
     def dump(self):
         lines = []
         lines.append("feature {} {{".format(self.tag))
-        for l in self.lookups.values():
-            lines.extend(map(indent, l.dump()))
+        for l in list(self.lookups.values()):
+            lines.extend(list(map(indent, l.dump())))
         lines.append("}} {};".format(self.tag))
         return lines
 
@@ -85,7 +85,7 @@ class Lookup(object):
         lines.extend([indent(r.dump()) for r in self.rules])
         lines.append("}} {};".format(self.label))
         if not self.rules:
-            lines = map(comment, lines)
+            lines = list(map(comment, lines))
         return lines
 
 class Rule(object):
@@ -194,7 +194,7 @@ def get_components(name, mode="indic2"):
         elif mode == "indic1":
             lookup = "vatu_old"
             components = [stem[:-2], "RAc2"]
-    components = map(add_prefix, components)
+    components = list(map(add_prefix, components))
     return components, lookup
 
 def ligate(components, reference):

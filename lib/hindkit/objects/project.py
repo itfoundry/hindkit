@@ -199,7 +199,7 @@ class Project(object):
             ]
             product.abstract_directory = os.path.join(
                 product.abstract_directory,
-                "-".join(filter(None, directory_parts)),
+                "-".join([_f for _f in directory_parts if _f]),
             )
 
         if self.options["match_mI_variants"]:
@@ -323,7 +323,7 @@ class Project(object):
             file_format_to_paths = collections.defaultdict(list)
             for product in products_built:
                 file_format_to_paths[product.file_format].append(product.get_path(temp=False))
-            for file_format, paths in file_format_to_paths.items():
+            for file_format, paths in list(file_format_to_paths.items()):
                 archive_filename = "{}-{}-{}.zip".format(
                     self.family.name_postscript,
                     self.fontrevision.replace(".", ""),

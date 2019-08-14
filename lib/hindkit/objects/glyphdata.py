@@ -36,13 +36,13 @@ class GlyphData(object):
                             uni = None
                         self.dictionary[development_name] = production_name, uni
 
-            self.glyph_order = self.dictionary.keys()
+            self.glyph_order = list(self.dictionary.keys())
 
     def generate_goadb(self, names=None):
         if names is None:
             names = self.glyph_order
         lines = []
-        for development_name, data in self.dictionary.items():
+        for development_name, data in list(self.dictionary.items()):
             if (names is None) or (development_name in names):
                 production_name, uni = data
                 if uni:

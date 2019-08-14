@@ -241,7 +241,7 @@ class FeatureTables(BaseFeature):
             if content
         )
 
-        for name, entries in tables.items():
+        for name, entries in list(tables.items()):
             if entries:
                 lines.append("table %s {" % name)
                 lines.extend("  " + i for i in entries)
@@ -585,10 +585,10 @@ class FeatureMatches(BaseFeature):
             (tuple(i.glyphs[:1]), i.glyphs[1:]) for i in multiple_glyph_bases
         )
         compressed = compress(
-            (tuple(v), list(k)) for k, v in compressed.items()
+            (tuple(v), list(k)) for k, v in list(compressed.items())
         )
 
-        for rule in ([v, list(k)] for k, v in compressed.items()):
+        for rule in ([v, list(k)] for k, v in list(compressed.items())):
             self.substitute_rule_lines.append(
                 "sub {}' {} by {};".format(
                     self.name_default,

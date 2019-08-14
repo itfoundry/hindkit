@@ -27,7 +27,7 @@ class Database(object):
     def __init__(self, root):
 
         root.pop('_lib')
-        self.scripts = [Script(self, k, v) for k, v in root.items()]
+        self.scripts = [Script(self, k, v) for k, v in list(root.items())]
 
     def export_glyphdata(self, glyphsapp_version=2):
 
@@ -106,7 +106,7 @@ class Script(object):
                 inherited = node.pop('inherited')
                 for node in group:
                     node.update({
-                        k: v for k, v in inherited.items()
+                        k: v for k, v in list(inherited.items())
                         if k not in node
                     })
                     glyphs.append(node)

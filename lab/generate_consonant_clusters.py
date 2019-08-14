@@ -66,7 +66,7 @@ class Letter(object):
                 property_name = "is_" + i[:-1]
                 property_value = bool(("-", "+").index(i[-1:]))
             else:
-                for k, v in self.PROPERTIES.items():
+                for k, v in list(self.PROPERTIES.items()):
                     if i in v:
                         property_name = k
                         property_value = i

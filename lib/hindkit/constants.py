@@ -243,7 +243,7 @@ def get_adobe_latin(number, get_combined=False):
     with open(
         kit.relative_to_package("data/adobe-latin-{}.txt".format(suffix))
     ) as f:
-        f.next()
+        next(f)
         for line in f:
             parts = line.strip().split("\t")[:4]
             u_scalar, u_character, production_name, u_name = parts
