@@ -1,8 +1,8 @@
 #!/usr/bin/env AFDKOPython
 # encoding: UTF-8
-from __future__ import division, absolute_import, print_function, unicode_literals
 
-import StringIO, collections, re
+
+import io, collections, re
 import yaml, lxml.etree
 import itfoundrykit.constants
 
@@ -47,7 +47,7 @@ class Database(object):
                 lxml.etree.SubElement(root, 'glyph', attrib=glyph_normalized)
 
         dtd_string = DTD_2 if glyphsapp_version == 2 else DTD_1
-        dtd_file = StringIO.StringIO(dtd_string)
+        dtd_file = io.StringIO(dtd_string)
         doctype_string = DOCTYPE_TEMPLATE.format(dtd_string)
 
         if lxml.etree.DTD(dtd_file).validate(root) is True:
