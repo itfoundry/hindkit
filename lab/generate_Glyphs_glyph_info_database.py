@@ -1,7 +1,3 @@
-#!/usr/bin/env AFDKOPython
-# encoding: UTF-8
-
-
 import io, collections, re
 import yaml, lxml.etree
 import itfoundrykit.constants

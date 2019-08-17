@@ -1,7 +1,3 @@
-#!/usr/bin/env AFDKOPython
-# encoding: UTF-8
-
-
 import os, argparse, subprocess, collections, errno
 import fontTools.ttLib
 import hindkit as kit

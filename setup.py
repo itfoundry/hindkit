@@ -1,4 +1,3 @@
-#!/usr/bin/env AFDKOPython
 import setuptools
 setuptools.setup(
     name = "hindkit",

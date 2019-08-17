@@ -1,7 +1,3 @@
-#!/usr/bin/env AFDKOPython
-# encoding: UTF-8
-
-
 import os, glob, subprocess, itertools
 import fontTools.ttLib, getKerningPairsFromFEA
 import hindkit as kit

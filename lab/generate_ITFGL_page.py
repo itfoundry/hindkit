@@ -1,7 +1,3 @@
-#!/usr/bin/env AFDKOPython
-# encoding: UTF-8
-
-
 import hindkit as kit
 
 data = kit.constants.get_glyph_list("itfgl.txt", with_u_scalar=True)

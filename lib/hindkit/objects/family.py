@@ -1,7 +1,3 @@
-#!/usr/bin/env AFDKOPython
-# encoding: UTF-8
-
-
 import os, subprocess
 import mutatorMath.ufo.document
 import hindkit as kit

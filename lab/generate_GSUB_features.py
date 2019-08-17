@@ -1,7 +1,3 @@
-#!/usr/bin/env AFDKOPython
-# encoding: UTF-8
-
-
 import collections, re
 import hindkit as k
 from generate_GOADB import Glyph

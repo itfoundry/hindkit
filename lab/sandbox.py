@@ -1,7 +1,3 @@
-#!/usr/bin/env AFDKOPython
-# encoding: UTF-8
-
-
 import hindkit
 
 U_SCALAR_TO_U_NAME = hindkit.constants.get_u_scalar_to_u_name()

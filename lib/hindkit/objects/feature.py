@@ -1,7 +1,3 @@
-#!/usr/bin/env AFDKOPython
-# encoding: UTF-8
-
-
 import os, collections, itertools, re
 import WriteFeaturesKernFDK, WriteFeaturesMarkFDK
 import hindkit as kit

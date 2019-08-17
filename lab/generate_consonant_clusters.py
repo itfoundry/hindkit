@@ -1,6 +1,3 @@
-#!/usr/bin/env AFDKOPython
-# encoding: UTF-8
-
 import collections
 import pytoml
 

@@ -1,7 +1,3 @@
-#!/usr/bin/env AFDKOPython
-# encoding: UTF-8
-
-
 import os, sys, functools, shutil, errno
 
 def relative_to_interpreter(path):
