@@ -36,6 +36,8 @@ class Family(object):
         self.source_tag = source_tag
         self.initial_release_year = initial_release_year
 
+        self.project = None
+
     def get_client_data(self):
         return kit.Client(self, self.client_name)
 
@@ -73,7 +75,6 @@ class Family(object):
 
         p = self.project
         styles = [i.style for i in p.products if not i.subsidiary]
-
 
         if p.options["run_makeinstances"]:
             self.generate_styles()
