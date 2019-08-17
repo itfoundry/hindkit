@@ -231,7 +231,7 @@ class FeatureTables(BaseFeature):
         tables["name"].extend(
             "nameid {} \"{}\";".format(
                 name_id,
-                content.encode("unicode_escape").replace("\\x", "\\00").replace("\\u", "\\")
+                content.encode("unicode_escape").decode().replace("\\x", "\\00").replace("\\u", "\\")
             )
             for name_id, content in sorted(client_data.tables["name"].items())
             if content
