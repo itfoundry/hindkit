@@ -66,7 +66,6 @@ def remove_illegal_chars_for_postscript_name_part(name):
 
 from hindkit import constants
 from hindkit import filters
-from hindkit import patched
 
 from hindkit.objects.base import BaseFile
 from hindkit.objects.family import Family, DesignSpace, Fmndb

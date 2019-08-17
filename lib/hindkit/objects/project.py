@@ -100,6 +100,7 @@ class Project(object):
                 "position_marks_for_mI_variants": False,
 
             "run_makeinstances": True,
+            "do_normalize": True,
             "run_checkoutlines": True,
             "run_autohint": False,
             "build_ttf": False,

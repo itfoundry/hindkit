@@ -1,5 +1,5 @@
 import os, subprocess
-import mutatorMath.ufo.document
+import defcon, mutatorMath.ufo.document
 import hindkit as kit
 
 class Family(object):
@@ -30,7 +30,7 @@ class Family(object):
         self.masters = None
         self.styles = None
 
-        self.info = kit.patched.defcon.Font().info
+        self.info = defcon.Font().info
 
         self.client_name = client_name
         self.source_tag = source_tag
@@ -98,6 +98,7 @@ class Family(object):
         self.project.designspace.prepare()
         subprocess.call([
             "makeInstancesUFO",
+            "-v",
             "-d", self.project.designspace.get_path(),
             "-a",
             "-c",

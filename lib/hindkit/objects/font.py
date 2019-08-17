@@ -1,5 +1,6 @@
-import os, glob, subprocess, itertools
-import fontTools.ttLib, getKerningPairsFromFEA
+import os, glob, subprocess, itertools, collections
+import defcon, fontTools.ttLib, getKerningPairsFromFEA
+from afdko.makeinstancesufo import logger, normalizeUFO, updateInstance, validateLayers
 import hindkit as kit
 
 class BaseFont(kit.BaseFile):
@@ -74,7 +75,7 @@ class BaseFont(kit.BaseFile):
                         subprocess.call([
                             "vfb2ufo", "-fo", input_path, self.get_path(),
                         ])
-                    self.defconFont = kit.patched.defcon.Font(self.get_path())
+                    self.defconFont = defcon.Font(self.get_path())
                     print("[OPENED]", self.get_path())
                     return self.defconFont
                 else:
@@ -130,7 +131,7 @@ class BaseFont(kit.BaseFile):
             source_font = source_file.open()
         elif import_kerning and source_path.endswith(".fea"):
             kern_fea_reader = getKerningPairsFromFEA.FEAKernReader([source_path])
-            source_font = kit.patched.defcon.Font()
+            source_font = defcon.Font()
             source_font.groups.update(kern_fea_reader.kernClasses)
             kern_classes_reversed = {tuple(v): k for k, v in list(kern_fea_reader.kernClasses.items())}
             if len(kern_fea_reader.kernClasses) != len(kern_classes_reversed):
@@ -395,8 +396,12 @@ class Style(BaseFont):
     def produce(self, project, file_format="OTF", subsidiary=False):
         return Product(project, self, file_format=file_format, subsidiary=subsidiary)
 
-
 class Product(BaseFont):
+
+    Options = collections.namedtuple(
+        "Options",
+        "doNormalize doOverlapRemoval doAutoHint no_round",
+    )
 
     def __init__(self, project, style, file_format="OTF", subsidiary=False):
 
@@ -464,13 +469,27 @@ class Product(BaseFont):
             defconFont.kerning.clear()
             self.style.save()
 
-            if self.project.options["run_checkoutlines"] or self.project.options["run_autohint"]:
-                options = {
-                    "doOverlapRemoval": self.project.options["run_checkoutlines"],
-                    "doAutoHint": self.project.options["run_autohint"],
-                    "allowDecimalCoords": False,
-                }
-                kit.patched.updateInstance(options, self.style.get_path())
+            # from afdko/makeinstancesufo.py:
+            options = self.Options(
+                doNormalize = self.project.options["do_normalize"],
+                doOverlapRemoval = self.project.options["run_checkoutlines"],
+                doAutoHint = self.project.options["run_autohint"],
+                no_round = False,
+            )
+            instancePath = self.style.get_path()
+            if options.doNormalize:
+                logger.info("Applying UFO normalization...")
+                normalizeUFO(instancePath, outputPath=None, onlyModified=True,
+                                writeModTimes=False)
+            if options.doOverlapRemoval or options.doAutoHint:
+                logger.info("Applying post-processing...")
+                updateInstance(options, instancePath)
+            if not options.doOverlapRemoval:
+                validateLayers(instancePath)
+            if options.doOverlapRemoval or options.doAutoHint:
+                if options.doNormalize:
+                    normalizeUFO(instancePath, outputPath=None, onlyModified=False,
+                                writeModTimes=False)
 
         elif self.file_format == "TTF":
 
@@ -499,8 +518,11 @@ class Product(BaseFont):
             "-gf", self.goadb_trimmed.get_path(),
             "-ga",
             "-overrideMenuNames",
-            "-shw",
         ]
+        if self.project.options["run_autohint"]:
+            arguments.append("-shw")
+        else:
+            arguments.append("-nshw")
         if self.project.options["use_mac_name_records"]:
             arguments.append("-useMacNames")
         else:
