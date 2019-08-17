@@ -236,13 +236,18 @@ class BaseFont(kit.BaseFile):
             else:
                 key_pair_modified = [None, None]
                 g_name = None
-                if key.startswith("public.kern"):
+                if key.startswith("public.kern1.") or key.startswith("public.kern2."):
+                    g_name = key[13:]
+                    if key.startswith("public.kern1."):
+                        key_pair_modified[0] = "@MMK_L_" + g_name
+                    else:
+                        key_pair_modified[1] = "@MMK_R_" + g_name
+                elif key.startswith("public.kern"):
                     key_modified = key[13:]
                     if key_modified.startswith("@MMK_L_"):
-                        side = 0
-                    elif key_modified.startswith("@MMK_R_"):
-                        side = 1
-                    key_pair_modified[side] = key_modified
+                        key_pair_modified[0] = key_modified
+                    else:
+                        key_pair_modified[1] = key_modified
                 elif key.startswith("_KERN_"):
                     parts = key.split("_")
                     if len(parts) == 3:
