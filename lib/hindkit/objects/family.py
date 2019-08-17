@@ -114,16 +114,15 @@ class DesignSpace(kit.BaseFile):
             project = project,
             file_format = "DesignSpace",
         )
-
-    def generate(self):
-
-        doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
+        self.doc = mutatorMath.ufo.document.DesignSpaceDocumentWriter(
             os.path.abspath(kit.relative_to_cwd(self.get_path()))
         )
 
+    def generate(self):
+
         for i, master in enumerate(self.project.family.masters):
 
-            doc.addSource(
+            self.doc.addSource(
 
                 path = os.path.abspath(kit.relative_to_cwd(master.get_path())),
                 name = "master " + master.name,
@@ -145,7 +144,7 @@ class DesignSpace(kit.BaseFile):
         for product in self.project.products:
             if not product.subsidiary:
                 style = product.style
-                doc.startInstance(
+                self.doc.startInstance(
                     name = "instance " + style.name,
                     location = {
                         "axis " + str(axis_number): axis_position
@@ -160,11 +159,11 @@ class DesignSpace(kit.BaseFile):
                     # styleMapFamilyName = None,
                     # styleMapStyleName = None,
                 )
-                doc.writeInfo()
+                self.doc.writeInfo()
                 if self.project.options["prepare_kerning"]:
-                    doc.writeKerning()
-                doc.endInstance()
-        doc.save()
+                    self.doc.writeKerning()
+                self.doc.endInstance()
+        self.doc.save()
 
 
 class Fmndb(kit.BaseFile):
