@@ -557,19 +557,19 @@ class Product(BaseFont):
             self.built = True
             print("[FONT SUCCESSFULLY BUILT]", self.get_path())
 
-            font = fontTools.ttLib.TTFont(self.get_path(), recalcTimestamp=True)
+            self.font = fontTools.ttLib.TTFont(self.get_path(), recalcTimestamp=True)
             dirty = False
             for table_tag in [
                 "STAT", # Introduced by Glyphs.
             ]:
-                if table_tag in font:
-                    del font[table_tag]
+                if table_tag in self.font:
+                    del self.font[table_tag]
                     dirty = True
             if hasattr(self, "postprocess"):
-                font = self.postprocess(font)
+                self.font = self.postprocess()
                 dirty = True
             if dirty:
-                font.save(self.get_path(), reorderTables=False)
+                self.font.save(self.get_path(), reorderTables=False)
                 print("[FONT POSTPROCESSED]", self.get_path())
 
         if self.built:

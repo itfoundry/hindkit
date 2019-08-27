@@ -287,8 +287,8 @@ class FeatureKern(BaseFeature):
             kern_path = self.get_path()
             if os.path.exists(kern_path):
                 with open(kern_path) as f:
-                    content = f.read()
-                dist, kern = self.postprocess(content)
+                    self.content = f.read()
+                dist, kern = self.postprocess()
                 kit.remove(kern_path)
                 if dist:
                     with open(os.path.join(self.get_directory(), "dist.fea"), "w") as f:

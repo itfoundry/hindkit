@@ -36,7 +36,7 @@ class Family(object):
         self.source_tag = source_tag
         self.initial_release_year = initial_release_year
 
-        self.project = None
+        self.project: kit.Project = None
 
     def get_client_data(self):
         return kit.Client(self, self.client_name)
