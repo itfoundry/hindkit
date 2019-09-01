@@ -219,6 +219,8 @@ class BaseFont(kit.BaseFile):
 
             if glyph_class_name.startswith("_KERN_"):
                 glyph_class_name_modified = "@" + glyph_class_name[1:]
+            else:
+                glyph_class_name_modified = glyph_class_name
 
             glyph_names_modified = []
 
