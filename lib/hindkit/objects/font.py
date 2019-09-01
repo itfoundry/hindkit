@@ -224,64 +224,58 @@ class BaseFont(kit.BaseFile):
 
     def refresh_groups(self):
 
-        f = self.open()
-        kerning_modifications = {}
+        font = self.open()
+        groups_modified = {}
+        kerning_side_renaming_map = {}
 
-        for key, g_names in list(f.groups.items()):
-            del f.groups[key]
-            g_names_modified = [self.glyph_renaming_map.get(i, i) for i in g_names]
-            g_names_modified = [i for i in g_names_modified if i in f]
-            if not key.startswith(("public.kern", "_KERN_")) and g_names_modified:
-                f.groups[key] = g_names_modified
-            else:
-                key_pair_modified = [None, None]
-                g_name = None
-                if key.startswith("public.kern1.") or key.startswith("public.kern2."):
-                    g_name = key[13:]
-                    if key.startswith("public.kern1."):
-                        key_pair_modified[0] = "@MMK_L_" + g_name
+        for glyph_class_name, glyph_names in font.groups.items():
+
+            if glyph_class_name.startswith("_KERN_"):
+                glyph_class_name_modified = "@" + glyph_class_name[1:]
+
+            glyph_names_modified = []
+
+            for glyph_name in glyph_names:
+                if glyph_name.endswith("'"):  # Kerning class key glyph.
+                    glyph_name = glyph_name[:-1]
+                    if glyph_class_name_modified.endswith("_1ST"):
+                        kerning_side_renaming_map[(0, glyph_name)] = glyph_class_name_modified
+                    elif glyph_class_name_modified.endswith("_2ND"):
+                        kerning_side_renaming_map[(1, glyph_name)] = glyph_class_name_modified
                     else:
-                        key_pair_modified[1] = "@MMK_R_" + g_name
-                elif key.startswith("public.kern"):
-                    key_modified = key[13:]
-                    if key_modified.startswith("@MMK_L_"):
-                        key_pair_modified[0] = key_modified
-                    else:
-                        key_pair_modified[1] = key_modified
-                elif key.startswith("_KERN_"):
-                    parts = key.split("_")
-                    if len(parts) == 3:
-                        _, _, g_name = parts
-                        key_pair_modified = "@MMK_L_" + g_name, "@MMK_R_" + g_name
-                    else:
-                        _, _, g_name, side_tag = parts
-                        if side_tag == "1ST":
-                            key_pair_modified[0] = "@MMK_L_" + g_name
-                        elif side_tag == "2ND":
-                            key_pair_modified[1] = "@MMK_R_" + g_name
-                for side, key_modified in enumerate(key_pair_modified):
-                    if key_modified:
-                        if g_names_modified:
-                            f.groups[key_modified] = g_names_modified
-                        if g_name:
-                            kerning_modifications[side, g_name] = key_modified
-                        else:
-                            kerning_modifications[side, key] = key_modified
+                        kerning_side_renaming_map[(0, glyph_name)] = glyph_class_name_modified
+                        kerning_side_renaming_map[(1, glyph_name)] = glyph_class_name_modified
+                glyph_name_modified = self.glyph_renaming_map.get(glyph_name, glyph_name)
+                if glyph_name_modified in font:
+                    glyph_names_modified.append(glyph_name_modified)
+
+            if glyph_names_modified:
+                groups_modified[glyph_class_name_modified] = glyph_names_modified
+
+        font.groups.clear()
+        font.groups.update(groups_modified)
         print("\n[NOTE] Refreshed glyph groups.")
+        print(font.groups)
 
-        available_keys = list(f.keys()) + list(f.groups.keys())
-        for key_pair, value in list(f.kerning.items()):
-            del f.kerning[key_pair]
-            key_pair_refreshed = []
-            for side, key in enumerate(key_pair):
-                key_refreshed = kerning_modifications.get((side, key), key)
-                key_refreshed = self.glyph_renaming_map.get(key_refreshed, key_refreshed)
-                if key_refreshed in available_keys:
-                    key_pair_refreshed.append(key_refreshed)
+        kerning_modified = {}
+
+        for pair, value in font.kerning.items():
+
+            valid_side_mames = list(font.groups.keys()) + list(font.keys())
+            pair_modified = []
+
+            for side, side_name in enumerate(pair):
+                side_name_modified = kerning_side_renaming_map.get((side, side_name), side_name)
+                side_name_modified = self.glyph_renaming_map.get(side_name_modified, side_name_modified)
+                if side_name_modified in valid_side_mames:
+                    pair_modified.append(side_name_modified)
                 else:
                     break
             else:
-                f.kerning[tuple(key_pair_refreshed)] = value
+                kerning_modified[tuple(pair_modified)] = value
+
+        font.kerning.clear()
+        font.kerning.update(kerning_modified)
         print("\n[NOTE] Refreshed kerning.")
 
     def derive_glyphs(self, deriving_names):
