@@ -154,21 +154,8 @@ class BaseFont(kit.BaseFile):
         target_font = self.open()
 
         if import_blue_zones:
-
-            source_blue_values = source_font.info.postscriptBlueValues
-            source_other_blues = source_font.info.postscriptOtherBlues
-            target_blue_values = target_font.info.postscriptBlueValues
-            target_other_blues = target_font.info.postscriptOtherBlues
-
-            blue_values = [min(source_blue_values[0], target_blue_values[0]), 0]
-            blue_values.extend(source_blue_values[2:4] + target_blue_values[2:4] + source_blue_values[6:10])
-            other_blues = source_other_blues
-
-            target_font.info.postscriptBlueValues = blue_values
-            target_font.info.postscriptOtherBlues = other_blues
-            print(source_other_blues, source_blue_values)
-            print(target_other_blues, target_blue_values)
-            print(other_blues, blue_values)
+            target_font.info.postscriptBlueValues = source_font.info.postscriptBlueValues
+            target_font.info.postscriptOtherBlues = source_font.info.postscriptOtherBlues
 
         if import_x_and_cap_heights:
             self.x_height = source_font.info.xHeight
