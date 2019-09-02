@@ -1,12 +1,20 @@
-import os, argparse, subprocess, collections, errno
+import argparse
+import collections
+import errno
+import os
+import subprocess
+
 import fontTools.ttLib
+
 import hindkit as kit
+
 
 class Version(object):
     def __init__(self, release, commit, build):
         self.release = release
         self.commit = commit
         self.build = build
+
 
 class Project(object):
 
@@ -30,7 +38,7 @@ class Project(object):
         self,
         family,
         target_tag = None,
-        release_commit = None, # (65535, 999)
+        release_commit = None,  # (65535, 999)
         fontrevision = "1.000",
         options = {},
     ):
@@ -93,11 +101,11 @@ class Project(object):
 
             "prepare_kerning": False,
             "prepare_mark_positioning": False,
-                "prepare_mark_to_mark_positioning": True,
+            "prepare_mark_to_mark_positioning": True,
 
             "match_mI_variants": 0,
-                "match_mI_variants_for_scripts": None,
-                "position_marks_for_mI_variants": False,
+            "match_mI_variants_for_scripts": None,
+            "position_marks_for_mI_variants": False,
 
             "run_makeinstances": True,
             "do_normalize": True,
@@ -112,8 +120,8 @@ class Project(object):
             "use_mac_name_records": False,
 
             "use_os_2_version_4": False,
-                "prefer_typo_metrics": False,
-                "is_width_weight_slope_only": False,
+            "prefer_typo_metrics": False,
+            "is_width_weight_slope_only": False,
 
             "additional_unicode_range_bits": [],
             "additional_code_pages": [],
@@ -292,19 +300,7 @@ class Project(object):
             self.fmndb.prepare()
 
             for product in self.products:
-                if not product.subsidiary:
-                    product.generate()
-
-            for product in self.products:
-                if product.file_format == "TTF":
-                    subprocess.call([
-                        "open",
-                        "-a", "Glyphs.app",
-                        product.style.get_path()
-                    ])
-            for product in self.products:
-                if product.file_format == "TTF":
-                    product.generate()
+                product.generate()
 
             products_built = [i for i in self.products if i.built]
 

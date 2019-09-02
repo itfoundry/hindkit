@@ -85,11 +85,11 @@ class Goadb(kit.BaseFile):
 
         if self.product:
             names = self.project.glyph_data.glyph_order
-            reference_names = self.product.style.open().glyphOrder
+            reference_font = self.product.style.open()
             not_covered_glyphs = [
-                name
-                for name in reference_names
-                if name not in names
+                glyph.name
+                for glyph in reference_font
+                if glyph.name not in names
             ]
             if not_covered_glyphs:
                 print(
@@ -101,7 +101,7 @@ class Goadb(kit.BaseFile):
             self.names = [
                 name
                 for name in names
-                if name in reference_names
+                if name in reference_font
             ]
         else:
             self.names = None

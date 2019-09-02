@@ -1,7 +1,18 @@
-import os, glob, subprocess, itertools, collections
-import defcon, fontTools.ttLib, getKerningPairsFromFEA
+import collections
+import glob
+import itertools
+import os
+import subprocess
+
+import defcon
+import fontTools.ttLib
+import getKerningPairsFromFEA
+import ufo2ft
+
 from afdko.makeinstancesufo import logger, normalizeUFO, updateInstance, validateLayers
+
 import hindkit as kit
+
 
 class BaseFont(kit.BaseFile):
 
@@ -181,8 +192,8 @@ class BaseFont(kit.BaseFile):
                 g_names_importing.difference_update(g_names_already_existing)
                 print("Already existing; will not overwrite: {}".format(", ".join(g_names_already_existing)))
             g_names_importing = (
-                [i for i in source_font.glyphOrder if i in g_names_importing] +
-                [i for i in g_names_importing if i not in source_font.glyphOrder]
+                [i for i in source_font.glyphOrder if i in g_names_importing]
+                + [i for i in g_names_importing if i not in source_font.glyphOrder]
             )
             for source_g_name in g_names_importing:
                 source_g = source_font[source_g_name]
@@ -384,6 +395,7 @@ class Style(BaseFont):
     def produce(self, project, file_format="OTF", subsidiary=False):
         return Product(project, self, file_format=file_format, subsidiary=subsidiary)
 
+
 class Product(BaseFont):
 
     Options = collections.namedtuple(
@@ -428,36 +440,21 @@ class Product(BaseFont):
 
         self.goadb_trimmed = kit.Goadb(self.project, product=self)
         self.goadb_trimmed.prepare()
+        style_file_format_backup = None
 
         if self.file_format == "OTF" and self.style.file_format == "UFO":
 
-            defconFont = self.style.open()
-            defconFont.info.postscriptFontName = self.full_name_postscript
-            defconFont.lib["public.glyphOrder"] = self.goadb_trimmed.names
-            for k in ["com.schriftgestaltung.glyphOrder", "com.schriftgestaltung.font.glyphOrder"]:
-                defconFont.lib.pop(k, None)
-            for i in """
-                versionMajor
-                versionMinor
-                copyright
-                familyName
-                styleName
-                styleMapFamilyName
-                styleMapStyleName
-                postscriptWeightName
-                openTypeHeadCreated
-                openTypeNamePreferredFamilyName
-                openTypeNamePreferredSubfamilyName
-                openTypeNameDesigner
-                openTypeOS2WeightClass
-                openTypeOS2WidthClass
-            """.split():
-                setattr(defconFont.info, i, None)
-            defconFont.groups.clear()
-            defconFont.kerning.clear()
+            font = self.style.open()
+            font.info.postscriptFontName = self.full_name_postscript
+            font.lib["public.glyphOrder"] = self.goadb_trimmed.names
+            for glyph in font:
+                glyph.unicodes = []
+            font.groups.clear()
+            font.kerning.clear()
             self.style.save()
 
             # from afdko/makeinstancesufo.py:
+
             options = self.Options(
                 doNormalize = self.project.options["do_normalize"],
                 doOverlapRemoval = self.project.options["run_checkoutlines"],
@@ -467,8 +464,12 @@ class Product(BaseFont):
             instancePath = self.style.get_path()
             if options.doNormalize:
                 logger.info("Applying UFO normalization...")
-                normalizeUFO(instancePath, outputPath=None, onlyModified=True,
-                                writeModTimes=False)
+                normalizeUFO(
+                    instancePath,
+                    outputPath = None,
+                    onlyModified = True,
+                    writeModTimes = False,
+                )
             if options.doOverlapRemoval or options.doAutoHint:
                 logger.info("Applying post-processing...")
                 updateInstance(options, instancePath)
@@ -476,26 +477,23 @@ class Product(BaseFont):
                 validateLayers(instancePath)
             if options.doOverlapRemoval or options.doAutoHint:
                 if options.doNormalize:
-                    normalizeUFO(instancePath, outputPath=None, onlyModified=False,
-                                writeModTimes=False)
+                    normalizeUFO(
+                        instancePath,
+                        outputPath = None,
+                        onlyModified = False,
+                        writeModTimes = False,
+                    )
 
         elif self.file_format == "TTF":
-
-            # subprocess.call([
-            #     "osascript", "-l", "JavaScript",
-            #     kit.relative_to_package("data/generate_ttf.js"),
-            #     os.path.abspath(self.style.get_path()),
-            # ])
-
-            self.style.file_format = "TTF" #TODO: Should restore the original file format afterwards. Or the styles should just seperate.
-
-            while not os.path.exists(self.style.get_path()):
-                print(
-                    "\n[PROMPT] Input file {} is missing. Try again? [Y/n]: ".format(self.style.get_path()),
-                    end = "",
-                )
-                if input().upper().startswith("N"):
-                    return
+            self.style.open()
+            tt_font = ufo2ft.compileTTF(
+                self.style.open(),
+                removeOverlaps = True,
+            )
+            style_file_format_backup = self.style.file_format
+            self.style.file_format = "TTF"
+            tt_font.save(self.style.get_path())
+            print(f"Converted PostScript outlines into TrueType: `{self.style.get_path()}`")
 
         kit.makedirs(self.get_directory())
 
@@ -535,6 +533,9 @@ class Product(BaseFont):
 
         subprocess.call(["makeotf"] + arguments)
 
+        if style_file_format_backup:
+            self.style.file_format = style_file_format_backup
+
         if os.path.exists(self.get_path()):
 
             self.built = True
@@ -543,7 +544,7 @@ class Product(BaseFont):
             self.font = fontTools.ttLib.TTFont(self.get_path(), recalcTimestamp=True)
             dirty = False
             for table_tag in [
-                "STAT", # Introduced by Glyphs.
+                "STAT",  # Introduced by Glyphs.
             ]:
                 if table_tag in self.font:
                     del self.font[table_tag]
