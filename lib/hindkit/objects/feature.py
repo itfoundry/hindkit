@@ -204,27 +204,25 @@ class FeatureTables(BaseFeature):
 
         if self.project.options["override_GDEF"]:
             GDEF_records = {
-                "bases": "",
-                "ligatures": "",
-                "marks": "",
-                "components": "",
+                "base": "",
+                "ligature": "",
+                "mark": "",
+                "component": "",
             }
             if self.project.options["prepare_mark_positioning"] or os.path.exists(os.path.join(self.get_directory(), "classes.fea")):
-                GDEF_records["marks"] = "@{}".format(WriteFeaturesMarkFDK.kCombMarksClassName)
+                GDEF_records["mark"] = "@{}".format(WriteFeaturesMarkFDK.kCombMarksClassName)
             classes_suffixing_path = os.path.join(self.get_directory(), "classes_suffixing.fea")
             if os.path.exists(classes_suffixing_path):
                 lines_without_comment = []
                 with open(classes_suffixing_path) as f:
                     lines_without_comment = [line.partition("#")[0].strip() for line in f]
                 content_without_comment = "\n".join(lines_without_comment)
-                for k, v in [
-                    ("bases", "@BASES_GDEF"),
-                    ("marks", "@COMBINING_MARKS_GDEF"),
-                ]:
+                for k in GDEF_records.keys():
+                    v = f"@GDEF.{k}"
                     if v in content_without_comment:
                         GDEF_records[k] = v
             tables["GDEF"].extend([
-                "GlyphClassDef {bases}, {ligatures}, {marks}, {components};".format(**GDEF_records)
+                "GlyphClassDef {base}, {ligature}, {mark}, {component};".format(**GDEF_records)
             ])
 
         tables["name"].append("include(nameExtension.fea);")
