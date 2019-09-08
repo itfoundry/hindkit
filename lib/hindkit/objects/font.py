@@ -228,23 +228,44 @@ class BaseFont(kit.BaseFile):
 
         for glyph_class_name, glyph_names in font.groups.items():
 
-            if glyph_class_name.startswith("_KERN_"):
-                glyph_class_name_modified = "@" + glyph_class_name[1:]
+            if glyph_class_name.startswith("public.kern1."):
+
+                glyph_class_name_modified = "@MMK_L_" + glyph_class_name[13:]
+                kerning_side_renaming_map[(0, glyph_class_name)] = glyph_class_name_modified
+
+            elif glyph_class_name.startswith("public.kern2"):
+
+                glyph_class_name_modified = "@MMK_R_" + glyph_class_name[13:]
+                kerning_side_renaming_map[(1, glyph_class_name)] = glyph_class_name_modified
+
+            elif glyph_class_name.startswith("_KERN_"):
+
+                glyph_class_name_modified = "@" + glyph_class_name
+                key_glyph_name = None
+
+                for glyph_name in glyph_names:
+                    if glyph_name.endswith("'"):
+                        key_glyph_name = glyph_name[:-1]
+                        break
+                else:
+                    key_glyph_name = glyph_class_name.split("_")[2]
+
+                if glyph_class_name.endswith("_1ST"):
+                    kerning_side_renaming_map[(0, key_glyph_name)] = glyph_class_name_modified
+                elif glyph_class_name.endswith("_2ND"):
+                    kerning_side_renaming_map[(1, key_glyph_name)] = glyph_class_name_modified
+                else:
+                    kerning_side_renaming_map[(0, key_glyph_name)] = glyph_class_name_modified
+                    kerning_side_renaming_map[(1, key_glyph_name)] = glyph_class_name_modified
+
             else:
+
                 glyph_class_name_modified = glyph_class_name
 
             glyph_names_modified = []
-
             for glyph_name in glyph_names:
-                if glyph_name.endswith("'"):  # Kerning class key glyph.
+                if glyph_name.endswith("'"):
                     glyph_name = glyph_name[:-1]
-                    if glyph_class_name_modified.endswith("_1ST"):
-                        kerning_side_renaming_map[(0, glyph_name)] = glyph_class_name_modified
-                    elif glyph_class_name_modified.endswith("_2ND"):
-                        kerning_side_renaming_map[(1, glyph_name)] = glyph_class_name_modified
-                    else:
-                        kerning_side_renaming_map[(0, glyph_name)] = glyph_class_name_modified
-                        kerning_side_renaming_map[(1, glyph_name)] = glyph_class_name_modified
                 glyph_name_modified = self.glyph_renaming_map.get(glyph_name, glyph_name)
                 if glyph_name_modified in font:
                     glyph_names_modified.append(glyph_name_modified)
