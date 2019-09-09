@@ -12,7 +12,7 @@ def marks(family, glyph):
 
 def mI_variants(family, glyph):
     match = re.match(
-        family.project.script_abbr_current + kit.FeatureMatches.mI_VARIANT_NAME_PATTERN + r"$",
+        kit.FeatureMatches.mI_VARIANT_NAME_PATTERN + r"$",
         glyph.name,
     )
     return bool(match)
