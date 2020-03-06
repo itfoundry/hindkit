@@ -509,6 +509,7 @@ class Product(BaseFont):
             self.style.open()
             tt_font = ufo2ft.compileTTF(
                 self.style.open(),
+                useProductionNames = False,
                 removeOverlaps = self.project.options["run_checkoutlines"],
             )
             style_file_format_backup = self.style.file_format

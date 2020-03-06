@@ -110,9 +110,4 @@ class Goadb(kit.BaseFile):
         goadb_lines = self.project.glyph_data.generate_goadb(names=self.names)
         with open(self.get_path(), "w") as f:
             for line in goadb_lines:
-                if self.product.file_format == "TTF":
-                    line = self.TTF_DIFFERENCES_INTRODUCED_BY_GLYPHS_APP.get(
-                        line,
-                        line,
-                    )
                 f.write(line + "\n")
