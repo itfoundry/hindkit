@@ -25,7 +25,8 @@ class Family(object):
             self.name = self.name_script_independent
             if script_name and append_script_name:
                 self.name += " " + script_name
-        self.name_postscript = kit.remove_illegal_chars_for_postscript_name_part(self.name)
+
+        self._name_postscript = None
 
         self.masters = None
         self.styles = None
@@ -37,6 +38,10 @@ class Family(object):
         self.initial_release_year = initial_release_year
 
         self.project: kit.Project = None
+
+    @property
+    def name_postscript(self):
+        return kit.fallback(self._name_postscript, kit.remove_illegal_chars_for_postscript_name_part(self.name))
 
     def get_client_data(self):
         return kit.Client(self, self.client_name)

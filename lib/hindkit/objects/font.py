@@ -438,6 +438,10 @@ class Product(BaseFont):
             abstract_directory = kit.Project.directories["products"],
         )
 
+        self._name_postscript = self.style._name_postscript
+        self._full_name = self.style._full_name
+        self._full_name_postscript = self.style._full_name_postscript
+
         self.project = project
         self.subsidiary = subsidiary
         self.built = False

@@ -1,10 +1,9 @@
 .DS_Store
-
-*.pyc
+.mypy_cache
+.vscode/
 *.egg-info/
+*.pyc
 /build/
 /dist/
-.vscode/
-
 /lab/input.txt
 /lab/output.txt
