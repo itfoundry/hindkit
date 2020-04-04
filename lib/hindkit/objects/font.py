@@ -177,19 +177,22 @@ class BaseFont(kit.BaseFile):
         else:
             g_names_importing = set(source_font.keys())
 
-        g_names_importing_renamed = {
-            self.glyph_renaming_map.get(i, i) for i in g_names_importing
-        }
 
         if import_glyphs and g_names_importing:
             print("\n[NOTE] Importing glyphs from `{}` to `{}`:".format(source_path, self.name))
             if g_names_excluded:
                 g_names_importing.difference_update(g_names_excluded)
                 print("Excluding: {}".format(", ".join(g_names_excluded)))
-            g_names_importing_renamed
+            g_names_importing_renamed = {
+                self.glyph_renaming_map.get(i, i) for i in g_names_importing
+            }
             g_names_already_existing = g_names_importing_renamed.intersection(set(target_font.keys()))
             if g_names_already_existing:
-                g_names_importing.difference_update(g_names_already_existing)
+                reversed_glyph_renaming_map = {v: k for k, v in glyph_renaming_map.items()}
+                g_names_importing.difference_update(
+                    reversed_glyph_renaming_map.get(i, i)
+                    for i in g_names_already_existing
+                )
                 print("Already existing; will not overwrite: {}".format(", ".join(g_names_already_existing)))
             g_names_importing = (
                 [i for i in source_font.glyphOrder if i in g_names_importing]
@@ -344,6 +347,12 @@ class BaseFont(kit.BaseFile):
         for name in names_to_be_removed:
             del target[name]
             print(name, end=", ")
+        for name in names_to_be_removed:
+            try:
+                target.lib["public.glyphOrder"].remove(name)
+                print(f"[NOTE] Manually removed `{name}` from outdated public.glyphOrder.")
+            except ValueError:
+                pass
 
     def rename_glyphs(self, mapping):
         target = self.open()
