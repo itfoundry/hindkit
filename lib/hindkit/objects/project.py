@@ -312,22 +312,3 @@ class Project(object):
                 template = f.read()
             with open(kit.relative_to_cwd("OFL.txt"), "w") as f:
                 f.write(template.format(client_data.tables["name"][0]))
-
-            file_format_to_paths = collections.defaultdict(list)
-            for product in products_built:
-                file_format_to_paths[product.file_format].append(product.get_path(temp=False))
-            for file_format, paths in list(file_format_to_paths.items()):
-                archive_filename = "{}-{}-{}.zip".format(
-                    self.family.name_postscript,
-                    self.fontrevision.replace(".", ""),
-                    file_format,
-                )
-                archive_path = os.path.join(self.directories["products"], archive_filename)
-                kit.remove(archive_path)
-                subprocess.call(["zip", "-j", archive_path] + paths)
-                print("[ZIPPED]", archive_path)
-                subprocess.call(["ttx", "-fq"] + paths)
-                print("[TTX DUMPED]")
-                for path in paths:
-                    kit.remove(path)
-                    print("[REMOVED]", path)
